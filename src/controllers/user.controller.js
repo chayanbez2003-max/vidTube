@@ -4,6 +4,7 @@ import {ApiError} from "../utils/ApiError.js";
 import {uploadOnCloudinary} from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 
 const generateAccessTokenandRefreshToken=async (userId)=>{
     try {
@@ -21,6 +22,8 @@ const generateAccessTokenandRefreshToken=async (userId)=>{
     }
 }
 
+
+
 const registerUser = asyncHandler( async (req, res) => {
     const{username, email, password, fullName} = req.body;
     // console.log("email:", email);
@@ -31,7 +34,7 @@ const registerUser = asyncHandler( async (req, res) => {
         throw new ApiError(400, "All fields are required");
     }
     
-    const existedUser =await  User.findOne({
+    const existedUser =await User.findOne({
         $or: [{ username }, { email }]
     })
 
@@ -205,12 +208,15 @@ const refreshAccessToken = asyncHandler(async (req, res)=>{
 
 const changeCurrentPassword = asyncHandler(async (req, res)=>{
     const {oldPassword, newPassword} = req.body
-    const user = await User.findById(req.useq?._id)
+    const user = await User.findById(req.user._id)
+    if (!user) {
+        throw new ApiError(404, "User not found");
+    }
 
-   const isPasswordCorrect=  user.isPasswordCorrect(oldPassword)
+   const isPasswordCorrect= await user.isPasswordCorrect(oldPassword)
 
    if(!isPasswordCorrect){
-    throw new ApiError((400,"Invalid old password"))
+    throw new ApiError(400,"Invalid old password")
    }
 
    user.password = newPassword;
@@ -222,7 +228,7 @@ const changeCurrentPassword = asyncHandler(async (req, res)=>{
     new ApiResponse(
         200,
         {},
-        "Pasword Changed Successfully"
+        "Password Changed Successfully"
     )
    )
 
@@ -244,7 +250,7 @@ const updateAccountDetails = asyncHandler(async(req,res)=>{
         throw new ApiError(400,"All fildes are required")
     }
 
-    const user = User.findByIdAndUpdate(
+    const user = await User.findByIdAndUpdate(
     req.user?._id,
     {
         $set:{
@@ -258,7 +264,7 @@ const updateAccountDetails = asyncHandler(async(req,res)=>{
 ).select("-password")
 
 return res
-.status(200
+.status(200)
 .json(
     new ApiResponse(
         200,
@@ -266,11 +272,10 @@ return res
         "Account details updated successully"
     )
 )
-)
 })
 
 const updateUserAvatar = asyncHandler(async (req,res)=>{
-    const avatarLocalPath = req.files?.path
+    const avatarLocalPath = req.file?.path
     if(!avatarLocalPath){
         throw new ApiError(400,"Avatar is missing")
     }
@@ -296,21 +301,21 @@ return res
 .json(
     new ApiResponse(
         200,
-        user,
-        "Cover image updated successfully"
+        user.toObject(),
+        "Avatar image updated successfully"
     )
 )
 
 })
 
 const updateUserCoverImage = asyncHandler(async(req,res)=>{
-    const coverImageLocalPath = req.files?.path
+    const coverImageLocalPath = req.file?.path
 
     if(!coverImageLocalPath){
         throw new ApiError(400,"Cover Image is missing")
     }
 
-    const coverImage = uploadOnCloudinary(coverImageLocalPath)
+    const coverImage = await uploadOnCloudinary(coverImageLocalPath)
 
     if(!coverImage.url){
         throw new ApiError(400,"Error while updating cover image")
@@ -332,7 +337,7 @@ return res
 .json(
     new ApiResponse(
         200,
-        user,
+        user.toObject(),
         "Cover image updated successfully"
     )
 )
@@ -343,19 +348,19 @@ const getUserchannelProfile = asyncHandler(async (req,res)=>{
     const {username}= req.params
     if(!username?.trim())
         {
-        throw new ApiError(400,"udername is missing")
+        throw new ApiError(400,"username is missing")
         
     }
     
     const channel = await User.aggregate([
         {
             $match: {
-                username:username?.toLowercase()
+                username:username?.toLowerCase()
             }
         },
         {
             $lookup:{
-                from:"subscribers",
+                from:"subscriptions",
                 localField:"_id",
                 foreignField:"channel",
                 as:"subscribers"
@@ -363,9 +368,9 @@ const getUserchannelProfile = asyncHandler(async (req,res)=>{
         },
         {
             $lookup:{
-                from:'subscription',
+                from:'subscriptions',
                 localField:"_id",
-                foreignfield:"subscriber",
+                foreignField:"subscriber",
                 as:"subscribedTo"
             }
         },
@@ -419,6 +424,60 @@ const getUserchannelProfile = asyncHandler(async (req,res)=>{
 
 })
 
+const getWatchHistory = asyncHandler(async(req, res) => {
+    const user = await User.aggregate([
+        {
+            $match: {
+                _id: new mongoose.Types.ObjectId(req.user._id)
+            }
+        },
+        {
+            $lookup: {
+                from: "videos",
+                localField: "watchHistory",
+                foreignField: "_id",
+                as: "watchHistory",
+                pipeline: [
+                    {
+                        $lookup: {
+                            from: "users",
+                            localField: "owner",
+                            foreignField: "_id",
+                            as: "owner",
+                            pipeline: [
+                                {
+                                    $project: {
+                                        fullName: 1,
+                                        username: 1,
+                                        avatar: 1
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        $addFields:{
+                            owner:{
+                                $first: "$owner"
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+    ])
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            user[0].watchHistory,
+            "Watch history fetched successfully"
+        )
+    )
+})
+
 
 export {
     registerUser,
@@ -430,7 +489,8 @@ export {
     updateAccountDetails,
     updateUserAvatar,
     updateUserCoverImage,
-    getUserchannelProfile
+    getUserchannelProfile,
+    getWatchHistory
 
 }
 
