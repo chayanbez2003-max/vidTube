@@ -3,6 +3,7 @@ import {ApiResponse} from "../utils/ApiResponse.js"
 import {ApiError} from "../utils/ApiError.js"
 import {asyncHandler} from "../utils/asyncHandler.js"
 import {Subscription} from "../models/subscription.model.js"
+import {createNotification} from "./notification.controller.js"
 
 // toggle subscription
 
@@ -35,6 +36,15 @@ const toggleSubscription = asyncHandler(async(req , res)=>{
         subscriber:req.user?._id,
         channel: channelId
     })
+
+    // Send notification to channel owner
+    await createNotification({
+        recipient: channelId,
+        sender: req.user._id,
+        type: "subscribe",
+        message: `${req.user.username} subscribed to your channel`,
+    });
+
     return res
     .status(200)
     .json(

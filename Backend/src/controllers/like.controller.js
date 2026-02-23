@@ -4,6 +4,8 @@ import {ApiResponse} from "../utils/ApiResponse.js"
 import {ApiError} from "../utils/ApiError.js"
 import {asyncHandler} from "../utils/asyncHandler.js"
 import {Like} from "../models/like.model.js"
+import {Video} from "../models/video.model.js"
+import {createNotification} from "./notification.controller.js"
 
 
 const toggleVideoLike = asyncHandler(async (req, res) => {
@@ -34,6 +36,19 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
         video:videoId,
         likedBy: req.user?._id,
     })
+
+    // Send notification to video owner
+    const video = await Video.findById(videoId).select("owner title");
+    if (video) {
+        await createNotification({
+            recipient: video.owner,
+            sender: req.user._id,
+            type: "like",
+            message: `${req.user.username} liked your video "${video.title}"`,
+            video: videoId,
+        });
+    }
+
     return res
     .status(200)
     .json(

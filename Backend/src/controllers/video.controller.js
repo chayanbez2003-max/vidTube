@@ -7,6 +7,8 @@ import { uploadOnCloudinary, deleteOnCloudinary } from "../utils/cloudinary.js";
 import { User } from "../models/user.model.js";
 import { Like } from "../models/like.model.js";
 import { Comment } from "../models/comment.model.js";
+import { Subscription } from "../models/subscription.model.js";
+import { createNotification } from "./notification.controller.js";
 
 
 const getAllVideos = asyncHandler(async (req, res)=>{
@@ -150,6 +152,18 @@ const publishVideo = asyncHandler(async(req, res)=>{
         throw new ApiError(500, "Video Upload failed , please try again" )
     }
 
+    // Notify all subscribers about the new video
+    const subscribers = await Subscription.find({ channel: req.user._id }).select("subscriber");
+    subscribers.forEach(sub => {
+        createNotification({
+            recipient: sub.subscriber,
+            sender: req.user._id,
+            type: "upload",
+            message: `${req.user.username} uploaded a new video: "${title}"`,
+            video: video._id,
+        });
+    });
+
     return res
     .status(200)
     .json(new ApiResponse(200, videoUploaded, "Video uploaded successfully"));
@@ -254,6 +268,7 @@ const getVideoById = asyncHandler(async(req, res)=>{
             {
                 $project: {
                     "videoFile.url": 1,
+                    "thumbnail.url": 1,
                     title: 1,
                     description: 1,
                     views: 1,
@@ -271,17 +286,20 @@ const getVideoById = asyncHandler(async(req, res)=>{
             throw new ApiError(500,"failed to fetch video, please try again")
         }
 
-        // increment view if video is fetched successfully
+        // Only increment view count if user hasn't viewed this video before
+        const currentUser = await User.findById(req.user?._id).select("watchHistory");
+        const alreadyViewed = currentUser?.watchHistory?.some(
+            (id) => id.toString() === videoId
+        );
 
-        await Video.findByIdAndUpdate(videoId,{
-            $inc: {
-                views: 1
-            }
-        });
+        if (!alreadyViewed) {
+            await Video.findByIdAndUpdate(videoId, {
+                $inc: { views: 1 }
+            });
+        }
 
-        // add video to user's watch history
-
-        await User.findByIdAndUpdate(req.user?._id,{
+        // add video to user's watch history (addToSet prevents duplicates)
+        await User.findByIdAndUpdate(req.user?._id, {
             $addToSet: {
                 watchHistory: videoId
             }

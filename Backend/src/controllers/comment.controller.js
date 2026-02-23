@@ -5,6 +5,7 @@ import { Video } from "../models/video.model.js";
 import mongoose from "mongoose";
 import { Like } from "../models/like.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { createNotification } from "./notification.controller.js";
 
 //get all comments for a video
 const getVideoCommnets =  asyncHandler(async(req , res) =>{
@@ -20,8 +21,7 @@ const getVideoCommnets =  asyncHandler(async(req , res) =>{
     const commentsAggregate = Comment.aggregate([
         {
             $match: {
-                video: new mongoose.Types.ObjectId(videoId),
-                state: "ACTIVE"
+                video: new mongoose.Types.ObjectId(videoId)
             }
         },
         {
@@ -123,6 +123,16 @@ const getVideoCommnets =  asyncHandler(async(req , res) =>{
     if(!comment){
         throw new ApiError(500, "Failed to add comment");
     }
+
+    // Send notification to video owner
+    await createNotification({
+        recipient: video.owner,
+        sender: req.user._id,
+        type: "comment",
+        message: `${req.user.username} commented on your video "${video.title}": "${content.substring(0, 50)}${content.length > 50 ? '...' : ''}"`,
+        video: video._id,
+        comment: comment._id,
+    });
 
     return res
     .status(200)
