@@ -1,0 +1,135 @@
+.video-card {
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    background: var(--bg-card);
+    border: 1px solid var(--glass-border);
+    transition: all var(--transition-normal);
+}
+
+.video-card:hover {
+    border-color: var(--border-accent);
+    box-shadow: 0 8px 32px rgba(124, 58, 237, 0.1);
+}
+
+.video-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.video-thumbnail {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.video-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.video-card:hover .video-thumbnail img {
+    transform: scale(1.05);
+}
+
+.video-duration {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background: rgba(0, 0, 0, 0.85);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.video-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+}
+
+.video-card:hover .video-overlay {
+    opacity: 1;
+}
+
+.play-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--accent-gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: white;
+    box-shadow: var(--accent-glow);
+    transform: scale(0.8);
+    transition: transform var(--transition-fast);
+}
+
+.video-card:hover .play-icon {
+    transform: scale(1);
+}
+
+.video-info {
+    display: flex;
+    gap: 12px;
+    padding: 14px;
+}
+
+.video-avatar {
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.video-meta {
+    flex: 1;
+    min-width: 0;
+}
+
+.video-title {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 4px;
+}
+
+.video-channel {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 2px;
+    text-transform: capitalize;
+}
+
+.video-channel:hover {
+    color: var(--text-primary);
+}
+
+.video-stats {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.video-stats span {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
