@@ -3,7 +3,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import mongoose, { isValidObjectId } from "mongoose";
 import { ApiError } from "../utils/ApiError.js";
 import {Video} from "../models/video.model.js";
-import { uploadOnCloudinary, deleteOnCloudinary } from "../utils/cloudinary.js";
+import { uploadOnCloudinary, deleteOnCloudinary, generateUploadSignature } from "../utils/cloudinary.js";
 import { User } from "../models/user.model.js";
 import { Like } from "../models/like.model.js";
 import { Comment } from "../models/comment.model.js";
@@ -74,8 +74,9 @@ const getAllVideos = asyncHandler(async (req, res)=>{
             pipeline: [
                 {
                     $project: {
+                        _id: 1,
                         username: 1,
-                        "avatar.url": 1
+                        avatar: 1
                     }
                 }
             ]
@@ -104,45 +105,38 @@ const getAllVideos = asyncHandler(async (req, res)=>{
 
 const publishVideo = asyncHandler(async(req, res)=>{
 
-    const{title, description} = req.body;
+    const { title, description, tags, category, videoUrl, videoPublicId, thumbnailUrl, thumbnailPublicId, duration } = req.body;
 
-    if([title, description].some((field)=> field?.trim()=== "")){
+    if([title, description, videoUrl, thumbnailUrl].some((field)=> !field || field.trim()=== "")){
         throw new ApiError(400, "All fields are required");
     }
     
-    const videoFileLocalPath = req.files?.videoFile[0].path;
-    const thumbnailFileLocalPath = req.files?.thumbnail[0].path;
-
-    if(!videoFileLocalPath || !thumbnailFileLocalPath){
-        throw new ApiError(400, "Video file and thumbnail are required");
+    // Parse tags — accept comma-separated string or array
+    let parsedTags = [];
+    if (tags) {
+        parsedTags = Array.isArray(tags) 
+            ? tags.map(t => typeof t === 'string' ? t.trim().toLowerCase() : t).filter(Boolean)
+            : typeof tags === 'string' ? tags.split(",").map(t => t.trim().toLowerCase()).filter(Boolean) : [];
     }
 
-    const videoFile = await uploadOnCloudinary(videoFileLocalPath);
-    const thumbnailFile = await uploadOnCloudinary(thumbnailFileLocalPath);
-
-    if(!videoFile){
-        throw new ApiError(500, "Unable to upload video file");
-    }
-    if(!thumbnailFile){
-        throw new ApiError(500, "Unable to upload thumbnail file");
-    }
- 
     const video = await Video.create({
         title,
         description,
-        duration: videoFile.duration,
+        duration: duration || 0,
         videoFile:{
-            url: videoFile.secure_url,
-            publicId: videoFile.public_id
+            url: videoUrl,
+            publicId: videoPublicId
         },
         thumbnail:{
-            url: thumbnailFile.secure_url,
-            publicId: thumbnailFile.public_id
+            url: thumbnailUrl,
+            publicId: thumbnailPublicId
         },
         owner:{
             _id: req.user?._id
         },
-        isPublished: true
+        isPublished: true,
+        tags: parsedTags,
+        category: category || 'other'
     })
 
     const videoUploaded = await Video.findById(video._id)
@@ -232,8 +226,9 @@ const getVideoById = asyncHandler(async(req, res)=>{
                         },
                         {
                             $project: {
+                                _id: 1,
                                 username: 1,
-                                "avatar.url": 1,
+                                avatar: 1,
                                 subscribersCount: 1,
                                 isSubscribed: 1
                             }
@@ -463,6 +458,64 @@ const togglePublishStatus = asyncHandler(async(req, res)=>{
     )
 })
 
+// Get trending videos
+const getTrendingVideosList = asyncHandler(async (req, res) => {
+    const { limit = 20 } = req.query;
+    
+    const trendingVideos = await Video.aggregate([
+        { $match: { isPublished: true } },
+        { $sort: { trendingScore: -1, views: -1 } },
+        { $limit: parseInt(limit) },
+        {
+            $lookup: {
+                from: "users",
+                localField: "owner",
+                foreignField: "_id",
+                as: "ownerDetails",
+                pipeline: [
+                    { $project: { username: 1, avatar: 1, fullName: 1 } }
+                ]
+            }
+        },
+        { $unwind: "$ownerDetails" },
+        {
+            $project: {
+                title: 1,
+                "thumbnail.url": 1,
+                views: 1,
+                duration: 1,
+                createdAt: 1,
+                trendingScore: 1,
+                tags: 1,
+                category: 1,
+                ownerDetails: 1
+            }
+        }
+    ]);
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, trendingVideos, "Trending videos fetched"));
+});
+
+// Manually trigger trending score update (admin or cron)
+import { updateAllTrendingScores } from "../utils/trending.js";
+
+const refreshTrendingScores = asyncHandler(async (req, res) => {
+    const count = await updateAllTrendingScores();
+    return res
+        .status(200)
+        .json(new ApiResponse(200, { updatedCount: count }, "Trending scores refreshed"));
+});
+
+// Generate Cloudinary Signature for direct frontend uploads
+const getUploadSignature = asyncHandler(async (req, res) => {
+    const signatureData = generateUploadSignature();
+    return res.status(200).json(
+        new ApiResponse(200, signatureData, "Upload signature generated successfully")
+    );
+});
+
 
 export {
     getAllVideos, 
@@ -470,5 +523,8 @@ export {
     getVideoById, 
     updateVideo, 
     deleteVideo, 
-    togglePublishStatus
+    togglePublishStatus,
+    getTrendingVideosList,
+    refreshTrendingScores,
+    getUploadSignature
 };

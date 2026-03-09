@@ -5,6 +5,7 @@ import {ApiError} from "../utils/ApiError.js"
 import {asyncHandler} from "../utils/asyncHandler.js"
 import {Like} from "../models/like.model.js"
 import {Video} from "../models/video.model.js"
+import {Stream} from "../models/stream.model.js"
 import {createNotification} from "./notification.controller.js"
 
 
@@ -123,6 +124,48 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
     );
 });
 
+const toggleStreamLike = asyncHandler(async (req, res) => {
+    const { streamId } = req.params;
+
+    if (!isValidObjectId(streamId)) {
+        throw new ApiError(400, "Invalid stream Id");
+    }
+
+    const likedAlready = await Like.findOne({
+        stream: streamId,
+        likedBy: req.user._id
+    });
+
+    if (likedAlready) {
+        await Like.findByIdAndDelete(likedAlready._id);
+
+        return res.status(200).json(
+            new ApiResponse(200, { isLiked: false }, "Stream unliked")
+        );
+    }
+
+    await Like.create({
+        stream: streamId,
+        likedBy: req.user._id
+    });
+
+    // Notify streamer
+    const stream = await Stream.findById(streamId).select("streamer title");
+    if (stream) {
+        await createNotification({
+            recipient: stream.streamer,
+            sender: req.user._id,
+            type: "like",
+            message: `${req.user.username} liked your live stream "${stream.title}"`,
+            // Since there's no stream field in notification yet, we might want to add it or use a generic one
+        });
+    }
+
+    return res.status(200).json(
+        new ApiResponse(200, { isLiked: true }, "Stream liked")
+    );
+});
+
 const getLikedVideos = asyncHandler(async (req, res)=>{
 
     const likedVideoAggregate = await Like.aggregate([
@@ -175,9 +218,10 @@ const getLikedVideos = asyncHandler(async (req, res)=>{
                     createdAt:1,
                     isPublished:1,
                     ownerDetails:{
+                        _id: 1,
                         username:1,
                         fullName:1,
-                        "avatar.url":1
+                        avatar:1
                     }
                 }
             }
@@ -198,5 +242,6 @@ export {
     toggleVideoLike,
     toggleCommentLike,
     toggleTweetLike,
+    toggleStreamLike,
     getLikedVideos
 }

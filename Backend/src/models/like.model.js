@@ -13,6 +13,10 @@ const likeSchema = new Schema({
         type:Schema.Types.ObjectId,
         ref:"Tweet"
     },
+    stream:{
+        type:Schema.Types.ObjectId,
+        ref:"Stream"
+    },
     likedBy:{
         type:Schema.Types.ObjectId,
         ref:"User"

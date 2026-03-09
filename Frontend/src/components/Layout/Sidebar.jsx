@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import {
   HiOutlineHome, HiOutlineFire, HiOutlineFolderOpen,
   HiOutlineThumbUp, HiOutlineClock, HiOutlineUserGroup,
-  HiOutlineChatAlt2
+  HiOutlineChatAlt2, HiOutlineChartBar, HiOutlineStatusOnline
 } from 'react-icons/hi';
 import './Sidebar.css';
 
@@ -15,6 +15,7 @@ export default function Sidebar({ collapsed }) {
     { to: '/', icon: <HiOutlineHome />, label: 'Home' },
     { to: '/trending', icon: <HiOutlineFire />, label: 'Trending' },
     { to: '/subscriptions', icon: <HiOutlineUserGroup />, label: 'Subscriptions' },
+    { to: '/live', icon: <HiOutlineStatusOnline />, label: 'Live' },
   ];
 
   const libraryNav = [
@@ -22,6 +23,7 @@ export default function Sidebar({ collapsed }) {
     { to: '/liked-videos', icon: <HiOutlineThumbUp />, label: 'Liked Videos' },
     { to: '/playlists', icon: <HiOutlineFolderOpen />, label: 'Playlists' },
     { to: '/tweets', icon: <HiOutlineChatAlt2 />, label: 'Tweets' },
+    { to: '/dashboard', icon: <HiOutlineChartBar />, label: 'Dashboard' },
   ];
 
   return (

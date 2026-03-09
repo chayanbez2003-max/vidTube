@@ -236,6 +236,57 @@
     border-radius: 4px;
 }
 
+.comment-owner-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.comment-action-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 0;
+    transition: color var(--transition-fast);
+}
+
+.comment-action-btn:hover {
+    color: var(--text-primary);
+}
+
+.comment-action-btn.delete:hover {
+    color: var(--neon-red);
+}
+
+.comment-edit-form {
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.comment-edit-form textarea {
+    min-height: 80px;
+    border-radius: var(--border-radius-sm);
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.comment-edit-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.btn-sm {
+    padding: 6px 14px;
+    font-size: 12px;
+}
+
 @media (max-width: 640px) {
     .vp-actions-row {
         flex-direction: column;

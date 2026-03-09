@@ -42,6 +42,19 @@ const deleteOnCloudinary = async(public_id, resourceType="image")=>{
     }
 } 
 
+const generateUploadSignature = () => {
+    const timestamp = Math.round(new Date().getTime() / 1000);
+    const signature = cloudinary.utils.api_sign_request(
+        { timestamp },
+        process.env.CLOUDINARY_API_SECRET
+    );
 
+    return {
+        timestamp,
+        signature,
+        cloudName: process.env.CLOUDINARY_CLOUD_NAME,
+        apiKey: process.env.CLOUDINARY_API_KEY
+    };
+};
 
-export {uploadOnCloudinary, deleteOnCloudinary};
+export {uploadOnCloudinary, deleteOnCloudinary, generateUploadSignature};

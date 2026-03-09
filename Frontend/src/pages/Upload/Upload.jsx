@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import axios from 'axios';
 import API from '../../api/axios';
 import toast from 'react-hot-toast';
 import { HiOutlineCloudUpload, HiOutlinePhotograph, HiOutlinePlay } from 'react-icons/hi';
@@ -8,7 +9,7 @@ import './Upload.css';
 
 export default function Upload() {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({ title: '', description: '' });
+  const [formData, setFormData] = useState({ title: '', description: '', tags: '', category: 'other' });
   const [videoFile, setVideoFile] = useState(null);
   const [thumbnail, setThumbnail] = useState(null);
   const [thumbnailPreview, setThumbnailPreview] = useState(null);
@@ -29,29 +30,60 @@ export default function Upload() {
     }
   };
 
+  const uploadToCloudinary = async (file, signatureData, onProgress) => {
+    const fData = new FormData();
+    fData.append("file", file);
+    fData.append("api_key", signatureData.apiKey);
+    fData.append("timestamp", signatureData.timestamp);
+    fData.append("signature", signatureData.signature);
+
+    const res = await axios.post(
+      `https://api.cloudinary.com/v1_1/${signatureData.cloudName}/auto/upload`,
+      fData,
+      { onUploadProgress: onProgress }
+    );
+    return res.data;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!videoFile || !thumbnail) return toast.error('Video and thumbnail are required');
-    if (!formData.title.trim() || !formData.description.trim()) return toast.error('All fields required');
+    if (!formData.title.trim() || !formData.description.trim()) return toast.error('Title and description required');
 
     setUploading(true);
-    const fd = new FormData();
-    fd.append('videoFile', videoFile);
-    fd.append('thumbnail', thumbnail);
-    fd.append('title', formData.title);
-    fd.append('description', formData.description);
+    setProgress(0);
 
     try {
-      await API.post('/video', fd, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-        onUploadProgress: (e) => {
-          setProgress(Math.round((e.loaded * 100) / e.total));
-        }
+      // 1. Get secure signature from our backend
+      const sigRes = await API.get('/video/sign-upload');
+      const signatureData = sigRes.data.data;
+
+      // 2. Upload Thumbnail first (lightweight)
+      const thumbData = await uploadToCloudinary(thumbnail, signatureData, () => {});
+
+      // 3. Upload Video (heavyweight)
+      const vidData = await uploadToCloudinary(videoFile, signatureData, (e) => {
+        setProgress(Math.round((e.loaded * 100) / e.total));
       });
-      toast.success('Video uploaded! 🎉');
+
+      // 4. Save to Database using lightweight backend request
+      await API.post('/video', {
+        title: formData.title,
+        description: formData.description,
+        tags: formData.tags,
+        category: formData.category,
+        videoUrl: vidData.secure_url,
+        videoPublicId: vidData.public_id,
+        thumbnailUrl: thumbData.secure_url,
+        thumbnailPublicId: thumbData.public_id,
+        duration: vidData.duration || 0
+      });
+
+      toast.success('Video published successfully! 🎉');
       navigate('/');
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Upload failed');
+      console.error(err);
+      toast.error(err.response?.data?.message || err.message || 'Upload failed');
     } finally {
       setUploading(false);
       setProgress(0);

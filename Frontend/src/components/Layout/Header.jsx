@@ -7,20 +7,13 @@ import {
   HiOutlineSearch, HiOutlineBell, HiOutlineVideoCamera,
   HiOutlineLogout, HiOutlineUser, HiOutlineCog, HiOutlinePlay,
   HiOutlineThumbUp, HiOutlineUserAdd, HiOutlineChatAlt2,
-  HiOutlineUpload, HiOutlineCheck, HiOutlineTrash
+  HiOutlineUpload, HiOutlineCheck, HiOutlineTrash, HiOutlineChartBar
 } from 'react-icons/hi';
 import toast from 'react-hot-toast';
+import { timeAgo } from '../../utils/formatters';
 import './Header.css';
 
-function timeAgo(d) {
-  if (!d) return '';
-  const diff = (Date.now() - new Date(d)) / 1000;
-  if (diff < 60) return 'Just now';
-  if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
-  if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
-  if (diff < 2592000) return Math.floor(diff / 86400) + 'd ago';
-  return Math.floor(diff / 2592000) + 'mo ago';
-}
+
 
 const NOTIF_ICONS = {
   like: <HiOutlineThumbUp />,
@@ -326,7 +319,7 @@ export default function Header({ onToggleSidebar }) {
                     <p className="suggestion-title">{video.title}</p>
                     <p className="suggestion-meta">
                       {video.ownerDetails?.username || video.owner?.username || 'Unknown'}
-                      {video.views !== undefined && ` · ${video.views} views`}
+                      {video.views !== undefined && ` ${video.views} views`}
                     </p>
                   </div>
                 </button>
@@ -470,6 +463,9 @@ export default function Header({ onToggleSidebar }) {
                     <div className="dropdown-divider" />
                     <Link to={`/channel/${user.username}`} className="dropdown-item" onClick={() => setShowDropdown(false)}>
                       <HiOutlineUser /> Your Channel
+                    </Link>
+                    <Link to="/dashboard" className="dropdown-item" onClick={() => setShowDropdown(false)}>
+                      <HiOutlineChartBar /> Dashboard
                     </Link>
                     <Link to="/settings" className="dropdown-item" onClick={() => setShowDropdown(false)}>
                       <HiOutlineCog /> Settings

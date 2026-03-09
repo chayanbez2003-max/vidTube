@@ -42,6 +42,27 @@ const userSchema = new Schema({
     },
     refreshToken:{
         type: String,  
+    },
+    role: {
+        type: String,
+        enum: ['user', 'creator', 'admin'],
+        default: 'user'
+    },
+    isEmailVerified: {
+        type: Boolean,
+        default: false
+    },
+    emailVerificationToken: {
+        type: String,
+    },
+    emailVerificationExpiry: {
+        type: Date,
+    },
+    passwordResetToken: {
+        type: String,
+    },
+    passwordResetExpiry: {
+        type: Date,
     }
 
 },

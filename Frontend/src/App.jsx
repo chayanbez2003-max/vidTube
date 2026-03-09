@@ -16,6 +16,11 @@ import Playlists from './pages/Playlists/Playlists';
 import Tweets from './pages/Tweets/Tweets';
 import Subscriptions from './pages/Subscriptions/Subscriptions';
 import Settings from './pages/Settings/Settings';
+import Dashboard from './pages/Dashboard/Dashboard';
+import GoLive from './pages/LiveStream/GoLive';
+import WatchStream from './pages/LiveStream/WatchStream';
+import LiveStreams from './pages/LiveStream/LiveStreams';
+import { SocketProvider } from './context/SocketContext';
 import './index.css';
 
 function ProtectedRoute({ children }) {
@@ -44,6 +49,10 @@ function AppLayout() {
           <Route path="/tweets" element={<ProtectedRoute><Tweets /></ProtectedRoute>} />
           <Route path="/subscriptions" element={<ProtectedRoute><Subscriptions /></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/live" element={<LiveStreams />} />
+          <Route path="/go-live" element={<ProtectedRoute><GoLive /></ProtectedRoute>} />
+          <Route path="/stream/:streamId" element={<WatchStream />} />
         </Routes>
       </main>
     </div>
@@ -75,6 +84,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <SocketProvider>
         <Toaster
           position="top-center"
           toastOptions={{
@@ -88,6 +98,7 @@ export default function App() {
           }}
         />
         <AppRouter />
+        </SocketProvider>
       </AuthProvider>
     </BrowserRouter>
   );

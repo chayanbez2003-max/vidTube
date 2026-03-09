@@ -18,7 +18,11 @@ export default function Subscriptions() {
   const fetchSubscriptions = async () => {
     try {
       const { data } = await API.get(`/subscriptions/u/${user._id}`);
-      setChannels(data.data || []);
+      // Filter out self-subscription just in case (backend handles this too)
+      const filtered = (data.data || []).filter(item => 
+        String(item.subscribedChannel?._id) !== String(user._id)
+      );
+      setChannels(filtered);
     } catch (e) {}
     setLoading(false);
   };

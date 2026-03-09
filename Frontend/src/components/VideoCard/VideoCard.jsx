@@ -1,33 +1,10 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { HiOutlineEye } from 'react-icons/hi';
+import { formatDuration, formatViews, timeAgo } from '../../utils/formatters';
 import './VideoCard.css';
 
-function formatDuration(seconds) {
-  if (!seconds) return '0:00';
-  const mins = Math.floor(seconds / 60);
-  const secs = Math.floor(seconds % 60);
-  return `${mins}:${secs.toString().padStart(2, '0')}`;
-}
 
-function formatViews(views) {
-  if (!views) return '0 views';
-  if (views >= 1000000) return `${(views / 1000000).toFixed(1)}M views`;
-  if (views >= 1000) return `${(views / 1000).toFixed(1)}K views`;
-  return `${views} views`;
-}
-
-function timeAgo(dateString) {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diff = Math.floor((now - date) / 1000);
-  if (diff < 60) return 'Just now';
-  if (diff < 3600) return `${Math.floor(diff / 60)} min ago`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)} hours ago`;
-  if (diff < 2592000) return `${Math.floor(diff / 86400)} days ago`;
-  if (diff < 31536000) return `${Math.floor(diff / 2592000)} months ago`;
-  return `${Math.floor(diff / 31536000)} years ago`;
-}
 
 export default function VideoCard({ video, index = 0 }) {
   const thumbnailUrl = video?.thumbnail?.url || video?.thumbnail;
@@ -62,8 +39,8 @@ export default function VideoCard({ video, index = 0 }) {
             <h3 className="video-title">{video.title}</h3>
             <p className="video-channel">{ownerUsername}</p>
             <p className="video-stats">
-              <span><HiOutlineEye /> {formatViews(video.views)}</span>
-              {createdAtStr && <span>• {timeAgo(createdAtStr)}</span>}
+              <span><HiOutlineEye /> {formatViews(video.views)} views</span>
+              {createdAtStr && <span>{timeAgo(createdAtStr)}</span>}
             </p>
           </div>
         </div>

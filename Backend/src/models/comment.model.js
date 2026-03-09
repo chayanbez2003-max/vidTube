@@ -13,6 +13,10 @@ export const commentSchema = new Schema({
     video:{
         type:Schema.Types.ObjectId,
         ref:"Video"
+    },
+    stream:{
+        type:Schema.Types.ObjectId,
+        ref:"Stream"
     }
     
 },{timestamps:true})

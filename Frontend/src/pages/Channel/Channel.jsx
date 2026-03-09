@@ -97,9 +97,7 @@ export default function Channel() {
             <h1 className="channel-name">{channel.fullName}</h1>
             <div className="channel-stats">
               <span>@{channel.username}</span>
-              <span>•</span>
               <span><HiOutlineUsers /> {formatCount(channel.subscribersCount)} subscribers</span>
-              <span>•</span>
               <span>{videos.length} videos</span>
             </div>
           </div>

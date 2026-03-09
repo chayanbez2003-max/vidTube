@@ -13,8 +13,7 @@ const videoSchema = new Schema({
         type: {
             url: String,
             public_id: String
-        }, //cloudinary url
-        required: true
+        }, //cloudinary url (optional for live streams)
     },
     title:{
         type: String,
@@ -22,11 +21,11 @@ const videoSchema = new Schema({
     },
     description:{
         type: String,
-        required: true,
+        default: '',
     },
     duration:{
-        type: Number,  //cloudinary url
-        required: true
+        type: Number,
+        default: 0
     },
     views:{
         type: Number,
@@ -40,10 +39,33 @@ const videoSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: "User",
         
+    },
+    tags: [{
+        type: String,
+        trim: true,
+        lowercase: true
+    }],
+    category: {
+        type: String,
+        enum: [
+            'education', 'entertainment', 'gaming', 'music', 
+            'news', 'sports', 'technology', 'travel', 
+            'comedy', 'howto', 'science', 'other'
+        ],
+        default: 'other'
+    },
+    trendingScore: {
+        type: Number,
+        default: 0
+    },
+    totalWatchTime: {
+        type: Number,
+        default: 0  
     }
 
-})
+}, {timestamps: true})
 
 videoSchema.plugin(mongooseAggregatePaginate);
+videoSchema.index({ title: 'text', description: 'text', tags: 'text' });
 
 export const Video= mongoose.model('Video', videoSchema)

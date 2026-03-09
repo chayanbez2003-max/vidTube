@@ -5,11 +5,15 @@ import {
     publishVideo,
     deleteVideo,
     updateVideo,
-    togglePublishStatus
+    togglePublishStatus,
+    getTrendingVideosList,
+    refreshTrendingScores,
+    getUploadSignature
 } from "../controllers/video.controller.js";
 import { upload} from "../middlewares/multer.middleware.js";
 
 import {verifyJWT} from "../middlewares/auth.middleware.js";
+import {authorizeRoles} from "../middlewares/role.middleware.js";
 
 const router = Router();
 
@@ -18,18 +22,15 @@ router
     .get(getAllVideos)
     .post(
         verifyJWT,
-        upload.fields([
-            {
-                name: "videoFile",
-                maxCount: 1
-            },
-            {
-                name: "thumbnail",
-                maxCount: 1
-            } 
-        ]),
         publishVideo
     )
+
+    // Direct Cloudinary Upload Signature
+    router.route("/sign-upload").get(verifyJWT, getUploadSignature);
+
+    // Trending routes
+    router.route("/trending").get(getTrendingVideosList);
+    router.route("/refresh-trending").post(verifyJWT, authorizeRoles("admin"), refreshTrendingScores);
 
     router
          .route("/:videoId")

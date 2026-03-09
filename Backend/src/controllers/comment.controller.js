@@ -2,6 +2,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import {Comment} from "../models/comment.model.js";
 import { Video } from "../models/video.model.js";
+import { Stream } from "../models/stream.model.js";
 import mongoose from "mongoose";
 import { Like } from "../models/like.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -70,9 +71,10 @@ const getVideoCommnets =  asyncHandler(async(req , res) =>{
                 content: 1,
                 createdAt:1,
                 owner:{
+                    _id: 1,
                     username:1,
                     fullName:1,
-                    "avatar.url": 1
+                    avatar: 1
                 },
                 isLiked:1,
                 likesCount:1
@@ -124,6 +126,10 @@ const getVideoCommnets =  asyncHandler(async(req , res) =>{
         throw new ApiError(500, "Failed to add comment");
     }
 
+    // Populate owner so frontend can display it immediately
+    const populatedComment = await Comment.findById(comment._id)
+        .populate("owner", "_id username fullName avatar");
+
     // Send notification to video owner
     await createNotification({
         recipient: video.owner,
@@ -139,12 +145,133 @@ const getVideoCommnets =  asyncHandler(async(req , res) =>{
     .json(
         new ApiResponse(
             200,
-            comment,
+            populatedComment,
             "Comment added successfully"
         )
     )
 
  })
+
+// get all comments for a stream
+const getStreamComments = asyncHandler(async (req, res) => {
+    const { streamId } = req.params;
+    const { page = 1, limit = 10 } = req.query;
+
+    const stream = await Stream.findById(streamId);
+    if (!stream) {
+        throw new ApiError(404, "Stream not found");
+    }
+
+    const commentsAggregate = Comment.aggregate([
+        {
+            $match: {
+                stream: new mongoose.Types.ObjectId(streamId)
+            }
+        },
+        {
+            $lookup: {
+                from: "users",
+                localField: "owner",
+                foreignField: "_id",
+                as: "owner"
+            }
+        },
+        {
+            $lookup: {
+                from: "likes",
+                localField: "_id",
+                foreignField: "comment",
+                as: "likes"
+            }
+        },
+        {
+            $addFields: {
+                likesCount: {
+                    $size: "$likes"
+                },
+                owner: {
+                    $first: "$owner"
+                },
+                isLiked: {
+                    $cond: {
+                        if: {
+                            $in: [req.user?._id, "$likes.likedBy"]
+                        },
+                        then: true,
+                        else: false
+                    }
+                }
+            }
+        },
+        {
+            $sort: {
+                createdAt: -1
+            }
+        },
+        {
+            $project: {
+                content: 1,
+                createdAt: 1,
+                owner: {
+                    _id: 1,
+                    username: 1,
+                    fullName: 1,
+                    avatar: 1
+                },
+                isLiked: 1,
+                likesCount: 1
+            }
+        }
+    ]);
+
+    const options = {
+        page: parseInt(page, 10),
+        limit: parseInt(limit, 10)
+    };
+
+    const comments = await Comment.aggregatePaginate(commentsAggregate, options);
+
+    return res.status(200).json(
+        new ApiResponse(200, comments, "Stream comments fetched successfully")
+    );
+});
+
+// add a comment to a stream
+const addStreamComment = asyncHandler(async (req, res) => {
+    const { streamId } = req.params;
+    const { content } = req.body;
+
+    if (!content) {
+        throw new ApiError(400, "Content is required to add a comment");
+    }
+
+    const stream = await Stream.findById(streamId);
+    if (!stream) {
+        throw new ApiError(404, "Stream not found");
+    }
+
+    const comment = await Comment.create({
+        content,
+        stream: stream._id,
+        owner: req.user?._id,
+    });
+
+    if (!comment) {
+        throw new ApiError(500, "Failed to add comment");
+    }
+
+    // Send notification to streamer
+    await createNotification({
+        recipient: stream.streamer,
+        sender: req.user._id,
+        type: "comment",
+        message: `${req.user.username} commented on your live stream "${stream.title}"`,
+    });
+
+    return res.status(201).json(
+        new ApiResponse(201, comment, "Comment added to stream")
+    );
+});
 
 // update comment
 const updateComment = asyncHandler(async (req, res) => {
@@ -231,7 +358,9 @@ const deleteComment = asyncHandler(async (req, res) => {
 
 export {
     getVideoCommnets,
+    getStreamComments,
     addComment,
+    addStreamComment,
     updateComment,
     deleteComment
-} 
+}

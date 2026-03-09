@@ -7,15 +7,10 @@ import {
   HiOutlineChatAlt2, HiOutlineThumbUp, HiThumbUp,
   HiOutlineTrash, HiOutlinePencil
 } from 'react-icons/hi';
+import { timeAgo } from '../../utils/formatters';
 import './Tweets.css';
 
-function timeAgo(d) {
-  const diff = (Date.now() - new Date(d)) / 1000;
-  if (diff < 60) return 'Just now';
-  if (diff < 3600) return Math.floor(diff/60) + 'm';
-  if (diff < 86400) return Math.floor(diff/3600) + 'h';
-  return Math.floor(diff/86400) + 'd';
-}
+
 
 export default function Tweets() {
   const { user } = useAuth();

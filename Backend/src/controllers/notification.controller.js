@@ -3,6 +3,7 @@ import { Notification } from "../models/notification.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { sendRealtimeNotification } from "../socket/index.js";
 
 // Get all notifications for the logged-in user
 const getNotifications = asyncHandler(async (req, res) => {
@@ -33,9 +34,10 @@ const getNotifications = asyncHandler(async (req, res) => {
                 pipeline: [
                     {
                         $project: {
+                            _id: 1,
                             username: 1,
                             fullName: 1,
-                            "avatar.url": 1,
+                            avatar: 1,
                         },
                     },
                 ],
@@ -184,6 +186,18 @@ const createNotification = async ({ recipient, sender, type, message, video = nu
             message,
             video,
             comment,
+        });
+
+        // Push real-time notification via Socket.IO
+        sendRealtimeNotification(String(recipient), {
+            _id: notification._id,
+            type,
+            message,
+            sender,
+            video,
+            comment,
+            isRead: false,
+            createdAt: notification.createdAt,
         });
 
         return notification;

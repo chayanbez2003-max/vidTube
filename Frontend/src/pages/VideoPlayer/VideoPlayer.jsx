@@ -7,24 +7,12 @@ import toast from 'react-hot-toast';
 import {
   HiOutlineThumbUp, HiThumbUp, HiOutlineShare,
   HiOutlineDotsHorizontal, HiOutlineUserAdd, HiUserAdd,
-  HiOutlineEye
+  HiOutlineEye, HiOutlinePencil, HiOutlineTrash
 } from 'react-icons/hi';
+import { formatViews, timeAgo } from '../../utils/formatters';
 import './VideoPlayer.css';
 
-function formatViews(v) {
-  if (!v) return '0';
-  if (v >= 1000000) return (v/1000000).toFixed(1) + 'M';
-  if (v >= 1000) return (v/1000).toFixed(1) + 'K';
-  return v;
-}
 
-function timeAgo(d) {
-  const diff = (Date.now() - new Date(d)) / 1000;
-  if (diff < 3600) return Math.floor(diff/60) + ' min ago';
-  if (diff < 86400) return Math.floor(diff/3600) + ' hours ago';
-  if (diff < 2592000) return Math.floor(diff/86400) + ' days ago';
-  return Math.floor(diff/2592000) + ' months ago';
-}
 
 export default function VideoPlayer() {
   const { videoId } = useParams();
@@ -38,6 +26,8 @@ export default function VideoPlayer() {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [subscribersCount, setSubscribersCount] = useState(0);
   const [showDesc, setShowDesc] = useState(false);
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editContent, setEditContent] = useState('');
 
   useEffect(() => {
     fetchVideo();
@@ -102,6 +92,36 @@ export default function VideoPlayer() {
     } catch (err) {
       toast.error('Failed to add comment');
     }
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    if (!window.confirm('Are you sure you want to delete this comment?')) return;
+    try {
+      await API.delete(`/comment/c/${commentId}`);
+      toast.success('Comment deleted');
+      setComments(prev => prev.filter(c => c._id !== commentId));
+    } catch (err) {
+      toast.error('Failed to delete comment');
+    }
+  };
+
+  const handleUpdateComment = async (commentId) => {
+    if (!editContent.trim()) return;
+    try {
+      await API.patch(`/comment/c/${commentId}`, { content: editContent });
+      setComments(prev => prev.map(c => 
+        c._id === commentId ? { ...c, content: editContent } : c
+      ));
+      setEditingCommentId(null);
+      toast.success('Comment updated');
+    } catch (err) {
+      toast.error('Failed to update comment');
+    }
+  };
+
+  const startEditing = (comment) => {
+    setEditingCommentId(comment._id);
+    setEditContent(comment.content);
   };
 
   const handleShare = () => {
@@ -176,7 +196,7 @@ export default function VideoPlayer() {
           <motion.div className="vp-description glass-card" onClick={() => setShowDesc(!showDesc)}>
             <div className="vp-desc-stats">
               <span><HiOutlineEye /> {formatViews(video.views)} views</span>
-              <span>• {timeAgo(video.createdAt)}</span>
+              <span>{timeAgo(video.createdAt)}</span>
             </div>
             <p className={`vp-desc-text ${showDesc ? 'expanded' : ''}`}>
               {video.description}
@@ -229,10 +249,37 @@ export default function VideoPlayer() {
                       <span className="comment-author">{comment.owner?.username || 'User'}</span>
                       <span className="comment-time">{timeAgo(comment.createdAt)}</span>
                     </div>
-                    <p className="comment-text">{comment.content}</p>
-                    <div className="comment-actions">
-                      {/*   */}
-                    </div>
+                    
+                    {editingCommentId === comment._id ? (
+                      <div className="comment-edit-form">
+                        <textarea
+                          className="input-field"
+                          value={editContent}
+                          onChange={(e) => setEditContent(e.target.value)}
+                          autoFocus
+                        />
+                        <div className="comment-edit-actions">
+                          <button type="button" className="btn btn-ghost btn-sm" onClick={() => setEditingCommentId(null)}>Cancel</button>
+                          <button type="button" className="btn btn-primary btn-sm" onClick={() => handleUpdateComment(comment._id)}>Save</button>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <p className="comment-text">{comment.content}</p>
+                        <div className="comment-actions">
+                          {user && String(user._id) === String(comment.owner?._id || comment.owner) && (
+                            <div className="comment-owner-actions">
+                              <button className="comment-action-btn" onClick={() => startEditing(comment)}>
+                                <HiOutlinePencil /> Edit
+                              </button>
+                              <button className="comment-action-btn delete" onClick={() => handleDeleteComment(comment._id)}>
+                                <HiOutlineTrash /> Delete
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </>
+                    )}
                   </div>
                 </motion.div>
               ))}

@@ -5,6 +5,8 @@ import {uploadOnCloudinary} from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
+import crypto from "crypto";
+import { sendEmail, getVerificationEmailHTML, getPasswordResetEmailHTML } from "../utils/sendEmail.js";
 
 const generateAccessTokenandRefreshToken=async (userId)=>{
     try {
@@ -478,6 +480,155 @@ const getWatchHistory = asyncHandler(async(req, res) => {
     )
 })
 
+// ==================== EMAIL VERIFICATION ====================
+
+const sendVerificationEmail = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+        throw new ApiError(404, "User not found");
+    }
+
+    if (user.isEmailVerified) {
+        throw new ApiError(400, "Email is already verified");
+    }
+
+    // Generate verification token
+    const verificationToken = crypto.randomBytes(32).toString("hex");
+    const hashedToken = crypto.createHash("sha256").update(verificationToken).digest("hex");
+
+    user.emailVerificationToken = hashedToken;
+    user.emailVerificationExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+    await user.save({ validateBeforeSave: false });
+
+    const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/verify-email/${verificationToken}`;
+
+    try {
+        await sendEmail({
+            to: user.email,
+            subject: "vidTube — Verify Your Email",
+            html: getVerificationEmailHTML(user.username, verificationUrl),
+        });
+
+        return res.status(200).json(
+            new ApiResponse(200, {}, "Verification email sent successfully")
+        );
+    } catch (error) {
+        user.emailVerificationToken = undefined;
+        user.emailVerificationExpiry = undefined;
+        await user.save({ validateBeforeSave: false });
+        throw new ApiError(500, "Failed to send verification email");
+    }
+});
+
+const verifyEmail = asyncHandler(async (req, res) => {
+    const { token } = req.params;
+
+    if (!token) {
+        throw new ApiError(400, "Verification token is required");
+    }
+
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+    const user = await User.findOne({
+        emailVerificationToken: hashedToken,
+        emailVerificationExpiry: { $gt: Date.now() },
+    });
+
+    if (!user) {
+        throw new ApiError(400, "Invalid or expired verification token");
+    }
+
+    user.isEmailVerified = true;
+    user.emailVerificationToken = undefined;
+    user.emailVerificationExpiry = undefined;
+    await user.save({ validateBeforeSave: false });
+
+    return res.status(200).json(
+        new ApiResponse(200, {}, "Email verified successfully")
+    );
+});
+
+// ==================== PASSWORD RESET ====================
+
+const forgotPassword = asyncHandler(async (req, res) => {
+    const { email } = req.body;
+
+    if (!email) {
+        throw new ApiError(400, "Email is required");
+    }
+
+    const user = await User.findOne({ email: email.toLowerCase() });
+
+    if (!user) {
+        // Don't reveal if email exists — security best practice
+        return res.status(200).json(
+            new ApiResponse(200, {}, "If an account with that email exists, a password reset link has been sent.")
+        );
+    }
+
+    // Generate reset token
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    const hashedToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+
+    user.passwordResetToken = hashedToken;
+    user.passwordResetExpiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+    await user.save({ validateBeforeSave: false });
+
+    const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password/${resetToken}`;
+
+    try {
+        await sendEmail({
+            to: user.email,
+            subject: "vidTube — Reset Your Password",
+            html: getPasswordResetEmailHTML(user.username, resetUrl),
+        });
+
+        return res.status(200).json(
+            new ApiResponse(200, {}, "If an account with that email exists, a password reset link has been sent.")
+        );
+    } catch (error) {
+        user.passwordResetToken = undefined;
+        user.passwordResetExpiry = undefined;
+        await user.save({ validateBeforeSave: false });
+        throw new ApiError(500, "Failed to send password reset email");
+    }
+});
+
+const resetPassword = asyncHandler(async (req, res) => {
+    const { token } = req.params;
+    const { newPassword } = req.body;
+
+    if (!token || !newPassword) {
+        throw new ApiError(400, "Token and new password are required");
+    }
+
+    if (newPassword.length < 6) {
+        throw new ApiError(400, "Password must be at least 6 characters");
+    }
+
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+    const user = await User.findOne({
+        passwordResetToken: hashedToken,
+        passwordResetExpiry: { $gt: Date.now() },
+    });
+
+    if (!user) {
+        throw new ApiError(400, "Invalid or expired reset token");
+    }
+
+    user.password = newPassword;
+    user.passwordResetToken = undefined;
+    user.passwordResetExpiry = undefined;
+    user.refreshToken = undefined; // Force re-login on all devices
+    await user.save();
+
+    return res.status(200).json(
+        new ApiResponse(200, {}, "Password reset successfully. Please login with your new password.")
+    );
+});
+
 
 export {
     registerUser,
@@ -490,7 +641,9 @@ export {
     updateUserAvatar,
     updateUserCoverImage,
     getUserchannelProfile,
-    getWatchHistory
-
+    getWatchHistory,
+    sendVerificationEmail,
+    verifyEmail,
+    forgotPassword,
+    resetPassword
 }
-

@@ -14,6 +14,11 @@ const toggleSubscription = asyncHandler(async(req , res)=>{
     if(!isValidObjectId(channelId)){
         throw new ApiError(404, "Invalid channel ID")
     }
+
+    if(channelId.toString() === req.user?._id.toString()){
+        throw new ApiError(400, "You cannot subscribe to your own channel");
+    }
+
     const isSubscribed = await Subscription.findOne({
         subscriber: req.user?._id,
         channel: channelId,
@@ -116,7 +121,7 @@ const getUserChannelSubscribers = asyncHandler(async(req, res)=>{
                     _id: 1,
                     username: 1,
                     fullName: 1,
-                    "avatar.url": 1,
+                    avatar: 1,
                     subscribedToSubscriber: 1,
                     subscribersCount: 1,
                 }
@@ -145,6 +150,11 @@ const getSubscribedChannels = asyncHandler(async (req, res) => {
             $match: {
                 subscriber: new mongoose.Types.ObjectId(subscriberId),
             },
+        },
+        {
+            $match: {
+                channel: { $ne: new mongoose.Types.ObjectId(subscriberId) }
+            }
         },
         {
             $lookup: {
@@ -181,7 +191,7 @@ const getSubscribedChannels = asyncHandler(async (req, res) => {
                     _id: 1,
                     username: 1,
                     fullName: 1,
-                    "avatar.url": 1,
+                    avatar: 1,
                     latestVideo: {
                         _id: 1,
                         "videoFile.url": 1,
