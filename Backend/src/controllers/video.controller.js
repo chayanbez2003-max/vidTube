@@ -19,12 +19,11 @@ const getAllVideos = asyncHandler(async (req, res)=>{
 
     if(query){
         pipeline.push({
-            $search:{
-                index: "video_search",
-                text: {
-                    query: query,
-                    path: ["title", "description"]
-                }
+            $match: {
+                $or: [
+                    { title: { $regex: query, $options: "i" } },
+                    { description: { $regex: query, $options: "i" } }
+                ]
             }
         });   
     }

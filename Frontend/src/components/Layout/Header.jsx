@@ -99,6 +99,17 @@ export default function Header({ onToggleSidebar }) {
     setSearchLoading(false);
   }, []);
 
+  // Sync search input with URL query parameter
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const q = params.get('query');
+    if (q !== null) {
+      setSearchQuery(q);
+    } else {
+      setSearchQuery('');
+    }
+  }, [location.search]);
+
   const handleSearchChange = (e) => {
     const val = e.target.value;
     setSearchQuery(val);
@@ -136,9 +147,13 @@ export default function Header({ onToggleSidebar }) {
 
   const handleSearch = (e) => {
     e.preventDefault();
+    setShowSuggestions(false);
     if (searchQuery.trim()) {
       navigate(`/?query=${encodeURIComponent(searchQuery.trim())}`);
-      setShowSuggestions(false);
+    } else {
+      if (location.search || location.pathname !== '/') {
+        navigate('/');
+      }
     }
   };
 
@@ -152,6 +167,9 @@ export default function Header({ onToggleSidebar }) {
     setSearchQuery('');
     setSuggestions([]);
     setShowSuggestions(false);
+    if (location.pathname === '/') {
+      navigate('/');
+    }
   };
 
   // ==================== NOTIFICATIONS (Real Backend API) ====================
