@@ -8,11 +8,8 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { sendRealtimeNotification } from "../socket/index.js";
 import { createNotification } from "./notification.controller.js";
+import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
-/**
- * Start a new live stream
- * POST /api/v1/streams/start
- */
 const startStream = asyncHandler(async (req, res) => {
     const { title, description, category, tags } = req.body;
 
@@ -103,6 +100,7 @@ const startStream = asyncHandler(async (req, res) => {
  */
 const endStream = asyncHandler(async (req, res) => {
     const { streamId } = req.params;
+    console.log(`[endStream] Attempting to end stream: ${streamId} by user: ${req.user?._id}`);
 
     const stream = await Stream.findOne({
         _id: streamId,
@@ -111,6 +109,7 @@ const endStream = asyncHandler(async (req, res) => {
     });
 
     if (!stream) {
+        console.log(`[endStream] No active stream found with ID: ${streamId} for user: ${req.user?._id}`);
         throw new ApiError(404, "Active stream not found");
     }
 
@@ -118,23 +117,68 @@ const endStream = asyncHandler(async (req, res) => {
     stream.endedAt = new Date();
     await stream.save();
 
-    // Update the linked video with final data
-    if (stream.videoId) {
+    // Send the response immediately to prevent HTTP timeouts
+    res.status(200).json(
+        new ApiResponse(200, stream, "Stream ended successfully. Video is processing in the background.")
+    );
+
+    // Process the video upload in the background
+    const videoFileLocalPath = req.file?.path;
+    
+    if (videoFileLocalPath) {
+        (async () => {
+            let uploadedVideoParams = {};
+            let uploadSuccess = false;
+            try {
+                console.log("[endStream] Uploading recorded stream to Cloudinary...");
+                const videoNode = await uploadOnCloudinary(videoFileLocalPath);
+                if (videoNode) {
+                    uploadedVideoParams.videoFile = {
+                        url: videoNode.url,
+                        public_id: videoNode.public_id
+                    };
+                    uploadSuccess = true;
+                    console.log("[endStream] Cloudinary upload successful:", videoNode.url);
+                } else {
+                    console.error("[endStream] Cloudinary upload returned null — file may be too large or invalid.");
+                }
+            } catch (error) {
+                console.error("[endStream] Failed to upload recorded stream:", error);
+            }
+
+            // Update the linked video with final data
+            if (stream.videoId) {
+                try {
+                    const durationSec = Math.floor((stream.endedAt - stream.startedAt) / 1000) || 0;
+                    const updatePayload = {
+                        duration: durationSec,
+                        views: stream.peakViewers || 0,
+                        description: stream.description || `Live stream \u2014 Duration: ${Math.floor(durationSec / 60)}m ${durationSec % 60}s`,
+                        // Only keep video published if upload actually succeeded
+                        isPublished: uploadSuccess,
+                        ...uploadedVideoParams
+                    };
+                    await Video.findByIdAndUpdate(stream.videoId, updatePayload);
+                    console.log(`[endStream] Video record updated. Published: ${uploadSuccess}`);
+                } catch (error) {
+                    console.error("[endStream] Failed to update video record:", error);
+                }
+            }
+        })();
+    } else if (stream.videoId) {
+        // If there was no file uploaded, just update the duration and views without the video file
         try {
             const durationSec = Math.floor((stream.endedAt - stream.startedAt) / 1000) || 0;
-            await Video.findByIdAndUpdate(stream.videoId, {
+            const updatePayload = {
                 duration: durationSec,
                 views: stream.peakViewers || 0,
-                description: stream.description || `Live stream — Duration: ${Math.floor(durationSec / 60)}m ${durationSec % 60}s`,
-            });
+                description: stream.description || `Live stream \u2014 Duration: ${Math.floor(durationSec / 60)}m ${durationSec % 60}s`
+            };
+            await Video.findByIdAndUpdate(stream.videoId, updatePayload);
         } catch (error) {
-            console.error("Failed to update video record:", error);
+            console.error("Failed to update video record duration:", error);
         }
     }
-
-    return res.status(200).json(
-        new ApiResponse(200, stream, "Stream ended and saved as video successfully")
-    );
 });
 
 /**
@@ -191,11 +235,6 @@ const getStreamById = asyncHandler(async (req, res) => {
         new ApiResponse(200, stream, "Stream fetched")
     );
 });
-
-/**
- * Get my stream (active or most recent)
- * GET /api/v1/streams/my-stream
- */
 const getMyStream = asyncHandler(async (req, res) => {
     const stream = await Stream.findOne({
         streamer: req.user._id,

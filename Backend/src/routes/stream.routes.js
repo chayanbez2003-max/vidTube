@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import {
     startStream,
@@ -21,7 +22,7 @@ router.route("/:streamId").get(getStreamById);
 router.use(verifyJWT);
 
 router.route("/start").post(startStream);
-router.route("/end/:streamId").post(endStream);
+router.route("/end/:streamId").post(upload.single("videoFile"), endStream);
 router.route("/my-stream").get(getMyStream);
 router.route("/:streamId/chat").post(sendChatMessage);
 
