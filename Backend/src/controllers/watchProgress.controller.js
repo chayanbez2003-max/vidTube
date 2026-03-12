@@ -5,11 +5,7 @@ import { WatchProgress } from "../models/watchProgress.model.js";
 import { Video } from "../models/video.model.js";
 import { isValidObjectId } from "mongoose";
 
-/**
- * Save or update watch progress for a video
- * POST /api/v1/watch-progress/:videoId
- * Body: { watchedDuration, totalDuration }
- */
+ 
 const updateWatchProgress = asyncHandler(async (req, res) => {
     const { videoId } = req.params;
     const { watchedDuration, totalDuration } = req.body;
@@ -26,7 +22,7 @@ const updateWatchProgress = asyncHandler(async (req, res) => {
         ? Math.min(100, Math.round((watchedDuration / totalDuration) * 100)) 
         : 0;
 
-    const completed = percentage >= 95; // Mark complete if watched 95% or more
+    const completed = percentage >= 95; 
 
     const progress = await WatchProgress.findOneAndUpdate(
         { user: req.user._id, video: videoId },
@@ -49,10 +45,6 @@ const updateWatchProgress = asyncHandler(async (req, res) => {
     );
 });
 
-/**
- * Get watch progress for a specific video
- * GET /api/v1/watch-progress/:videoId
- */
 const getWatchProgress = asyncHandler(async (req, res) => {
     const { videoId } = req.params;
 
@@ -70,17 +62,13 @@ const getWatchProgress = asyncHandler(async (req, res) => {
     );
 });
 
-/**
- * Get all in-progress (not completed) videos for the user
- * GET /api/v1/watch-progress/continue-watching
- */
 const getContinueWatching = asyncHandler(async (req, res) => {
     const { limit = 10 } = req.query;
 
     const progressList = await WatchProgress.find({
         user: req.user._id,
         completed: false,
-        percentage: { $gt: 5 }, // At least 5% watched
+        percentage: { $gt: 5 },  
     })
         .sort({ updatedAt: -1 })
         .limit(parseInt(limit))

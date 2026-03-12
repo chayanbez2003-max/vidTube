@@ -39,8 +39,7 @@ const getAllVideos = asyncHandler(async (req, res)=>{
             }
         });
     }
-
-    // sorting videos whose isPublished is true
+ 
     pipeline.push({
         $match:{
             isPublished: true

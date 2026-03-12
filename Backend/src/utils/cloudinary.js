@@ -10,9 +10,10 @@ import fs from 'fs';
     const uploadOnCloudinary = async (localFilePath) => {
     try {
         if (!localFilePath) return null
-        //upload the file on cloudinary
-        const response = await cloudinary.uploader.upload(localFilePath, {
-            resource_type: "auto"
+        //upload the file on cloudinary using upload_large for videos
+        const response = await cloudinary.uploader.upload_large(localFilePath, {
+            resource_type: "auto",
+            chunk_size: 6000000 // 6MB chunks
         })
         // file has been uploaded successfull
         //console.log("file is uploaded on cloudinary ", response.url);
@@ -20,6 +21,7 @@ import fs from 'fs';
         return response;
 
     } catch (error) {
+        console.error("Cloudinary upload failed:", error);
         if (localFilePath && fs.existsSync(localFilePath)) {
             fs.unlinkSync(localFilePath) // remove the locally saved temporary file as the upload operation got failed
         }

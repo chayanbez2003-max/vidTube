@@ -44,6 +44,8 @@ export default function GoLive() {
 
   const videoRef = useRef(null);
   const mediaStreamRef = useRef(null);
+  const mediaRecorderRef = useRef(null);
+  const recordedChunksRef = useRef([]);
   const chatEndRef = useRef(null);
   const timerRef = useRef(null);
 
@@ -67,9 +69,12 @@ export default function GoLive() {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chatMessages]);
 
-  // Timer for stream duration
+  // Timer for stream duration and attach stream to video
   useEffect(() => {
     if (step === 'live') {
+      if (videoRef.current && mediaStreamRef.current) {
+        videoRef.current.srcObject = mediaStreamRef.current;
+      }
       timerRef.current = setInterval(() => {
         setElapsedTime(prev => prev + 1);
       }, 1000);
@@ -135,6 +140,22 @@ export default function GoLive() {
         socket.emit('stream:join', newStream._id);
       }
 
+      // Start recording
+      recordedChunksRef.current = [];
+      try {
+        const options = { mimeType: 'video/webm' };
+        const mediaRecorder = new MediaRecorder(mediaStreamRef.current, options);
+        mediaRecorder.ondataavailable = (event) => {
+          if (event.data.size > 0) {
+            recordedChunksRef.current.push(event.data);
+          }
+        };
+        mediaRecorderRef.current = mediaRecorder;
+        mediaRecorder.start(1000); // Collect 1s chunks
+      } catch (err) {
+        console.error('Error starting MediaRecorder:', err);
+      }
+
       toast.success('🔴 You are now LIVE!');
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to start stream');
@@ -147,7 +168,50 @@ export default function GoLive() {
     if (!stream) return;
 
     try {
-      await API.post(`/streams/end/${stream._id}`);
+      toast.info('Ending stream and saving recording...', { duration: 5000 });
+
+      const stopRecording = () => new Promise((resolve) => {
+        if (!mediaRecorderRef.current || mediaRecorderRef.current.state === "inactive") {
+          resolve();
+          return;
+        }
+        mediaRecorderRef.current.onstop = () => {
+          // Wait 150ms so the final ondataavailable chunk has time to fire
+          setTimeout(resolve, 150);
+        };
+        // Explicitly flush the current partial buffer before stopping
+        mediaRecorderRef.current.requestData();
+        mediaRecorderRef.current.stop();
+      });
+
+      await stopRecording();
+
+      // Stop camera after recording is fully flushed
+      if (mediaStreamRef.current) {
+        mediaStreamRef.current.getTracks().forEach(track => track.stop());
+      }
+      clearInterval(timerRef.current);
+
+      const blob = new Blob(recordedChunksRef.current, { type: 'video/webm' });
+      const formData = new FormData();
+      if (blob.size > 0) {
+        formData.append('videoFile', blob, 'stream-record.webm');
+      }
+
+      const uploadToastId = 'upload-progress';
+      await API.post(`/streams/end/${stream._id}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
+        timeout: 10 * 60 * 1000, // 10-minute timeout for large recordings
+        onUploadProgress: (e) => {
+          if (e.total) {
+            const pct = Math.round((e.loaded * 100) / e.total);
+            toast.loading(`Uploading recording... ${pct}%`, { id: uploadToastId });
+          }
+        },
+      });
+      toast.dismiss(uploadToastId);
 
       // Notify viewers
       if (socket) {
@@ -155,16 +219,12 @@ export default function GoLive() {
         socket.emit('stream:leave', stream._id);
       }
 
-      // Stop camera
-      if (mediaStreamRef.current) {
-        mediaStreamRef.current.getTracks().forEach(track => track.stop());
-      }
-
-      clearInterval(timerRef.current);
-      toast.success('Stream ended successfully');
+      toast.success('Stream ended and saved successfully!');
       navigate('/');
     } catch (error) {
-      toast.error('Failed to end stream');
+      console.error('End stream error:', error?.response?.data || error?.message || error);
+      toast.error(error?.response?.data?.message || 'Failed to end stream. Video might be too large.');
+      navigate('/'); // navigate anyway so they aren't stuck on the live screen
     }
   };
 

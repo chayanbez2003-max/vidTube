@@ -34,8 +34,8 @@ app.use(
     })
 );
 
-app.use(express.json({limit:"17kb"}));
-app.use(express.urlencoded({extended:true, limit:"17kb"}));
+app.use(express.json({limit:"500mb"}));
+app.use(express.urlencoded({extended:true, limit:"500mb"}));
 app.use((express.static('public')));
 app.use(cookieParser());
 
