@@ -2,6 +2,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import {User} from "../models/user.model.js";
 import {ApiError} from "../utils/ApiError.js";
 import {uploadOnCloudinary} from "../utils/cloudinary.js";
+import {checkImageModeration} from "../utils/rekognition.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
@@ -62,8 +63,21 @@ const registerUser = asyncHandler( async (req, res) => {
         throw new ApiError(400, "Avatar is required");
     }
 
+    // Moderation Checks
+    const avatarMod = await checkImageModeration(avatarLocalPath);
+    if (avatarMod.isExplicit) {
+        throw new ApiError(400, `Avatar contains explicit content: ${avatarMod.labels.map(l => l.Name).join(", ")}`);
+    }
+
+    if (coverImageLocalPath) {
+        const coverMod = await checkImageModeration(coverImageLocalPath);
+        if (coverMod.isExplicit) {
+            throw new ApiError(400, `Cover image contains explicit content: ${coverMod.labels.map(l => l.Name).join(", ")}`);
+        }
+    }
+
     const avatar = await uploadOnCloudinary(avatarLocalPath)
-    const coverImage = await uploadOnCloudinary(coverImageLocalPath);
+    const coverImage = await coverImageLocalPath ? await uploadOnCloudinary(coverImageLocalPath) : null;
 
     if(!avatar){
         throw new ApiError(400, "Failed to upload avatar");
@@ -282,6 +296,11 @@ const updateUserAvatar = asyncHandler(async (req,res)=>{
         throw new ApiError(400,"Avatar is missing")
     }
 
+    const avatarMod = await checkImageModeration(avatarLocalPath);
+    if (avatarMod.isExplicit) {
+        throw new ApiError(400, `Avatar contains explicit content: ${avatarMod.labels.map(l => l.Name).join(", ")}`);
+    }
+
     const avatar = await uploadOnCloudinary(avatarLocalPath)
 
     if(!avatar.url){
@@ -315,6 +334,11 @@ const updateUserCoverImage = asyncHandler(async(req,res)=>{
 
     if(!coverImageLocalPath){
         throw new ApiError(400,"Cover Image is missing")
+    }
+
+    const coverMod = await checkImageModeration(coverImageLocalPath);
+    if (coverMod.isExplicit) {
+        throw new ApiError(400, `Cover image contains explicit content: ${coverMod.labels.map(l => l.Name).join(", ")}`);
     }
 
     const coverImage = await uploadOnCloudinary(coverImageLocalPath)

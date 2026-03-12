@@ -10,7 +10,10 @@
   "author": "Chayan Bez",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-rekognition": "^3.1007.0",
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
+    "aws-sdk": "^2.1693.0",
+    "axios": "^1.13.6",
     "bcrypt": "^6.0.0",
     "cloudinary": "^2.7.0",
     "cookie-parser": "^1.4.7",
