@@ -4,7 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   HiOutlineStatusOnline, HiOutlineVideoCamera, HiOutlineEye,
   HiOutlineChatAlt2, HiOutlineTag, HiOutlineStop, HiOutlineUserGroup,
-  HiOutlineThumbUp, HiThumbUp, HiOutlinePencil, HiOutlineTrash
+  HiOutlineThumbUp, HiThumbUp, HiOutlinePencil, HiOutlineTrash,
+  HiOutlinePhotograph
 } from 'react-icons/hi';
 import API from '../../api/axios';
 import { useAuth } from '../../context/AuthContext';
@@ -28,6 +29,8 @@ export default function GoLive() {
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('other');
   const [tags, setTags] = useState('');
+  const [thumbnail, setThumbnail] = useState(null);
+  const [thumbnailPreview, setThumbnailPreview] = useState(null);
   const [stream, setStream] = useState(null);
   const [viewerCount, setViewerCount] = useState(0);
   const [chatMessages, setChatMessages] = useState([]);
@@ -118,11 +121,15 @@ export default function GoLive() {
       await startCamera();
 
       // Create stream in backend
-      const { data } = await API.post('/streams/start', {
-        title: title.trim(),
-        description: description.trim(),
-        category,
-        tags,
+      const formData = new FormData();
+      formData.append('title', title.trim());
+      formData.append('description', description.trim());
+      formData.append('category', category);
+      formData.append('tags', tags);
+      if (thumbnail) formData.append('thumbnail', thumbnail);
+
+      const { data } = await API.post('/streams/start', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
 
       const newStream = data.data;
@@ -168,7 +175,7 @@ export default function GoLive() {
     if (!stream) return;
 
     try {
-      toast.info('Ending stream and saving recording...', { duration: 5000 });
+      toast('Ending stream and saving recording...', { duration: 5000, icon: 'ℹ️' });
 
       const stopRecording = () => new Promise((resolve) => {
         if (!mediaRecorderRef.current || mediaRecorderRef.current.state === "inactive") {
@@ -179,8 +186,14 @@ export default function GoLive() {
           // Wait 150ms so the final ondataavailable chunk has time to fire
           setTimeout(resolve, 150);
         };
-        // Explicitly flush the current partial buffer before stopping
-        mediaRecorderRef.current.requestData();
+        try {
+          // Explicitly flush the current partial buffer before stopping
+          if (mediaRecorderRef.current.state === "recording") {
+            mediaRecorderRef.current.requestData();
+          }
+        } catch (e) {
+          console.warn("Could not request data from MediaRecorder:", e);
+        }
         mediaRecorderRef.current.stop();
       });
 
@@ -213,18 +226,17 @@ export default function GoLive() {
       });
       toast.dismiss(uploadToastId);
 
-      // Notify viewers
-      if (socket) {
+      toast.success('Stream ended and saved successfully!');
+    } catch (error) {
+      console.error('End stream error:', error?.response?.data || error?.message || error);
+      toast.error(error?.response?.data?.message || error?.message || 'Failed to end stream.');
+    } finally {
+      // ALWAYS notify viewers and disconnect, even if upload fails
+      if (socket && stream) {
         socket.emit('stream:end', stream._id);
         socket.emit('stream:leave', stream._id);
       }
-
-      toast.success('Stream ended and saved successfully!');
       navigate('/');
-    } catch (error) {
-      console.error('End stream error:', error?.response?.data || error?.message || error);
-      toast.error(error?.response?.data?.message || 'Failed to end stream. Video might be too large.');
-      navigate('/'); // navigate anyway so they aren't stuck on the live screen
     }
   };
 
@@ -382,6 +394,32 @@ export default function GoLive() {
                   onChange={(e) => setTags(e.target.value)}
                 />
               </div>
+            </div>
+
+            <div className="input-group">
+              <label>Thumbnail (optional)</label>
+              <label className="thumbnail-upload-area" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', background: 'rgba(255,255,255,0.05)', border: '1px dashed var(--border-color)', borderRadius: '8px' }}>
+                <input
+                  type="file"
+                  accept="image/*"
+                  style={{ display: 'none' }}
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                      setThumbnail(file);
+                      setThumbnailPreview(URL.createObjectURL(file));
+                    }
+                  }}
+                />
+                {thumbnailPreview ? (
+                  <img src={thumbnailPreview} alt="Thumbnail" style={{ width: '80px', height: '45px', objectFit: 'cover', borderRadius: '4px' }} />
+                ) : (
+                  <HiOutlinePhotograph style={{ fontSize: '24px', color: 'var(--text-muted)' }} />
+                )}
+                <span style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
+                  {thumbnail ? thumbnail.name : 'Click to upload a thumbnail image'}
+                </span>
+              </label>
             </div>
 
             <motion.button

@@ -1,32 +1,10 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
-import helmet from 'helmet';
-import rateLimit from 'express-rate-limit';
 
 const app = express();
 
-// Security middleware
-app.use(helmet({
-    crossOriginResourcePolicy: { policy: "cross-origin" },
-}));
 
-// Rate limiting — 100 requests per 15 minutes per IP
-const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 100,
-    standardHeaders: true,
-    legacyHeaders: false,
-    message: { error: "Too many requests, please try again later." },
-});
-app.use("/api/", limiter);
-
-// Stricter rate limit for auth routes
-const authLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 20,
-    message: { error: "Too many authentication attempts, please try again later." },
-});
 app.use(
     cors({
     origin: process.env.CROS_ORIGIN,

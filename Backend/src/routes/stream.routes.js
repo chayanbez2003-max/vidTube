@@ -21,7 +21,7 @@ router.route("/:streamId").get(getStreamById);
 // Protected routes (require login)
 router.use(verifyJWT);
 
-router.route("/start").post(startStream);
+router.route("/start").post(upload.single("thumbnail"), startStream);
 router.route("/end/:streamId").post(upload.single("videoFile"), endStream);
 router.route("/my-stream").get(getMyStream);
 router.route("/:streamId/chat").post(sendChatMessage);

@@ -1,5 +1,10 @@
 .home-header {
     margin-bottom: 24px;
+    position: sticky;
+    top: var(--header-height);
+    z-index: 10;
+    background: var(--bg-primary);
+    padding: 16px 0 0;
 }
 
 .search-results-title {
@@ -12,8 +17,10 @@
     display: flex;
     gap: 8px;
     overflow-x: auto;
-    padding-bottom: 8px;
+    padding-bottom: 16px;
     scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    align-items: center;
 }
 
 .category-chips::-webkit-scrollbar {
@@ -32,6 +39,7 @@
     white-space: nowrap;
     font-family: 'Inter', sans-serif;
     transition: all var(--transition-fast);
+    flex-shrink: 0;
 }
 
 .category-chip:hover {
@@ -61,6 +69,7 @@
     display: flex;
     gap: 12px;
     padding: 14px 0;
+    align-items: flex-start;
 }
 
 .skeleton-avatar {
@@ -90,5 +99,5 @@
 .load-more {
     display: flex;
     justify-content: center;
-    padding: 32px;
+    padding: 32px 0;
 }

@@ -8,13 +8,13 @@
   --bg-card: #1e1e2e;
   --bg-card-hover: #252540;
   --bg-overlay: rgba(0, 0, 0, 0.7);
-  
+
   /* Accent colors */
   --accent-primary: #7c3aed;
   --accent-secondary: #a855f7;
   --accent-gradient: linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #c084fc 100%);
   --accent-glow: 0 0 20px rgba(124, 58, 237, 0.4);
-  
+
   /* Neon accents */
   --neon-blue: #3b82f6;
   --neon-cyan: #06b6d4;
@@ -22,22 +22,22 @@
   --neon-green: #10b981;
   --neon-red: #ef4444;
   --neon-orange: #f97316;
-  
+
   /* Text */
   --text-primary: #f1f5f9;
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
   --text-accent: #c084fc;
-  
+
   /* Borders */
   --border-color: rgba(148, 163, 184, 0.1);
   --border-accent: rgba(124, 58, 237, 0.3);
-  
+
   /* Glass */
   --glass-bg: rgba(30, 30, 46, 0.8);
   --glass-border: rgba(255, 255, 255, 0.08);
   --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  
+
   /* Sizes */
   --sidebar-width: 240px;
   --sidebar-collapsed: 72px;
@@ -46,7 +46,7 @@
   --border-radius-sm: 8px;
   --border-radius-lg: 16px;
   --border-radius-xl: 24px;
-  
+
   /* Transitions */
   --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -78,13 +78,16 @@ body {
   width: 6px;
   height: 6px;
 }
+
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
   background: rgba(124, 58, 237, 0.3);
   border-radius: 3px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(124, 58, 237, 0.5);
 }
@@ -119,6 +122,7 @@ body {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -126,24 +130,51 @@ body {
 }
 
 @keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 5px rgba(124, 58, 237, 0.2); }
-  50% { box-shadow: 0 0 20px rgba(124, 58, 237, 0.4); }
+
+  0%,
+  100% {
+    box-shadow: 0 0 5px rgba(124, 58, 237, 0.2);
+  }
+
+  50% {
+    box-shadow: 0 0 20px rgba(124, 58, 237, 0.4);
+  }
 }
 
 @keyframes gradient-shift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 /* Buttons */
@@ -279,13 +310,14 @@ textarea.input-field {
 /* Video Grid */
 .video-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 20px;
+  align-items: start;
 }
 
 /* Skeleton Loader */
 .skeleton {
-  background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%);
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.04) 25%, rgba(255, 255, 255, 0.08) 50%, rgba(255, 255, 255, 0.04) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
   border-radius: var(--border-radius-sm);
@@ -300,11 +332,30 @@ textarea.input-field {
   border: 2px solid var(--border-accent);
 }
 
-.avatar-sm { width: 28px; height: 28px; }
-.avatar-md { width: 40px; height: 40px; }
-.avatar-lg { width: 56px; height: 56px; }
-.avatar-xl { width: 80px; height: 80px; }
-.avatar-2xl { width: 120px; height: 120px; }
+.avatar-sm {
+  width: 28px;
+  height: 28px;
+}
+
+.avatar-md {
+  width: 40px;
+  height: 40px;
+}
+
+.avatar-lg {
+  width: 56px;
+  height: 56px;
+}
+
+.avatar-xl {
+  width: 80px;
+  height: 80px;
+}
+
+.avatar-2xl {
+  width: 120px;
+  height: 120px;
+}
 
 /* Chip / Badge */
 .badge {
@@ -347,18 +398,36 @@ textarea.input-field {
   }
 }
 
+@media (max-width: 1024px) {
+  .video-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+  }
+}
+
 @media (max-width: 768px) {
   .main-content {
     margin-left: 0;
   }
+
   .main-content.collapsed {
     margin-left: 0;
   }
+
   .page-container {
     padding: 16px;
   }
+
+  .video-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+}
+
+@media (max-width: 480px) {
   .video-grid {
     grid-template-columns: 1fr;
+    gap: 16px;
   }
 }
 

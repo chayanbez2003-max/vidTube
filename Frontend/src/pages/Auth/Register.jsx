@@ -27,10 +27,6 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!avatar) {
-      toast.error('Avatar image is required');
-      return;
-    }
     setLoading(true);
     try {
       const fd = new FormData();
@@ -38,7 +34,7 @@ export default function Register() {
       fd.append('username', formData.username);
       fd.append('email', formData.email);
       fd.append('password', formData.password);
-      fd.append('avatar', avatar);
+      if (avatar) fd.append('avatar', avatar);
       if (coverImage) fd.append('coverImage', coverImage);
 
       await register(fd);
@@ -81,7 +77,7 @@ export default function Register() {
               ) : (
                 <div className="avatar-placeholder">
                   <HiOutlinePhotograph />
-                  <span>Avatar *</span>
+                  <span>Avatar (optional)</span>
                 </div>
               )}
             </label>

@@ -915,6 +915,12 @@
     gap: 12px;
     margin-top: 16px;
     flex-wrap: wrap;
+    position: sticky;
+    top: var(--header-height, 64px);
+    z-index: 10;
+    background: var(--bg-primary, #0f0f23);
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .live-action-btn {
