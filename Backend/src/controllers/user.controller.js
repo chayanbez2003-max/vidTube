@@ -60,29 +60,24 @@ const registerUser = asyncHandler( async (req, res) => {
 
 
 
-<<<<<<< HEAD
-    // Moderation Checks
-    const avatarMod = await checkImageModeration(avatarLocalPath);
-    if (avatarMod.isExplicit) {
-        throw new ApiError(400, `Avatar contains explicit content: ${avatarMod.labels.map(l => l.Name).join(", ")}`);
+    let avatar = null;
+    if (avatarLocalPath) {
+        // Moderation Checks
+        const avatarMod = await checkImageModeration(avatarLocalPath);
+        if (avatarMod.isExplicit) {
+            throw new ApiError(400, `Avatar contains explicit content: ${avatarMod.labels.map(l => l.Name).join(", ")}`);
+        }
+        avatar = await uploadOnCloudinary(avatarLocalPath);
     }
 
+    let coverImage = null;
     if (coverImageLocalPath) {
         const coverMod = await checkImageModeration(coverImageLocalPath);
         if (coverMod.isExplicit) {
             throw new ApiError(400, `Cover image contains explicit content: ${coverMod.labels.map(l => l.Name).join(", ")}`);
         }
+        coverImage = await uploadOnCloudinary(coverImageLocalPath);
     }
-
-    const avatar = await uploadOnCloudinary(avatarLocalPath)
-    const coverImage = await coverImageLocalPath ? await uploadOnCloudinary(coverImageLocalPath) : null;
-=======
-    let avatar = null;
-    if (avatarLocalPath) {
-        avatar = await uploadOnCloudinary(avatarLocalPath);
-    }
-    const coverImage = await uploadOnCloudinary(coverImageLocalPath);
->>>>>>> origin/branch-amisha
 
     const user = await User.create({
         fullName,
