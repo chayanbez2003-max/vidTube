@@ -61,15 +61,17 @@ const registerUser = asyncHandler( async (req, res) => {
 
 
     // Moderation Checks
-    const avatarMod = await checkImageModeration(avatarLocalPath);
-    if (avatarMod.isExplicit) {
-        throw new ApiError(400, `Avatar contains explicit content: ${avatarMod.labels.map(l => l.Name).join(", ")}`);
+    if (avatarLocalPath) {
+        const avatarMod = await checkImageModeration(avatarLocalPath);
+        if (avatarMod.isExplicit) {
+            throw new ApiError(400,"Avatar contains explicit content");
+        }
     }
 
     if (coverImageLocalPath) {
         const coverMod = await checkImageModeration(coverImageLocalPath);
         if (coverMod.isExplicit) {
-            throw new ApiError(400, `Cover image contains explicit content: ${coverMod.labels.map(l => l.Name).join(", ")}`);
+            throw new ApiError(400,"Cover image contains explicit content");
         }
     }
 
@@ -291,7 +293,7 @@ const updateUserAvatar = asyncHandler(async (req,res)=>{
 
     const avatarMod = await checkImageModeration(avatarLocalPath);
     if (avatarMod.isExplicit) {
-        throw new ApiError(400, `Avatar contains explicit content: ${avatarMod.labels.map(l => l.Name).join(", ")}`);
+        throw new ApiError(400,"Avatar contains explicit content");
     }
 
     const avatar = await uploadOnCloudinary(avatarLocalPath)
@@ -331,7 +333,7 @@ const updateUserCoverImage = asyncHandler(async(req,res)=>{
 
     const coverMod = await checkImageModeration(coverImageLocalPath);
     if (coverMod.isExplicit) {
-        throw new ApiError(400, `Cover image contains explicit content: ${coverMod.labels.map(l => l.Name).join(", ")}`);
+        throw new ApiError(400,"Cover image contains explicit content");
     }
 
     const coverImage = await uploadOnCloudinary(coverImageLocalPath)
