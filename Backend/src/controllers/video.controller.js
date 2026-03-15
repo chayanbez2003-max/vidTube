@@ -4,6 +4,7 @@ import mongoose, { isValidObjectId } from "mongoose";
 import { ApiError } from "../utils/ApiError.js";
 import {Video} from "../models/video.model.js";
 import { uploadOnCloudinary, deleteOnCloudinary, generateUploadSignature } from "../utils/cloudinary.js";
+import { checkVideoModeration, checkImageModeration } from "../utils/rekognition.js";
 import { User } from "../models/user.model.js";
 import { Like } from "../models/like.model.js";
 import { Comment } from "../models/comment.model.js";
@@ -110,6 +111,26 @@ const publishVideo = asyncHandler(async(req, res)=>{
         throw new ApiError(400, "All fields are required");
     }
     
+    // --- Content Moderation ---
+    // Since video and thumbnail are uploaded from frontend directly to Cloudinary,
+    // we must moderate them by passing their URLs right here before saving them to DB.
+    const [thumbnailMod, videoMod] = await Promise.all([
+        checkImageModeration(thumbnailUrl),
+        checkVideoModeration(videoUrl)
+    ]);
+
+    if (thumbnailMod.isExplicit || videoMod.isExplicit) {
+        // If they are explicit, we delete them from Cloudinary since they shouldn't exist!
+        await deleteOnCloudinary(videoPublicId, "video");
+        await deleteOnCloudinary(thumbnailPublicId);
+        
+        const explicitSource = videoMod.isExplicit ? "Video" : "Thumbnail";
+        const explicitLabels = videoMod.isExplicit ? videoMod.labels : thumbnailMod.labels;
+        
+        throw new ApiError(400, `${explicitSource} contains explicit content: ${explicitLabels.map(l => l.Name).join(", ")}`);
+    }
+    // --- End Content Moderation ---
+
     // Parse tags — accept comma-separated string or array
     let parsedTags = [];
     if (tags) {
@@ -345,6 +366,11 @@ const updateVideo = asyncHandler(async(req, res)=>{
 
         if(!thumbnailLocalPath){
             throw new ApiError(400, "Thumbnail is required")
+        }
+
+        const thumbnailMod = await checkImageModeration(thumbnailLocalPath);
+        if (thumbnailMod.isExplicit) {
+            throw new ApiError(400, `Thumbnail contains explicit content: ${thumbnailMod.labels.map(l => l.Name).join(", ")}`);
         }
 
         const thumbnail = await uploadOnCloudinary(thumbnailLocalPath)
