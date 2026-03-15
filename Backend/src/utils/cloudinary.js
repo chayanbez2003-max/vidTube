@@ -9,12 +9,23 @@ import fs from 'fs';
 
     const uploadOnCloudinary = async (localFilePath) => {
     try {
-        if (!localFilePath) return null
-        //upload the file on cloudinary using upload_large for videos
-        const response = await cloudinary.uploader.upload_large(localFilePath, {
-            resource_type: "auto",
-            chunk_size: 6000000 // 6MB chunks
-        })
+        if (!localFilePath || !fs.existsSync(localFilePath)) {
+            console.error(`File not found for Cloudinary upload: ${localFilePath}`);
+            return null;
+        }
+
+        // Prevent Cloudinary SDK from crashing on 0-byte files
+        const stats = fs.statSync(localFilePath);
+        if (stats.size === 0) {
+            console.error(`File is empty (0 bytes), skipping upload: ${localFilePath}`);
+            fs.unlinkSync(localFilePath);
+            return null;
+        }
+
+        //upload the file on cloudinary using standard upload
+        const response = await cloudinary.uploader.upload(localFilePath, {
+            resource_type: "auto"
+        });
         // file has been uploaded successfull
         //console.log("file is uploaded on cloudinary ", response.url);
         fs.unlinkSync(localFilePath)

@@ -38,7 +38,21 @@ const startStream = asyncHandler(async (req, res) => {
             : tags.split(",").map(t => t.trim().toLowerCase()).filter(Boolean);
     }
 
-    const thumbUrl = req.user.avatar?.url || req.user.avatar || "";
+    // Upload thumbnail to Cloudinary if provided, otherwise fall back to user avatar
+    let thumbUrl = req.user.avatar?.url || req.user.avatar || "";
+    let thumbPublicId = "stream_thumb";
+    const thumbnailLocalPath = req.file?.path;
+    if (thumbnailLocalPath) {
+        try {
+            const uploaded = await uploadOnCloudinary(thumbnailLocalPath);
+            if (uploaded) {
+                thumbUrl = uploaded.url;
+                thumbPublicId = uploaded.public_id;
+            }
+        } catch (err) {
+            console.error("[startStream] Thumbnail upload failed:", err);
+        }
+    }
 
     // Create a Video record immediately so existing like/comment APIs work
     const videoData = {
@@ -57,7 +71,7 @@ const startStream = asyncHandler(async (req, res) => {
 
     // Only add thumbnail if available
     if (thumbUrl) {
-        videoData.thumbnail = { url: thumbUrl, public_id: "stream_thumb" };
+        videoData.thumbnail = { url: thumbUrl, public_id: thumbPublicId };
     }
 
     const video = await Video.create(videoData);

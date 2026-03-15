@@ -59,10 +59,8 @@ const registerUser = asyncHandler( async (req, res) => {
     }
 
 
-    if(!avatarLocalPath){
-        throw new ApiError(400, "Avatar is required");
-    }
 
+<<<<<<< HEAD
     // Moderation Checks
     const avatarMod = await checkImageModeration(avatarLocalPath);
     if (avatarMod.isExplicit) {
@@ -78,14 +76,17 @@ const registerUser = asyncHandler( async (req, res) => {
 
     const avatar = await uploadOnCloudinary(avatarLocalPath)
     const coverImage = await coverImageLocalPath ? await uploadOnCloudinary(coverImageLocalPath) : null;
-
-    if(!avatar){
-        throw new ApiError(400, "Failed to upload avatar");
+=======
+    let avatar = null;
+    if (avatarLocalPath) {
+        avatar = await uploadOnCloudinary(avatarLocalPath);
     }
+    const coverImage = await uploadOnCloudinary(coverImageLocalPath);
+>>>>>>> origin/branch-amisha
 
     const user = await User.create({
         fullName,
-        avatar:avatar.url,
+        avatar: avatar?.url || "",
         coverImage: coverImage?.url || "",
         email,
         password,
