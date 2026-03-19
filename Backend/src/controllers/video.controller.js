@@ -127,7 +127,7 @@ const publishVideo = asyncHandler(async(req, res)=>{
         const explicitSource = videoMod.isExplicit ? "Video" : "Thumbnail";
         const explicitLabels = videoMod.isExplicit ? videoMod.labels : thumbnailMod.labels;
         
-        throw new ApiError(400, `${explicitSource} contains explicit content: ${explicitLabels.map(l => l.Name).join(", ")}`);
+        throw new ApiError(400, `${explicitSource} contains explicit content`);
     }
     // --- End Content Moderation ---
 
@@ -370,7 +370,7 @@ const updateVideo = asyncHandler(async(req, res)=>{
 
         const thumbnailMod = await checkImageModeration(thumbnailLocalPath);
         if (thumbnailMod.isExplicit) {
-            throw new ApiError(400, `Thumbnail contains explicit content: ${thumbnailMod.labels.map(l => l.Name).join(", ")}`);
+            throw new ApiError(400, "Thumbnail contains explicit content");
         }
 
         const thumbnail = await uploadOnCloudinary(thumbnailLocalPath)

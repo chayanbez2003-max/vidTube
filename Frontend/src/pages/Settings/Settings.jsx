@@ -51,7 +51,7 @@ export default function Settings() {
       updateUser(data.data);
       toast.success('Avatar updated!');
     } catch (err) {
-      toast.error('Failed to update avatar');
+      toast.error(err.response?.data?.message || 'Failed to update avatar');
     }
   };
 
