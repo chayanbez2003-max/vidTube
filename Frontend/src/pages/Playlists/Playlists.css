@@ -88,3 +88,29 @@
     height: 220px;
     border-radius: var(--border-radius);
 }
+
+/* Add Video button row below each playlist card */
+.playlist-actions {
+    padding: 0 16px 14px;
+    display: flex;
+    gap: 8px;
+}
+
+.playlist-add-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    width: 100%;
+    justify-content: center;
+    border: 1px dashed var(--glass-border);
+    border-radius: var(--border-radius-sm, 8px);
+    padding: 8px 14px;
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+
+.playlist-add-btn:hover {
+    border-color: var(--accent-primary, #7c3aed);
+    color: var(--text-primary);
+    background: rgba(124, 58, 237, 0.06);
+}

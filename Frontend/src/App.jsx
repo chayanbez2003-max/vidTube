@@ -13,6 +13,7 @@ import Channel from './pages/Channel/Channel';
 import History from './pages/History/History';
 import LikedVideos from './pages/LikedVideos/LikedVideos';
 import Playlists from './pages/Playlists/Playlists';
+import Playlist from './pages/Playlist/Playlist';
 import Tweets from './pages/Tweets/Tweets';
 import Subscriptions from './pages/Subscriptions/Subscriptions';
 import Settings from './pages/Settings/Settings';
@@ -46,6 +47,7 @@ function AppLayout() {
           <Route path="/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
           <Route path="/liked-videos" element={<ProtectedRoute><LikedVideos /></ProtectedRoute>} />
           <Route path="/playlists" element={<ProtectedRoute><Playlists /></ProtectedRoute>} />
+          <Route path="/playlist/:playlistId" element={<ProtectedRoute><Playlist /></ProtectedRoute>} />
           <Route path="/tweets" element={<ProtectedRoute><Tweets /></ProtectedRoute>} />
           <Route path="/subscriptions" element={<ProtectedRoute><Subscriptions /></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />

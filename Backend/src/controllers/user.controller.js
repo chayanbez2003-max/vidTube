@@ -60,31 +60,30 @@ const registerUser = asyncHandler( async (req, res) => {
 
 
 
-<<<<<<<<< Temporary merge branch 1
     // Moderation Checks
-    const avatarMod = await checkImageModeration(avatarLocalPath);
-    if (avatarMod.isExplicit) {
-        throw new ApiError(400, `Avatar contains explicit content: ${avatarMod.labels.map(l => l.Name).join(", ")}`);
+const avatarMod = await checkImageModeration(avatarLocalPath);
+if (avatarMod.isExplicit) {
+    throw new ApiError(
+        400,
+        `Avatar contains explicit content: ${avatarMod.labels.map(l => l.Name).join(", ")}`
+    );
+}
+
+let avatar = null;
+if (avatarLocalPath) {
+    avatar = await uploadOnCloudinary(avatarLocalPath);
+}
+
+let coverImage = null;
+if (coverImageLocalPath) {
+    const coverMod = await checkImageModeration(coverImageLocalPath);
+
+    if (coverMod.isExplicit) {
+        throw new ApiError(400, "Cover image contains explicit content");
     }
 
-    let coverImage = null;
-    if (coverImageLocalPath) {
-        const coverMod = await checkImageModeration(coverImageLocalPath);
-        if (coverMod.isExplicit) {
-            throw new ApiError(400,"Cover image contains explicit content");
-        }
-    }
-
-    const avatar = await uploadOnCloudinary(avatarLocalPath)
-    const coverImage = await coverImageLocalPath ? await uploadOnCloudinary(coverImageLocalPath) : null;
-=========
-    let avatar = null;
-    if (avatarLocalPath) {
-        avatar = await uploadOnCloudinary(avatarLocalPath);
-    }
-    const coverImage = await uploadOnCloudinary(coverImageLocalPath);
->>>>>>>>> Temporary merge branch 2
-
+    coverImage = await uploadOnCloudinary(coverImageLocalPath);
+}
     const user = await User.create({
         fullName,
         avatar: avatar?.url || "",
@@ -495,16 +494,26 @@ const getWatchHistory = asyncHandler(async(req, res) => {
         }
     ])
 
+    // $lookup doesn't preserve array order, so re-sort watchHistory
+    // by its position in the original array (index 0 = most recently watched)
+    const watchHistoryIds = (await User.findById(req.user._id).select("watchHistory").lean())
+        ?.watchHistory?.map(id => id.toString()) || [];
+
+    const sorted = (user[0]?.watchHistory || []).sort((a, b) => {
+        return watchHistoryIds.indexOf(a._id.toString()) - watchHistoryIds.indexOf(b._id.toString());
+    });
+
     return res
     .status(200)
     .json(
         new ApiResponse(
             200,
-            user[0].watchHistory,
+            sorted,
             "Watch history fetched successfully"
         )
     )
 })
+
 
 // ==================== EMAIL VERIFICATION ====================
 

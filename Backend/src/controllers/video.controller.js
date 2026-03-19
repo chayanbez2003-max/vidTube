@@ -19,12 +19,26 @@ const getAllVideos = asyncHandler(async (req, res)=>{
     const pipeline = [];
 
     if(query){
+        // Find users whose username or fullName matches the query
+        const matchingOwners = await User.find({
+            $or: [
+                { username: { $regex: query, $options: "i" } },
+                { fullName: { $regex: query, $options: "i" } }
+            ]
+        }).select("_id").lean();
+        const matchingOwnerIds = matchingOwners.map(u => u._id);
+
+        const orClauses = [
+            { title: { $regex: query, $options: "i" } },
+            { description: { $regex: query, $options: "i" } }
+        ];
+        if (matchingOwnerIds.length > 0) {
+            orClauses.push({ owner: { $in: matchingOwnerIds } });
+        }
+
         pipeline.push({
             $match: {
-                $or: [
-                    { title: { $regex: query, $options: "i" } },
-                    { description: { $regex: query, $options: "i" } }
-                ]
+                $or: orClauses
             }
         });   
     }
@@ -312,11 +326,15 @@ const getVideoById = asyncHandler(async(req, res)=>{
             });
         }
 
-        // add video to user's watch history (addToSet prevents duplicates)
+        // add video to user's watch history — always move to front
+        // so the array is always newest-first.
+        // Step 1: remove existing occurrence (if any)
         await User.findByIdAndUpdate(req.user?._id, {
-            $addToSet: {
-                watchHistory: videoId
-            }
+            $pull: { watchHistory: new mongoose.Types.ObjectId(videoId) }
+        });
+        // Step 2: push to the front of the array
+        await User.findByIdAndUpdate(req.user?._id, {
+            $push: { watchHistory: { $each: [new mongoose.Types.ObjectId(videoId)], $position: 0 } }
         });
 
         return res

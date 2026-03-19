@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import API from '../../api/axios';
 import VideoCard from '../../components/VideoCard/VideoCard';
@@ -15,11 +15,13 @@ export default function Home() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [searchParams] = useSearchParams();
+  const location = useLocation();
+  const isTrending = location.pathname === '/trending';
   const query = searchParams.get('query') || '';
 
   useEffect(() => {
     fetchVideos(1, true);
-  }, [query, activeCategory]);
+  }, [query, activeCategory, isTrending]);
 
   const fetchVideos = async (pageNum = 1, reset = false) => {
     try {
@@ -27,6 +29,11 @@ export default function Home() {
       const params = { page: pageNum, limit: 12 };
       if (query) params.query = query;
       if (activeCategory !== 'All') params.query = (params.query ? params.query + ' ' : '') + activeCategory.toLowerCase();
+      // On the trending page, sort by most-watched first
+      if (isTrending) {
+        params.sortBy = 'views';
+        params.sortType = 'desc';
+      }
       
       const { data } = await API.get('/video', { params });
       const fetchedVideos = data?.data?.docs || data?.data || [];

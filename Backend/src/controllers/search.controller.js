@@ -91,14 +91,29 @@ const searchVideos = asyncHandler(async (req, res) => {
     const searchWords = searchQuery.split(/\s+/).map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
     const regexPattern = searchWords.join("|");
 
+    // Find owner IDs whose username or fullName matches the query
+    // so that searching a creator's name surfaces their videos
+    const matchingOwners = await User.find({
+        $or: [
+            { username: { $regex: regexPattern, $options: "i" } },
+            { fullName: { $regex: regexPattern, $options: "i" } },
+        ]
+    }).select("_id").lean();
+    const matchingOwnerIds = matchingOwners.map(u => u._id);
+
+    const matchOrClauses = [
+        { title: { $regex: regexPattern, $options: "i" } },
+        { description: { $regex: regexPattern, $options: "i" } },
+        { tags: { $in: searchWords.map(w => new RegExp(w, "i")) } },
+    ];
+    if (matchingOwnerIds.length > 0) {
+        matchOrClauses.push({ owner: { $in: matchingOwnerIds } });
+    }
+
     pipeline.push({
         $match: {
             isPublished: true,
-            $or: [
-                { title: { $regex: regexPattern, $options: "i" } },
-                { description: { $regex: regexPattern, $options: "i" } },
-                { tags: { $in: searchWords.map(w => new RegExp(w, "i")) } },
-            ],
+            $or: matchOrClauses,
         },
     });
 

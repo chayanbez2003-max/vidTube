@@ -237,11 +237,27 @@ const getPlaylistById = asyncHandler(async (req, res) => {
                 localField: "videos",
                 foreignField: "_id",
                 as: "videos",
-            }
-        },
-        {
-            $match: {
-                "videos.isPublished": true
+                pipeline: [
+                    {
+                        $match: {
+                            isPublished: true
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: "users",
+                            localField: "owner",
+                            foreignField: "_id",
+                            as: "ownerDetails"
+                        }
+                    },
+                    {
+                        $unwind: {
+                            path: "$ownerDetails",
+                            preserveNullAndEmptyArrays: true
+                        }
+                    }
+                ]
             }
         },
         {
@@ -281,7 +297,12 @@ const getPlaylistById = asyncHandler(async (req, res) => {
                     description: 1,
                     duration: 1,
                     createdAt: 1,
-                    views: 1
+                    views: 1,
+                    ownerDetails: {
+                        username: 1,
+                        fullName: 1,
+                        avatar: 1
+                    }
                 },
                 owner: {
                     _id: 1,

@@ -46,6 +46,16 @@ export default function Channel() {
     }
   };
 
+  const handleDeleteVideo = async (videoId) => {
+    try {
+      await API.delete(`/video/${videoId}`);
+      setVideos(prev => prev.filter(v => v._id !== videoId));
+      toast.success('Video deleted successfully');
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Failed to delete video');
+    }
+  };
+
   const handleSubscribe = async () => {
     if (!user) return toast.error('Please sign in');
     try {
@@ -129,7 +139,15 @@ export default function Channel() {
         {activeTab === 'videos' && (
           videos.length > 0 ? (
             <div className="video-grid">
-              {videos.map((v, i) => <VideoCard key={v._id} video={v} index={i} />)}
+              {videos.map((v, i) => (
+                <VideoCard
+                  key={v._id}
+                  video={v}
+                  index={i}
+                  isOwner={user && user.username === channel.username}
+                  onDelete={handleDeleteVideo}
+                />
+              ))}
             </div>
           ) : (
             <div className="empty-state">

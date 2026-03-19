@@ -156,3 +156,71 @@
     margin-right: 4px;
     color: var(--text-muted);
 }
+
+/* Delete button — visible only to the channel owner on hover */
+.video-delete-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgba(239, 68, 68, 0.85);
+    border: none;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    cursor: pointer;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: opacity 0.2s ease, transform 0.2s ease, background 0.2s ease;
+    z-index: 10;
+    backdrop-filter: blur(4px);
+}
+
+.video-card:hover .video-delete-btn {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.video-delete-btn:hover {
+    background: rgba(220, 38, 38, 1);
+    transform: scale(1.1) !important;
+    box-shadow: 0 4px 14px rgba(239, 68, 68, 0.5);
+}
+
+/* Save-to-playlist button — bottom-left, purple, visible on hover */
+.video-save-btn {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgba(124, 58, 237, 0.85);
+    border: none;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    cursor: pointer;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: opacity 0.2s ease, transform 0.2s ease, background 0.2s ease;
+    z-index: 10;
+    backdrop-filter: blur(4px);
+}
+
+.video-card:hover .video-save-btn {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.video-save-btn:hover {
+    background: rgba(109, 40, 217, 1);
+    transform: scale(1.1) !important;
+    box-shadow: 0 4px 14px rgba(124, 58, 237, 0.5);
+}
