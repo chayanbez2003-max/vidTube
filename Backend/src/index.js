@@ -16,8 +16,9 @@ const io = initializeSocket(server);
 connectToDatabase()
 
 .then(()=>{
-    server.listen(process.env.PORT||8000 , () => {
-        console.log(`🚀 Server is running on port: ${process.env.PORT}`);
+    const PORT = process.env.PORT || 8000;
+    server.listen(PORT, () => {
+        console.log(`🚀 Server is running on port: ${PORT}`);
         console.log(`⚡ Socket.IO is ready for real-time connections`);
     });
 
