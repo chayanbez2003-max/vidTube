@@ -1,19 +1,14 @@
+/* ─── Shared sidebar base ─────────────────────────────── */
 .sidebar {
     position: fixed;
     top: var(--header-height);
     left: 0;
     bottom: 0;
-    width: var(--sidebar-width);
-    background: rgba(15, 15, 15, 0.95);
+    background: rgba(15, 15, 15, 0.97);
     border-right: 1px solid var(--glass-border);
     overflow-y: auto;
     overflow-x: hidden;
-    z-index: 90;
-    transition: width var(--transition-normal);
-}
-
-.sidebar.collapsed {
-    width: var(--sidebar-collapsed);
+    z-index: 200;
 }
 
 .sidebar-nav {
@@ -23,6 +18,43 @@
     height: 100%;
 }
 
+/* ─── Desktop sidebar ─────────────────────────────────── */
+.sidebar-desktop {
+    display: flex;
+    flex-direction: column;
+    width: var(--sidebar-width);
+}
+
+.sidebar-desktop.collapsed {
+    width: var(--sidebar-collapsed);
+}
+
+.sidebar-desktop.collapsed .nav-item {
+    justify-content: center;
+    padding: 12px;
+}
+
+.sidebar-desktop.collapsed .nav-item.active::before {
+    display: none;
+}
+
+/* ─── Mobile sidebar (drawer) ─────────────────────────── */
+.sidebar-mobile {
+    display: none;
+    width: 240px;
+}
+
+/* ─── Mobile backdrop ─────────────────────────────────── */
+.sidebar-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 199;
+}
+
+/* ─── Nav items ───────────────────────────────────────── */
 .nav-section {
     display: flex;
     flex-direction: column;
@@ -103,23 +135,20 @@
     line-height: 1.8;
 }
 
-/* Collapsed state */
-.sidebar.collapsed .nav-item {
-    justify-content: center;
-    padding: 12px;
-}
-
-.sidebar.collapsed .nav-item.active::before {
-    display: none;
-}
-
-@media (max-width: 768px) {
-    .sidebar {
-        transform: translateX(-100%);
-        transition: transform var(--transition-normal);
+/* ─── Mobile breakpoint ───────────────────────────────── */
+@media (max-width: 767px) {
+    /* Hide desktop sidebar entirely on mobile */
+    .sidebar-desktop {
+        display: none !important;
     }
 
-    .sidebar.mobile-open {
-        transform: translateX(0);
+    /* Show mobile drawer and backdrop */
+    .sidebar-mobile {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .sidebar-backdrop {
+        display: block;
     }
 }

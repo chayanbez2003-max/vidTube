@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -32,12 +32,35 @@ function ProtectedRoute({ children }) {
 
 function AppLayout() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
+
+  useEffect(() => {
+    const onResize = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      if (!mobile) setMobileOpen(false); // close drawer when going desktop
+    };
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  // Lock body scroll when mobile drawer is open
+  useEffect(() => {
+    document.body.style.overflow = mobileOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [mobileOpen]);
+
+  const handleToggle = () => {
+    if (isMobile) setMobileOpen(prev => !prev);
+    else setSidebarCollapsed(prev => !prev);
+  };
 
   return (
     <div className="app-layout">
-      <Header onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)} />
-      <Sidebar collapsed={sidebarCollapsed} />
-      <main className={`main-content ${sidebarCollapsed ? 'collapsed' : ''}`}>
+      <Header onToggleSidebar={handleToggle} />
+      <Sidebar collapsed={sidebarCollapsed} mobileOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
+      <main className={`main-content ${sidebarCollapsed && !isMobile ? 'collapsed' : ''}`}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/video/:videoId" element={<VideoPlayer />} />
