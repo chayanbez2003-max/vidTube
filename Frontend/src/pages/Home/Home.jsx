@@ -4,7 +4,6 @@ import { motion } from 'framer-motion';
 import API from '../../api/axios';
 import VideoCard from '../../components/VideoCard/VideoCard';
 import toast from 'react-hot-toast';
-import './Home.css';
 
 const CATEGORIES = ['All', 'Music', 'Gaming', 'Education', 'Tech', 'Comedy', 'Sports', 'News'];
 
@@ -29,15 +28,14 @@ export default function Home() {
       const params = { page: pageNum, limit: 12 };
       if (query) params.query = query;
       if (activeCategory !== 'All') params.query = (params.query ? params.query + ' ' : '') + activeCategory.toLowerCase();
-      // On the trending page, sort by most-watched first
       if (isTrending) {
         params.sortBy = 'views';
         params.sortType = 'desc';
       }
-      
+
       const { data } = await API.get('/video', { params });
       const fetchedVideos = data?.data?.docs || data?.data || [];
-      
+
       if (reset) {
         setVideos(fetchedVideos);
       } else {
@@ -62,29 +60,42 @@ export default function Home() {
   };
 
   return (
-    <div className="page-container">
-      <div className="home-header">
+    <div className="p-6 max-w-[1600px] mx-auto animate-[fadeInUp_0.5s_ease]">
+
+      {/* ── Sticky header with search title + category chips ── */}
+      <div
+        className="sticky z-10 mb-6 pt-4 pb-0"
+        style={{ top: 'var(--header-height)', background: 'var(--bg-primary)' }}
+      >
         {query && (
           <motion.h1
-            className="search-results-title"
+            className="text-[22px] font-semibold mb-4"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
           >
-            Search results for "<span className="text-gradient">{query}</span>"
+            Search results for &quot;<span className="text-gradient">{query}</span>&quot;
           </motion.h1>
         )}
-        
-        <div className="category-chips">
+
+        {/* Category chips — hide native scrollbar */}
+        <div className="flex gap-2 overflow-x-auto pb-4 items-center [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden">
           {CATEGORIES.map((cat) => (
             <motion.button
               key={cat}
-              className={`category-chip ${activeCategory === cat ? 'active' : ''}`}
               onClick={() => {
                 setActiveCategory(cat);
                 setPage(1);
               }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              className={[
+                'px-[18px] py-2 rounded-full text-[13px] font-semibold border whitespace-nowrap flex-shrink-0',
+                'font-[Inter,sans-serif] cursor-pointer transition-all duration-150',
+                activeCategory === cat
+                  ? 'border-transparent text-white shadow-[0_0_20px_rgba(124,58,237,0.4)]'
+                  : 'border-[var(--border-color)] bg-white/[0.04] text-[var(--text-secondary)] hover:bg-white/[0.08] hover:text-[var(--text-primary)]',
+              ].join(' ')}
+              style={activeCategory === cat ? { background: 'var(--accent-gradient)' } : {}}
             >
               {cat}
             </motion.button>
@@ -92,16 +103,20 @@ export default function Home() {
         </div>
       </div>
 
+      {/* ── Video grid / skeleton / empty state ── */}
       {loading && videos.length === 0 ? (
-        <div className="video-grid">
+        /* Skeleton grid */
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-5">
           {Array.from({ length: 12 }).map((_, i) => (
-            <div key={i} className="skeleton-card">
-              <div className="skeleton skeleton-thumb" />
-              <div className="skeleton-info">
-                <div className="skeleton skeleton-avatar" />
-                <div className="skeleton-meta">
-                  <div className="skeleton skeleton-title" />
-                  <div className="skeleton skeleton-sub" />
+            <div key={i} className="rounded-xl overflow-hidden">
+              {/* Thumbnail skeleton */}
+              <div className="aspect-video rounded-xl bg-[linear-gradient(90deg,rgba(255,255,255,0.04)_25%,rgba(255,255,255,0.08)_50%,rgba(255,255,255,0.04)_75%)] bg-[length:200%_100%] animate-[shimmer_1.5s_infinite]" />
+              {/* Info skeleton */}
+              <div className="flex gap-3 pt-[14px] items-start">
+                <div className="w-9 h-9 rounded-full flex-shrink-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.04)_25%,rgba(255,255,255,0.08)_50%,rgba(255,255,255,0.04)_75%)] bg-[length:200%_100%] animate-[shimmer_1.5s_infinite]" />
+                <div className="flex-1 flex flex-col gap-2">
+                  <div className="h-4 w-4/5 rounded bg-[linear-gradient(90deg,rgba(255,255,255,0.04)_25%,rgba(255,255,255,0.08)_50%,rgba(255,255,255,0.04)_75%)] bg-[length:200%_100%] animate-[shimmer_1.5s_infinite]" />
+                  <div className="h-3 w-1/2 rounded bg-[linear-gradient(90deg,rgba(255,255,255,0.04)_25%,rgba(255,255,255,0.08)_50%,rgba(255,255,255,0.04)_75%)] bg-[length:200%_100%] animate-[shimmer_1.5s_infinite]" />
                 </div>
               </div>
             </div>
@@ -109,15 +124,20 @@ export default function Home() {
         </div>
       ) : videos.length > 0 ? (
         <>
-          <div className="video-grid">
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-5 items-start">
             {videos.map((video, index) => (
               <VideoCard key={video._id} video={video} index={index} />
             ))}
           </div>
+
           {hasMore && (
-            <div className="load-more">
+            <div className="flex justify-center py-8">
               <motion.button
-                className="btn btn-secondary"
+                className="inline-flex items-center gap-2 px-5 py-[10px] rounded-lg font-semibold text-sm
+                           bg-[rgba(124,58,237,0.15)] text-[var(--accent-secondary)]
+                           border border-[var(--border-accent)] cursor-pointer
+                           transition-all duration-150 hover:bg-[rgba(124,58,237,0.25)]
+                           disabled:opacity-50"
                 onClick={loadMore}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
@@ -129,10 +149,12 @@ export default function Home() {
           )}
         </>
       ) : (
-        <div className="empty-state">
-          <div className="empty-state-icon">🎬</div>
-          <h3>No videos found</h3>
-          <p>{query ? 'Try a different search term' : 'Be the first to upload a video!'}</p>
+        <div className="flex flex-col items-center justify-center py-[60px] px-5 text-center">
+          <div className="text-5xl text-[var(--text-muted)] mb-4">🎬</div>
+          <h3 className="text-xl font-semibold mb-2">No videos found</h3>
+          <p className="text-[var(--text-secondary)] text-sm max-w-[400px]">
+            {query ? 'Try a different search term' : 'Be the first to upload a video!'}
+          </p>
         </div>
       )}
     </div>
