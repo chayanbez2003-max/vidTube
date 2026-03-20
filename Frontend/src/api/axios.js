@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: '/api/v1',
+  baseURL: 'https://vidtube-bemr.onrender.com/api/v1',
   withCredentials: true,
 });
 
@@ -25,7 +25,7 @@ API.interceptors.response.use(
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       try {
-        const { data } = await axios.post('/api/v1/users/refresh-token', {}, { withCredentials: true });
+        const { data } = await axios.post('https://vidtube-bemr.onrender.com/api/v1/users/refresh-token', {}, { withCredentials: true });
         const newToken = data.data.accessToken;
         localStorage.setItem('accessToken', newToken);
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
