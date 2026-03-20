@@ -5,10 +5,22 @@ import cors from 'cors';
 const app = express();
 
 
+const allowedOrigins = (process.env.CORS_ORIGIN || process.env.CROS_ORIGIN || '')
+  .split(',')
+  .map(o => o.trim())
+  .filter(Boolean);
+
 app.use(
     cors({
-    origin: process.env.CROS_ORIGIN,
-    credentials: true
+        origin: (origin, callback) => {
+            // Allow requests with no origin (e.g. mobile apps, curl)
+            if (!origin) return callback(null, true);
+            if (allowedOrigins.includes(origin)) {
+                return callback(null, origin); // reflect exact origin — required for credentials
+            }
+            return callback(new Error(`CORS blocked for origin: ${origin}`));
+        },
+        credentials: true
     })
 );
 
