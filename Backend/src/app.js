@@ -18,7 +18,7 @@ app.use(
             if (allowedOrigins.includes(origin)) {
                 return callback(null, origin); // reflect exact origin — required for credentials
             }
-            return callback(new Error(`CORS blocked for origin: ${origin}`));
+            return callback(null, false);
         },
         credentials: true
     })
