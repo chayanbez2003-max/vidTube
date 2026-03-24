@@ -1,7 +1,7 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import {User} from "../models/user.model.js";
 import {ApiError} from "../utils/ApiError.js";
-import {uploadOnCloudinary} from "../utils/cloudinary.js";
+import {uploadBufferToCloudinary} from "../middlewares/multer.middleware.js";
 import {checkImageModeration} from "../utils/rekognition.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
@@ -28,83 +28,178 @@ const generateAccessTokenandRefreshToken=async (userId)=>{
 
 
 const registerUser = asyncHandler( async (req, res) => {
+  try {
     const{username, email, password, fullName} = req.body;
-    // console.log("email:", email);
 
-    if([fullName, username, email, password].some(field => 
+    console.log("[register] body fields:", { username, email, fullName, passwordLen: password?.length });
+    console.log("[register] files received:", Object.keys(req.files || {}));
+
+    if([fullName, username, email, password].some(field =>
         field?.trim() === "" )
     ){
         throw new ApiError(400, "All fields are required");
     }
-    
-    const existedUser =await User.findOne({
+
+    const existedUser = await User.findOne({
         $or: [{ username }, { email }]
-    })
+    });
 
     if(existedUser){
         throw new ApiError(400, "Username or email already exists");
     }
 
-     console.log(req.files);
-   
-    const avatarLocalPath = req.files?.avatar?.[0]?.path;
-    // const avatarLocalPath=req.files?.avatar[0]?.path;
-    // const coverImageLocalPath=req.files?.coverImage?.[0]?.path;
+    // ── Cloud-first upload (memoryStorage — no local file writes) ────────────
+    // req.files[field][0].buffer  ← in-memory Buffer from multer memoryStorage
+    const avatarBuffer    = req.files?.avatar?.[0]?.buffer;
+    const coverBuffer     = req.files?.coverImage?.[0]?.buffer;
 
-
-    let coverImageLocalPath;
-
-    if(req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0){   
-        coverImageLocalPath = req.files.coverImage[0].path;
+    // Upload avatar first, then run moderation on the returned Cloudinary URL
+    let avatar = null;
+    if (avatarBuffer) {
+        const avatarResult = await uploadBufferToCloudinary(avatarBuffer, { folder: "vidtube/avatars" });
+        const avatarMod    = await checkImageModeration(avatarResult.secure_url);
+        if (avatarMod.isExplicit) {
+            // Clean up the just-uploaded image if it's explicit
+            const { deleteOnCloudinary } = await import("../utils/cloudinary.js");
+            await deleteOnCloudinary(avatarResult.public_id, "image");
+            throw new ApiError(
+                400,
+                `Avatar contains explicit content: ${avatarMod.labels.map(l => l.Name).join(", ")}`
+            );
+        }
+        avatar = avatarResult;
     }
 
-
-
-    // Moderation Checks
-const avatarMod = await checkImageModeration(avatarLocalPath);
-if (avatarMod.isExplicit) {
-    throw new ApiError(
-        400,
-        `Avatar contains explicit content: ${avatarMod.labels.map(l => l.Name).join(", ")}`
-    );
-}
-
-let avatar = null;
-if (avatarLocalPath) {
-    avatar = await uploadOnCloudinary(avatarLocalPath);
-}
-
-let coverImage = null;
-if (coverImageLocalPath) {
-    const coverMod = await checkImageModeration(coverImageLocalPath);
-
-    if (coverMod.isExplicit) {
-        throw new ApiError(400, "Cover image contains explicit content");
+    let coverImage = null;
+    if (coverBuffer) {
+        const coverResult = await uploadBufferToCloudinary(coverBuffer, { folder: "vidtube/covers" });
+        const coverMod    = await checkImageModeration(coverResult.secure_url);
+        if (coverMod.isExplicit) {
+            const { deleteOnCloudinary } = await import("../utils/cloudinary.js");
+            await deleteOnCloudinary(coverResult.public_id, "image");
+            throw new ApiError(400, "Cover image contains explicit content");
+        }
+        coverImage = coverResult;
     }
 
-    coverImage = await uploadOnCloudinary(coverImageLocalPath);
-}
     const user = await User.create({
         fullName,
-        avatar: avatar?.url || "",
-        coverImage: coverImage?.url || "",
+        avatar:     avatar?.secure_url     || "",
+        coverImage: coverImage?.secure_url  || "",
         email,
         password,
-        username:  username.toLowerCase()
+        username:  username?.toLowerCase()
     });
-    
-    const createdUser = await User.findById(user._id).select(
-        "-password -refreshToken"
-    )
+
+    const createdUser = await User.findById(user._id).select("-password -refreshToken");
 
     if(!createdUser){
-        throw new ApiError(500," Something went wrong while registering the user")
+        throw new ApiError(500, "Something went wrong while registering the user");
     }
 
     return res.status(201).json(
-        new ApiResponse(200,createdUser,"User created successfully")
-    )
-} )
+        new ApiResponse(201, createdUser, "User created successfully")
+    );
+  } catch (err) {
+    console.error("[register] ❌ CRASH:", err?.message);
+    console.error("[register] Stack:", err?.stack);
+    throw err;
+  }
+})
+
+
+// const registerUser = asyncHandler(async (req, res) => {
+//   try {
+//     const { username, email, password, fullName } = req.body;
+
+//     console.log("[register] body fields:", {
+//       username,
+//       email,
+//       fullName,
+//       passwordLen: password?.length,
+//     });
+//     console.log("[register] files received:", req.files);
+
+//     if ([fullName, username, email, password].some(field => field?.trim() === "")) {
+//       throw new ApiError(400, "All fields are required");
+//     }
+
+//     const existedUser = await User.findOne({
+//       $or: [{ username }, { email }],
+//     });
+
+//     if (existedUser) {
+//       throw new ApiError(400, "Username or email already exists");
+//     }
+
+//     const avatarLocalPath = req.files?.avatar?.[0]?.path;
+
+//     let coverImageLocalPath;
+//     if (
+//       req.files &&
+//       Array.isArray(req.files.coverImage) &&
+//       req.files.coverImage.length > 0
+//     ) {
+//       coverImageLocalPath = req.files.coverImage[0].path;
+//     }
+
+//     // 🔥 SAFE AVATAR HANDLING
+//     let avatar = null;
+//     if (avatarLocalPath && fs.existsSync(avatarLocalPath)) {
+//       const avatarMod = await checkImageModeration(avatarLocalPath);
+
+//       if (avatarMod.isExplicit) {
+//         throw new ApiError(
+//           400,
+//           `Avatar contains explicit content: ${avatarMod.labels.map(l => l.Name).join(", ")}`
+//         );
+//       }
+
+//       avatar = await uploadOnCloudinary(avatarLocalPath);
+//     } else if (avatarLocalPath) {
+//       console.warn("⚠️ Avatar file missing:", avatarLocalPath);
+//     }
+
+//     // 🔥 SAFE COVER IMAGE HANDLING
+//     let coverImage = null;
+//     if (coverImageLocalPath && fs.existsSync(coverImageLocalPath)) {
+//       const coverMod = await checkImageModeration(coverImageLocalPath);
+
+//       if (coverMod.isExplicit) {
+//         throw new ApiError(400, "Cover image contains explicit content");
+//       }
+
+//       coverImage = await uploadOnCloudinary(coverImageLocalPath);
+//     } else if (coverImageLocalPath) {
+//       console.warn("⚠️ Cover image file missing:", coverImageLocalPath);
+//     }
+
+//     const user = await User.create({
+//       fullName,
+//       avatar: avatar?.url || "",
+//       coverImage: coverImage?.url || "",
+//       email,
+//       password,
+//       username: username.toLowerCase(),
+//     });
+
+//     const createdUser = await User.findById(user._id).select(
+//       "-password -refreshToken"
+//     );
+
+//     if (!createdUser) {
+//       throw new ApiError(500, "Something went wrong while registering the user");
+//     }
+
+//     return res.status(201).json(
+//       new ApiResponse(201, createdUser, "User created successfully")
+//     );
+//   } catch (err) {
+//     console.error("[register] ❌ CRASH:", err?.message);
+//     console.error("[register] Stack:", err?.stack);
+//     throw err;
+//   }
+// });
 
 const loginUser =  asyncHandler( async(req,res)=>{
     const{username, password,email} = req.body;
@@ -291,84 +386,57 @@ return res
 )
 })
 
-const updateUserAvatar = asyncHandler(async (req,res)=>{
-    const avatarLocalPath = req.file?.path
-    if(!avatarLocalPath){
-        throw new ApiError(400,"Avatar is missing")
+const updateUserAvatar = asyncHandler(async (req, res) => {
+    const avatarBuffer = req.file?.buffer;
+    if (!avatarBuffer) {
+        throw new ApiError(400, "Avatar is missing");
     }
 
-    const avatarMod = await checkImageModeration(avatarLocalPath);
+    const avatarResult = await uploadBufferToCloudinary(avatarBuffer, { folder: "vidtube/avatars" });
+
+    const avatarMod = await checkImageModeration(avatarResult.secure_url);
     if (avatarMod.isExplicit) {
-        throw new ApiError(400,"Avatar contains explicit content");
+        const { deleteOnCloudinary } = await import("../utils/cloudinary.js");
+        await deleteOnCloudinary(avatarResult.public_id, "image");
+        throw new ApiError(400, "Avatar contains explicit content");
     }
 
-    const avatar = await uploadOnCloudinary(avatarLocalPath)
+    const user = await User.findByIdAndUpdate(
+        req.user?._id,
+        { $set: { avatar: avatarResult.secure_url } },
+        { new: true }
+    ).select("-password");
 
-    if(!avatar.url){
-        throw new ApiError(400,"Error while uploading on avatar")
-    }
-    
-const user =   await User.findByIdAndUpdate(
-    req.user?._id,
-    {
-       $set:{
-         avatar:avatar.url
-       }
-    },
-    {new:true}
-).select("-password")
-
-return res
-.status(200)
-.json(
-    new ApiResponse(
-        200,
-        user.toObject(),
-        "Avatar image updated successfully"
-    )
-)
-
+    return res.status(200).json(
+        new ApiResponse(200, user.toObject(), "Avatar image updated successfully")
+    );
 })
 
-const updateUserCoverImage = asyncHandler(async(req,res)=>{
-    const coverImageLocalPath = req.file?.path
+const updateUserCoverImage = asyncHandler(async (req, res) => {
+    const coverBuffer = req.file?.buffer;
 
-    if(!coverImageLocalPath){
-        throw new ApiError(400,"Cover Image is missing")
+    if (!coverBuffer) {
+        throw new ApiError(400, "Cover Image is missing");
     }
 
-    const coverMod = await checkImageModeration(coverImageLocalPath);
+    const coverResult = await uploadBufferToCloudinary(coverBuffer, { folder: "vidtube/covers" });
+
+    const coverMod = await checkImageModeration(coverResult.secure_url);
     if (coverMod.isExplicit) {
-        throw new ApiError(400,"Cover image contains explicit content");
+        const { deleteOnCloudinary } = await import("../utils/cloudinary.js");
+        await deleteOnCloudinary(coverResult.public_id, "image");
+        throw new ApiError(400, "Cover image contains explicit content");
     }
 
-    const coverImage = await uploadOnCloudinary(coverImageLocalPath)
+    const user = await User.findByIdAndUpdate(
+        req.user?._id,
+        { $set: { coverImage: coverResult.secure_url } },
+        { new: true }
+    ).select("-password");
 
-    if(!coverImage.url){
-        throw new ApiError(400,"Error while updating cover image")
-    }
-
-
-const user=await User.findByIdAndUpdate(
-    req.user?._id,
-    {
-        $set:{
-            coverImage : coverImage.url
-        }
-    },
-    {new:true}
-).select("-password")
-
-return res
-.status(200)
-.json(
-    new ApiResponse(
-        200,
-        user.toObject(),
-        "Cover image updated successfully"
-    )
-)
-
+    return res.status(200).json(
+        new ApiResponse(200, user.toObject(), "Cover image updated successfully")
+    );
 })
     
 const getUserchannelProfile = asyncHandler(async (req,res)=>{

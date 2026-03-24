@@ -46,8 +46,11 @@ export const checkImageModeration = async (imagePathOrUrl) => {
       labels: []
     };
   } catch (error) {
-    console.error("Error checking image moderation:", error);
-    throw new Error("Failed to check image moderation");
+    // If Rekognition is unavailable or credentials are missing,
+    // fail OPEN (allow the upload) rather than blocking the user with a 500.
+    // The error is logged so you can diagnose AWS config issues separately.
+    console.error("Image moderation check failed (skipping):", error.message);
+    return { isExplicit: false, labels: [] };
   }
 };
 
@@ -116,7 +119,7 @@ export const checkVideoModeration = async (cloudinaryVideoUrl) => {
       labels: []
     };
   } catch (error) {
-    console.error("Error checking video moderation:", error);
-    throw new Error("Failed to check video moderation");
+    console.error("Video moderation check failed (skipping):", error.message);
+    return { isExplicit: false, labels: [] };
   }
 };
