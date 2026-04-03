@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import API from '../../api/axios';
 import toast from 'react-hot-toast';
 import { HiOutlineCog, HiOutlineLockClosed, HiOutlineUser, HiOutlinePhotograph } from 'react-icons/hi';
-import './Settings.css';
+
 
 export default function Settings() {
   const { user, updateUser } = useAuth();
@@ -56,51 +56,51 @@ export default function Settings() {
   };
 
   return (
-    <div className="page-container">
-      <motion.h1 className="page-title" style={{ marginBottom: 28 }}
+    <div className="max-w-[1280px] mx-auto p-4 md:p-6 lg:px-8">
+      <motion.h1 className="flex items-center gap-3 text-2xl md:text-[28px] font-light text-[var(--text-primary)] mb-8"
         initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
-        <HiOutlineCog /> <span className="text-gradient">Settings</span>
+        <HiOutlineCog /> <span className="bg-[var(--accent-gradient)] text-transparent bg-clip-text font-medium">Settings</span>
       </motion.h1>
 
-      <div className="settings-layout">
-        <div className="settings-tabs">
+      <div className="flex flex-col md:flex-row gap-6 lg:gap-10">
+        <div className="flex flex-row md:flex-col gap-2 w-full md:w-[220px] lg:w-[260px] shrink-0 overflow-x-auto pb-2 [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden">
           {[
-            { id: 'profile', icon: <HiOutlineUser />, label: 'Profile' },
-            { id: 'password', icon: <HiOutlineLockClosed />, label: 'Password' },
+            { id: 'profile', icon: <HiOutlineUser className="text-[20px]" />, label: 'Profile' },
+            { id: 'password', icon: <HiOutlineLockClosed className="text-[20px]" />, label: 'Password' },
           ].map(tab => (
             <button key={tab.id} 
-              className={`settings-tab ${activeTab === tab.id ? 'active' : ''}`}
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-[14.5px] transition-all cursor-pointer whitespace-nowrap bg-transparent border-none outline-none ${activeTab === tab.id ? 'bg-teal-primary/10 text-[var(--primary-soft)] shadow-[inset_0_-3px_0_#1DB8A8] md:shadow-[inset_3px_0_0_#1DB8A8]' : 'text-[var(--text-muted)] hover:bg-white/[0.04] hover:text-[var(--text-primary)]'}`}
               onClick={() => setActiveTab(tab.id)}>
               {tab.icon} {tab.label}
             </button>
           ))}
         </div>
 
-        <div className="settings-content glass-card">
+        <div className="flex-1 w-full bg-bg-surface border border-white/10 p-6 md:p-8 rounded-2xl glass-card">
           {activeTab === 'profile' && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-              <h2 className="settings-section-title">Profile Settings</h2>
-              <div className="settings-avatar-section">
-                <img src={user?.avatar} alt="" className="avatar avatar-2xl" />
-                <label htmlFor="settings-avatar" className="btn btn-secondary" style={{ cursor: 'pointer' }}>
+              <h2 className="text-[20px] font-light text-[var(--text-primary)] mb-6 m-0 border-b border-white/10 pb-4">Profile Settings</h2>
+              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-8 p-5 bg-white/[0.02] rounded-xl border border-[var(--border-color)]">
+                <img src={user?.avatar} alt="" className="w-20 h-20 md:w-24 md:h-24 rounded-full object-cover ring-4 ring-bg-base shadow-lg" />
+                <label htmlFor="settings-avatar" className="btn-ghost !py-2 !px-4 flex items-center gap-2 cursor-pointer border-white/10 text-sm">
                   <HiOutlinePhotograph /> Change Avatar
                 </label>
                 <input id="settings-avatar" type="file" accept="image/*" onChange={handleAvatarUpdate} hidden />
               </div>
-              <form onSubmit={handleProfileUpdate} className="settings-form">
-                <div className="input-group">
+              <form onSubmit={handleProfileUpdate} className="flex flex-col gap-5 max-w-[500px]">
+                <div className="flex flex-col gap-1.5 [&>label]:text-[13px] [&>label]:font-medium [&>label]:text-[var(--text-secondary)] [&>label]:ml-1">
                   <label>Full Name</label>
-                  <input className="input-field" value={profileData.fullName}
+                  <input className="w-full bg-[var(--glass-border)] border border-white/10 rounded-xl px-4 py-3 text-[14.5px] text-[var(--text-primary)] focus:outline-none focus:border-teal-primary transition-colors" value={profileData.fullName}
                     onChange={e => setProfileData({...profileData, fullName: e.target.value})} />
                 </div>
-                <div className="input-group">
+                <div className="flex flex-col gap-1.5 [&>label]:text-[13px] [&>label]:font-medium [&>label]:text-[var(--text-secondary)] [&>label]:ml-1">
                   <label>Email</label>
-                  <input className="input-field" type="email" value={profileData.email}
+                  <input className="w-full bg-[var(--glass-border)] border border-white/10 rounded-xl px-4 py-3 text-[14.5px] text-[var(--text-primary)] focus:outline-none focus:border-teal-primary transition-colors" type="email" value={profileData.email}
                     onChange={e => setProfileData({...profileData, email: e.target.value})} />
                 </div>
-                <motion.button type="submit" className="btn btn-primary" disabled={loading}
+                <motion.button type="submit" className="btn-primary w-full md:w-auto mt-2 px-6 py-3 cursor-pointer outline-none border-none text-[15px]" disabled={loading}
                   whileTap={{ scale: 0.95 }}>
-                  {loading ? <span className="spinner" /> : 'Save Changes'}
+                  {loading ? <span className="w-5 h-5 border-2 border-[rgba(255,255,255,0.3)] border-t-white rounded-full animate-spin inline-block" /> : 'Save Changes'}
                 </motion.button>
               </form>
             </motion.div>
@@ -108,21 +108,21 @@ export default function Settings() {
 
           {activeTab === 'password' && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-              <h2 className="settings-section-title">Change Password</h2>
-              <form onSubmit={handlePasswordChange} className="settings-form">
-                <div className="input-group">
+              <h2 className="text-[20px] font-light text-[var(--text-primary)] mb-6 m-0 border-b border-white/10 pb-4">Change Password</h2>
+              <form onSubmit={handlePasswordChange} className="flex flex-col gap-5 max-w-[500px]">
+                <div className="flex flex-col gap-1.5 [&>label]:text-[13px] [&>label]:font-medium [&>label]:text-[var(--text-secondary)] [&>label]:ml-1">
                   <label>Current Password</label>
-                  <input className="input-field" type="password" value={passwordData.oldPassword}
+                  <input className="w-full bg-[var(--glass-border)] border border-white/10 rounded-xl px-4 py-3 text-[14.5px] text-[var(--text-primary)] focus:outline-none focus:border-teal-primary transition-colors" type="password" value={passwordData.oldPassword}
                     onChange={e => setPasswordData({...passwordData, oldPassword: e.target.value})} required />
                 </div>
-                <div className="input-group">
+                <div className="flex flex-col gap-1.5 [&>label]:text-[13px] [&>label]:font-medium [&>label]:text-[var(--text-secondary)] [&>label]:ml-1">
                   <label>New Password</label>
-                  <input className="input-field" type="password" value={passwordData.newPassword}
+                  <input className="w-full bg-[var(--glass-border)] border border-white/10 rounded-xl px-4 py-3 text-[14.5px] text-[var(--text-primary)] focus:outline-none focus:border-teal-primary transition-colors" type="password" value={passwordData.newPassword}
                     onChange={e => setPasswordData({...passwordData, newPassword: e.target.value})} required />
                 </div>
-                <motion.button type="submit" className="btn btn-primary" disabled={loading}
+                <motion.button type="submit" className="btn-primary w-full md:w-auto mt-2 px-6 py-3 cursor-pointer outline-none border-none text-[15px]" disabled={loading}
                   whileTap={{ scale: 0.95 }}>
-                  {loading ? <span className="spinner" /> : 'Update Password'}
+                  {loading ? <span className="w-5 h-5 border-2 border-[rgba(255,255,255,0.3)] border-t-white rounded-full animate-spin inline-block" /> : 'Update Password'}
                 </motion.button>
               </form>
             </motion.div>

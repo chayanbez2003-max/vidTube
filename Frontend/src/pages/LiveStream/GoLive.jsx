@@ -12,7 +12,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useSocket } from '../../context/SocketContext';
 import toast from 'react-hot-toast';
 import { timeAgo } from '../../utils/formatters';
-import './LiveStream.css';
+
 
 const CATEGORIES = [
   'education', 'entertainment', 'gaming', 'music',
@@ -332,24 +332,24 @@ export default function GoLive() {
   // ==================== SETUP SCREEN ====================
   if (step === 'setup') {
     return (
-      <div className="page-container">
+      <div className="max-w-[1280px] mx-auto p-4 md:p-6 lg:px-8">
         <motion.div
-          className="golive-setup"
+          className="max-w-[800px] mx-auto bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-2xl p-6 md:p-8 flex flex-col gap-8 mt-5 shadow-sm"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <div className="golive-header">
-            <HiOutlineStatusOnline className="golive-header-icon" />
-            <h1>Go <span className="text-gradient">Live</span></h1>
-            <p>Set up your stream and start broadcasting to your audience</p>
+          <div className="flex flex-col items-center text-center gap-2 pb-6 border-b border-[var(--border-color)]">
+            <HiOutlineStatusOnline className="text-[56px] text-live animate-pulse" />
+            <h1 className="text-3xl font-light text-[var(--text-primary)] m-0">Go <span className="bg-[var(--accent-gradient)] text-transparent bg-clip-text font-medium">Live</span></h1>
+            <p className="text-[15px] text-[var(--text-muted)] m-0 max-w-[400px]">Set up your stream and start broadcasting to your audience</p>
           </div>
 
-          <div className="golive-form">
-            <div className="input-group">
+          <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-1.5 [&>label]:text-[13px] [&>label]:font-medium [&>label]:text-[var(--text-secondary)]">
               <label>Stream Title *</label>
               <input
                 type="text"
-                className="input-field"
+                className="w-full bg-slate-100 border border-[var(--border-color)] rounded-xl px-4 py-3 text-[14.5px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--primary)] transition-colors"
                 placeholder="What are you streaming today?"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
@@ -357,10 +357,10 @@ export default function GoLive() {
               />
             </div>
 
-            <div className="input-group">
+            <div className="flex flex-col gap-1.5 [&>label]:text-[13px] [&>label]:font-medium [&>label]:text-[var(--text-secondary)]">
               <label>Description</label>
               <textarea
-                className="input-field"
+                className="w-full bg-slate-100 border border-[var(--border-color)] rounded-xl px-4 py-3 text-[14.5px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--primary)] transition-colors resize-y min-h-[100px]"
                 placeholder="Tell viewers what your stream is about..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
@@ -368,27 +368,27 @@ export default function GoLive() {
               />
             </div>
 
-            <div className="golive-form-row">
-              <div className="input-group">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="flex flex-col gap-1.5 [&>label]:text-[13px] [&>label]:font-medium [&>label]:text-[var(--text-secondary)]">
                 <label>Category</label>
                 <select
-                  className="input-field"
+                  className="w-full bg-slate-100 border border-[var(--border-color)] rounded-xl px-4 py-3 text-[14.5px] text-[var(--text-primary)] focus:outline-none focus:border-[var(--primary)] transition-colors appearance-none"
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
                 >
                   {CATEGORIES.map(cat => (
-                    <option key={cat} value={cat}>
+                    <option key={cat} value={cat} className="bg-white text-[var(--text-primary)]">
                       {cat.charAt(0).toUpperCase() + cat.slice(1)}
                     </option>
                   ))}
                 </select>
               </div>
 
-              <div className="input-group">
+              <div className="flex flex-col gap-1.5 [&>label]:text-[13px] [&>label]:font-medium [&>label]:text-[var(--text-secondary)]">
                 <label>Tags (comma separated)</label>
                 <input
                   type="text"
-                  className="input-field"
+                  className="w-full bg-slate-100 border border-[var(--border-color)] rounded-xl px-4 py-3 text-[14.5px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--primary)] transition-colors"
                   placeholder="gaming, minecraft, live"
                   value={tags}
                   onChange={(e) => setTags(e.target.value)}
@@ -396,9 +396,9 @@ export default function GoLive() {
               </div>
             </div>
 
-            <div className="input-group">
+            <div className="flex flex-col gap-1.5 [&>label]:text-[13px] [&>label]:font-medium [&>label]:text-[var(--text-secondary)]">
               <label>Thumbnail (optional)</label>
-              <label className="thumbnail-upload-area" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', background: 'rgba(255,255,255,0.05)', border: '1px dashed var(--border-color)', borderRadius: '8px' }}>
+              <label className="thumbnail-upload-area" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', background: '#f1f5f9', border: '1px dashed var(--border-color)', borderRadius: '8px' }}>
                 <input
                   type="file"
                   accept="image/*"
@@ -423,7 +423,7 @@ export default function GoLive() {
             </div>
 
             <motion.button
-              className="btn btn-primary golive-btn"
+              className="btn-primary mt-4 !py-3.5 !text-[15px] flex items-center justify-center gap-2 cursor-pointer outline-none border-none font-bold"
               onClick={handleGoLive}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
@@ -431,12 +431,12 @@ export default function GoLive() {
             >
               {loading ? (
                 <>
-                  <span className="golive-spinner" />
+                  <span className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
                   Starting Stream...
                 </>
               ) : (
                 <>
-                  <HiOutlineVideoCamera />
+                  <HiOutlineVideoCamera className="text-[20px]" />
                   Go Live Now
                 </>
               )}
@@ -449,115 +449,116 @@ export default function GoLive() {
 
   // ==================== LIVE SCREEN ====================
   return (
-    <div className="page-container">
-      <div className="live-layout">
+    <div className="max-w-[1280px] mx-auto p-4 md:p-6 lg:px-8">
+      <div className="flex flex-col lg:flex-row gap-6 relative">
         {/* Video Area */}
-        <div className="live-video-area">
-          <div className="live-video-container">
+        <div className="flex-[2] flex flex-col gap-6 min-w-0">
+          <div className="relative w-full aspect-video bg-slate-900 rounded-2xl overflow-hidden shadow-[0_0_40px_rgba(0,0,0,0.15)] border border-[var(--border-color)] group">
             <video
               ref={videoRef}
               autoPlay
               muted
               playsInline
-              className="live-video"
+              className="w-full h-full object-cover"
             />
 
             {/* Live overlay */}
-            <div className="live-overlay-top">
-              <div className="live-badge-container">
-                <span className="live-badge-dot" />
-                <span className="live-badge-text">LIVE</span>
+            <div className="absolute top-0 left-0 right-0 p-4 sm:p-6 flex justify-between items-start bg-gradient-to-b from-black/80 via-black/40 to-transparent z-10 transition-opacity duration-300 opacity-0 group-hover:opacity-100 lg:opacity-100">
+              <div className="badge-live">
+                <span className="w-2 h-2 rounded-full bg-live animate-[livePulse_2s_infinite]" />
+                <span>LIVE</span>
               </div>
-              <div className="live-stats">
-                <span className="live-stat">
+              <div className="flex gap-3">
+                <span className="bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-md text-[var(--text-primary)] text-sm font-medium flex items-center gap-1.5 border border-white/10">
                   <HiOutlineEye /> {viewerCount}
                 </span>
-                <span className="live-stat">
+                <span className="bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-md text-[var(--text-primary)] text-sm font-medium flex items-center gap-1.5 border border-white/10">
                   ⏱ {formatTime(elapsedTime)}
                 </span>
               </div>
             </div>
 
-            <div className="live-overlay-bottom">
-              <h2 className="live-title">{stream?.title}</h2>
-              <div className="live-meta">
-                <span className="badge badge-accent">{category}</span>
+            <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 pb-6 bg-gradient-to-t from-black/90 via-black/50 to-transparent z-10 transition-opacity duration-300 opacity-0 group-hover:opacity-100 lg:opacity-100">
+              <h2 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)] leading-tight m-0 mb-3 drop-shadow-md">{stream?.title}</h2>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="bg-teal-primary/20 text-[var(--primary)] border border-teal-primary/30 px-2.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wider backdrop-blur-md">{category}</span>
                 {stream?.tags?.map(tag => (
-                  <span key={tag} className="live-tag">#{tag}</span>
+                  <span key={tag} className="text-xs text-[var(--text-secondary)] font-medium bg-white/10 px-2 py-1 rounded backdrop-blur-sm border border-[var(--border-color)]">#{tag}</span>
                 ))}
               </div>
             </div>
           </div>
 
-          <div className="live-controls">
+          <div className="flex flex-wrap items-center justify-between gap-4 p-5 bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-2xl shadow-sm">
             <motion.button
-              className={`live-action-btn ${isLiked ? 'liked' : ''}`}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl border transition-all font-medium text-sm cursor-pointer outline-none ${isLiked ? '!text-[var(--primary)] !bg-[var(--primary)]/10 !border-[var(--primary)]/20' : 'border-[var(--border-color)] bg-slate-100 hover:bg-slate-200 text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
               onClick={handleToggleLike}
               whileTap={{ scale: 0.9 }}
             >
-              {isLiked ? <HiThumbUp /> : <HiOutlineThumbUp />}
+              {isLiked ? <HiThumbUp className="text-[18px]" /> : <HiOutlineThumbUp className="text-[18px]" />}
               <span>{likesCount > 0 ? likesCount : 'Like'}</span>
             </motion.button>
 
             <motion.button
-              className="btn btn-danger golive-end-btn"
+              className="btn-danger flex items-center justify-center gap-2 px-6 py-2.5 shadow-none outline-none cursor-pointer border-none font-medium text-sm"
               onClick={handleEndStream}
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.95 }}
             >
-              <HiOutlineStop /> End Stream
+              <HiOutlineStop className="text-[18px]" /> End Stream
             </motion.button>
           </div>
 
           {/* Comments Section */}
-          <div className="live-comments-section glass-card">
-            <h3>Comments ({comments.length})</h3>
-            <form className="live-comment-form" onSubmit={handleAddComment}>
-              <img src={user?.avatar?.url || user?.avatar} alt="" className="avatar avatar-sm" />
+          <div className="flex flex-col bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-2xl p-5 md:p-6 gap-6 shadow-sm">
+            <h3 className="text-lg font-bold text-[var(--text-primary)] m-0">Comments ({comments.length})</h3>
+            <form className="flex items-center gap-3 w-full" onSubmit={handleAddComment}>
+              <img src={user?.avatar?.url || user?.avatar} alt="" className="w-8 h-8 rounded-full object-cover shrink-0" />
               <input
                 type="text"
                 placeholder="Add a public comment..."
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
+                className="flex-1 bg-slate-100 border border-[var(--border-color)] rounded-full px-4 py-2.5 text-[14px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--primary)] transition-colors"
               />
-              <button type="submit" disabled={!newComment.trim()}>Post</button>
+              <button type="submit" disabled={!newComment.trim()} className="bg-teal-primary hover:bg-teal-soft text-black font-semibold rounded-full px-4 py-2 text-sm border-none cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed">Post</button>
             </form>
 
-            <div className="live-comments-list">
+            <div className="flex flex-col gap-5">
               {comments.length === 0 ? (
-                <p className="no-comments">No comments yet.</p>
+                <p className="text-center text-[var(--text-muted)] text-sm py-4 m-0">No comments yet.</p>
               ) : (
                 comments.map((c) => (
-                  <div key={c._id} className="live-comment-item">
-                    <img src={c.owner?.avatar?.url || c.owner?.avatar} alt="" className="avatar avatar-sm" />
-                    <div className="live-comment-content">
-                      <div className="live-comment-meta">
-                        <strong>{c.owner?.username}</strong>
-                        <span>{timeAgo(c.createdAt)}</span>
+                  <div key={c._id} className="flex gap-3 group">
+                    <img src={c.owner?.avatar?.url || c.owner?.avatar} alt="" className="w-8 h-8 rounded-full object-cover shrink-0" />
+                    <div className="flex flex-col gap-1 min-w-0 flex-1">
+                      <div className="flex items-baseline gap-2">
+                        <strong className="text-[13px] font-semibold text-[var(--text-primary)]">{c.owner?.username}</strong>
+                        <span className="text-[11px] text-[var(--text-muted)]">{timeAgo(c.createdAt)}</span>
                       </div>
 
                       {editingCommentId === c._id ? (
-                        <div className="live-comment-edit">
+                        <div className="flex flex-col gap-2">
                           <input
-                            className="edit-input"
+                            className="w-full bg-slate-100 border border-[var(--primary)]/50 text-[var(--text-primary)] text-sm rounded px-3 py-1.5 focus:outline-none focus:border-[var(--primary)]"
                             value={editContent}
                             onChange={(e) => setEditContent(e.target.value)}
                             autoFocus
                           />
-                          <div className="edit-actions">
-                            <button onClick={() => setEditingCommentId(null)}>Cancel</button>
-                            <button onClick={() => handleUpdateComment(c._id)}>Save</button>
+                          <div className="flex gap-2">
+                            <button onClick={() => setEditingCommentId(null)} className="p-1 px-3 bg-slate-100 hover:bg-slate-200 rounded text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors border-none cursor-pointer text-xs">Cancel</button>
+                            <button onClick={() => handleUpdateComment(c._id)} className="p-1 px-3 bg-[var(--primary)]/10 hover:bg-[var(--primary)]/20 rounded text-[var(--primary)] transition-colors border border-[var(--primary)]/30 cursor-pointer text-xs font-semibold">Save</button>
                           </div>
                         </div>
                       ) : (
                         <>
-                          <p>{c.content}</p>
+                          <p className="text-[14px] text-[var(--text-primary)] m-0 leading-relaxed break-words">{c.content}</p>
                           {String(user?._id) === String(c.owner?._id || c.owner) && (
-                            <div className="comment-actions">
-                              <button onClick={() => { setEditingCommentId(c._id); setEditContent(c.content); }} title="Edit">
+                            <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity mt-1">
+                              <button onClick={() => { setEditingCommentId(c._id); setEditContent(c.content); }} title="Edit" className="p-1 bg-slate-100 hover:bg-slate-200 rounded text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors border-none cursor-pointer">
                                 <HiOutlinePencil />
                               </button>
-                              <button className="delete" onClick={() => handleDeleteComment(c._id)} title="Delete">
+                              <button className="p-1 bg-slate-100 hover:bg-red-50 rounded text-[var(--text-muted)] hover:text-red-500 transition-colors border-none cursor-pointer" onClick={() => handleDeleteComment(c._id)} title="Delete">
                                 <HiOutlineTrash />
                               </button>
                             </div>
@@ -573,37 +574,37 @@ export default function GoLive() {
         </div>
 
         {/* Chat Area */}
-        <div className="live-chat">
-          <div className="live-chat-header">
-            <HiOutlineChatAlt2 />
-            <h3>Live Chat</h3>
-            <span className="live-chat-count">
+        <div className="flex-1 flex flex-col bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-2xl overflow-hidden h-[600px] lg:h-auto lg:max-h-[800px] shadow-sm">
+          <div className="flex items-center gap-2 p-4 border-b border-[var(--border-color)] bg-slate-50">
+            <HiOutlineChatAlt2 className="text-xl text-[var(--text-secondary)]" />
+            <h3 className="m-0 text-base font-bold text-[var(--text-primary)] flex-1">Live Chat</h3>
+            <span className="flex items-center gap-1.5 text-xs font-semibold text-[var(--primary)] bg-teal-primary/10 px-2 py-1 rounded-full">
               <HiOutlineUserGroup /> {viewerCount}
             </span>
           </div>
 
-          <div className="live-chat-messages">
+          <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4 bg-transparent pt-6">
             {chatMessages.length === 0 ? (
-              <div className="live-chat-empty">
-                <HiOutlineChatAlt2 />
-                <p>Chat messages will appear here</p>
+              <div className="flex flex-col items-center justify-center flex-1 h-full text-[var(--text-muted)] gap-2">
+                <HiOutlineChatAlt2 className="text-[40px] opacity-50" />
+                <p className="m-0 text-sm">Chat messages will appear here</p>
               </div>
             ) : (
               chatMessages.map((msg, i) => (
                 <motion.div
                   key={i}
-                  className="live-chat-msg"
+                  className="flex items-start gap-3 break-words"
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                 >
                   <img
                     src={msg.avatar || '/default-avatar.png'}
                     alt=""
-                    className="live-chat-avatar"
+                    className="w-7 h-7 rounded-full object-cover shrink-0 opacity-80"
                   />
-                  <div>
-                    <span className="live-chat-username">{msg.username}</span>
-                    <span className="live-chat-text">{msg.message}</span>
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-[12px] font-bold text-[var(--text-secondary)] block mb-0.5 leading-tight">{msg.username}</span>
+                    <span className="text-[14px] text-[var(--text-primary)] leading-snug">{msg.message}</span>
                   </div>
                 </motion.div>
               ))
@@ -611,15 +612,16 @@ export default function GoLive() {
             <div ref={chatEndRef} />
           </div>
 
-          <form className="live-chat-input" onSubmit={handleSendChat}>
+          <form className="flex items-center gap-2 p-3 pb-4 border-t border-[var(--border-color)] bg-slate-50" onSubmit={handleSendChat}>
             <input
               type="text"
               placeholder="Say something..."
               value={chatInput}
               onChange={(e) => setChatInput(e.target.value)}
               maxLength={300}
+              className="flex-1 bg-slate-100 border border-[var(--border-color)] rounded-lg px-3 py-2 text-[14px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--primary)] transition-colors"
             />
-            <button type="submit" disabled={!chatInput.trim()}>
+            <button type="submit" disabled={!chatInput.trim()} className="bg-teal-primary hover:bg-teal-soft text-black font-semibold rounded-lg px-4 py-2 text-sm border-none cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
               Send
             </button>
           </form>

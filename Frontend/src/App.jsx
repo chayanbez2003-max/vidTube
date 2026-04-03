@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-import { AuthProvider, useAuth } from './context/AuthContext';
-import Header from './components/Layout/Header';
-import Sidebar from './components/Layout/Sidebar';
-import Home from './pages/Home/Home';
-import Login from './pages/Auth/Login';
-import Register from './pages/Auth/Register';
+import { AuthProvider, useAuth } from './context/AuthContext.jsx';
+import Header from './components/Layout/Header.jsx';
+import Sidebar from './components/Layout/Sidebar.jsx';
+import Home from './pages/Home/Home.jsx';
+import Login from './pages/Auth/Login.jsx';
+import Register from './pages/Auth/Register.jsx';
 import VideoPlayer from './pages/VideoPlayer/VideoPlayer';
 import Upload from './pages/Upload/Upload';
 import Channel from './pages/Channel/Channel';
@@ -33,27 +33,20 @@ function ProtectedRoute({ children }) {
 function AppLayout() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
   useEffect(() => {
-    const onResize = () => {
-      const mobile = window.innerWidth < 768;
-      setIsMobile(mobile);
-      if (!mobile) setMobileOpen(false); // close drawer when going desktop
-    };
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Lock body scroll when mobile drawer is open
-  useEffect(() => {
-    document.body.style.overflow = mobileOpen ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
-  }, [mobileOpen]);
-
   const handleToggle = () => {
-    if (isMobile) setMobileOpen(prev => !prev);
-    else setSidebarCollapsed(prev => !prev);
+    if (isMobile) {
+      setMobileOpen(!mobileOpen);
+    } else {
+      setSidebarCollapsed(!sidebarCollapsed);
+    }
   };
 
   return (
@@ -114,11 +107,28 @@ export default function App() {
           position="top-center"
           toastOptions={{
             style: {
-              background: '#1e1e2e',
-              color: '#f1f5f9',
-              border: '1px solid rgba(255,255,255,0.08)',
+              background: 'var(--bg-card)',
+              color: 'var(--text-primary)',
+              border: '1px solid var(--border-color)',
               borderRadius: '12px',
-              fontFamily: 'Inter, sans-serif',
+              fontFamily: '"DM Sans", system-ui, sans-serif',
+              boxShadow: '0 8px 40px rgba(var(--bg-rgb),0.2)',
+            },
+            success: {
+              style: {
+                background: 'rgba(16, 185, 129, 0.1)',
+                border: '1px solid rgba(16, 185, 129, 0.3)',
+                color: '#065F46',
+              },
+              iconTheme: { primary: '#10B981', secondary: '#ffffff' },
+            },
+            error: {
+              style: {
+                background: 'rgba(239, 68, 68, 0.1)',
+                border: '1px solid rgba(239, 68, 68, 0.3)',
+                color: '#991B1B',
+              },
+              iconTheme: { primary: '#EF4444', secondary: '#ffffff' },
             },
           }}
         />

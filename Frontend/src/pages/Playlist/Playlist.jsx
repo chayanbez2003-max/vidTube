@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 import { HiOutlineFolderOpen, HiOutlineEye, HiOutlineTrash, HiOutlinePlay } from 'react-icons/hi';
 import VideoCard from '../../components/VideoCard/VideoCard';
 import { formatViews, timeAgo } from '../../utils/formatters';
-import './Playlist.css';
+
 
 export default function Playlist() {
   const { playlistId } = useParams();
@@ -48,11 +48,11 @@ export default function Playlist() {
 
   if (loading) {
     return (
-      <div className="page-container">
-        <div className="skeleton" style={{ height: 200, borderRadius: 16, marginBottom: 24 }} />
+      <div className="max-w-[1280px] mx-auto p-4 md:p-6 lg:px-8 flex flex-col gap-8">
+        <div className="w-full h-[200px] rounded-2xl bg-[var(--glass-border)] animate-pulse mb-6" />
         <div className="video-grid">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="skeleton-card"><div className="skeleton skeleton-thumb" /></div>
+            <div key={i} className="flex flex-col gap-3"><div className="w-full aspect-video rounded-xl bg-[var(--glass-border)] animate-pulse" /></div>
           ))}
         </div>
       </div>
@@ -61,9 +61,9 @@ export default function Playlist() {
 
   if (!playlist) {
     return (
-      <div className="page-container">
-        <div className="empty-state">
-          <h3>Playlist not found</h3>
+      <div className="max-w-[1280px] mx-auto p-4 md:p-6 lg:px-8 flex flex-col gap-8">
+        <div className="flex flex-col items-center justify-center py-20 px-5 text-center">
+          <h3 className="text-xl font-semibold mb-2 text-[var(--text-primary)]">Playlist not found</h3>
         </div>
       </div>
     );
@@ -72,30 +72,30 @@ export default function Playlist() {
   const isOwner = String(user?._id) === String(playlist.owner?._id);
 
   return (
-    <div className="page-container playlist-detail-page">
+    <div className="max-w-[1280px] mx-auto p-4 md:p-6 lg:px-8 flex flex-col gap-8">
       {/* Playlist Header Info */}
-      <div className="playlist-detail-header glass-card">
-        <div className="pd-thumb">
+      <div className="flex flex-col md:flex-row gap-6 p-6 md:p-8 bg-bg-surface border border-white/10 rounded-2xl">
+        <div className="relative w-full md:w-[320px] aspect-video rounded-xl overflow-hidden shrink-0 bg-[var(--glass-border)]">
           {playlist.videos?.length > 0 ? (
-            <img src={playlist.videos[0].thumbnail?.url || playlist.videos[0].thumbnail} alt={playlist.name} />
+            <img src={playlist.videos[0].thumbnail?.url || playlist.videos[0].thumbnail} alt={playlist.name} className="w-full h-full object-cover" />
           ) : (
-            <div className="pd-thumb-empty"><HiOutlineFolderOpen /></div>
+            <div className="w-full h-full flex items-center justify-center bg-[var(--glass-border)]"><HiOutlineFolderOpen className="text-5xl text-[var(--border-color)]" /></div>
           )}
-          <div className="pd-overlay-count">
+          <div className="absolute bottom-2 right-2 bg-black/80 px-2 py-1 rounded text-xs font-semibold flex items-center gap-1.5 backdrop-blur-sm">
             <HiOutlinePlay /> {playlist.totalVideos || 0}
           </div>
         </div>
         
-        <div className="pd-info">
-          <h1 className="pd-title">{playlist.name}</h1>
-          <p className="pd-desc">{playlist.description}</p>
+        <div className="flex flex-col flex-1">
+          <h1 className="text-2xl md:text-3xl font-light text-[var(--text-primary)] m-0 mb-3">{playlist.name}</h1>
+          <p className="text-[15px] text-[var(--text-secondary)] leading-relaxed m-0 mb-6 flex-1">{playlist.description}</p>
           
-          <div className="pd-meta">
-            <Link to={`/channel/${playlist.owner?.username}`} className="pd-owner">
-              <img src={playlist.owner?.avatar?.url || playlist.owner?.avatar} alt="" className="avatar avatar-sm" />
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 pt-5 border-t border-white/10">
+            <Link to={`/channel/${playlist.owner?.username}`} className="flex items-center gap-3 no-underline text-[var(--text-primary)] font-medium hover:text-[var(--primary-soft)] transition-colors">
+              <img src={playlist.owner?.avatar?.url || playlist.owner?.avatar} alt="" className="w-8 h-8 rounded-full object-cover" />
               <span>{playlist.owner?.fullName || playlist.owner?.username}</span>
             </Link>
-            <div className="pd-stats">
+            <div className="flex items-center gap-2 flex-wrap text-sm text-[var(--text-muted)]">
               <span>{playlist.totalVideos || 0} videos</span>
               •
               <span>{formatViews(playlist.totalViews || 0)} views</span>
@@ -107,30 +107,30 @@ export default function Playlist() {
       </div>
 
       {/* Videos List */}
-      <div className="pd-videos-section">
-        <h2 style={{ marginBottom: 20 }}>Playlist Videos</h2>
+      <div className="flex flex-col gap-6">
+        <h2 className="text-xl font-light text-[var(--text-primary)] m-0">Playlist Videos</h2>
         {playlist.videos?.length > 0 ? (
           <div className="video-grid">
             {playlist.videos.map((video, index) => (
-              <div key={video._id} className="pd-video-wrapper">
+              <div key={video._id} className="relative group">
                 <VideoCard video={video} index={index} />
                 {isOwner && (
                   <button 
-                    className="btn btn-ghost btn-sm pd-remove-video"
+                    className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 bg-black/60 hover:bg-black/90 text-[var(--text-primary)] flex items-center justify-center gap-1.5 backdrop-blur-md px-3 py-1.5 border border-white/10 z-10 transition-all rounded text-xs font-medium cursor-pointer"
                     onClick={() => handleRemoveVideo(video._id)}
                     title="Remove from playlist"
                   >
-                    <HiOutlineTrash className="text-danger" /> Remove
+                    <HiOutlineTrash className="text-red-400 text-sm" /> Remove
                   </button>
                 )}
               </div>
             ))}
           </div>
         ) : (
-          <div className="empty-state">
-            <div className="empty-state-icon">📭</div>
-            <h3>No videos in this playlist</h3>
-            <p>Add some videos to get started.</p>
+          <div className="flex flex-col items-center justify-center py-20 px-5 text-center">
+            <div className="text-[48px] mb-4 opacity-50">📭</div>
+            <h3 className="text-xl font-semibold mb-2 text-[var(--text-primary)]">No videos in this playlist</h3>
+            <p className="text-sm text-[var(--text-muted)]">Add some videos to get started.</p>
           </div>
         )}
       </div>

@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import API from '../../api/axios';
-import VideoCard from '../../components/VideoCard/VideoCard';
+import API from '../../api/axios.js';
+import VideoCard from '../../components/VideoCard/VideoCard.jsx';
 import toast from 'react-hot-toast';
+
 
 const CATEGORIES = ['All', 'Music', 'Gaming', 'Education', 'Tech', 'Comedy', 'Sports', 'News'];
 
@@ -80,7 +81,7 @@ export default function Home() {
         {/* Category chips — hide native scrollbar */}
         <div className="flex gap-2 overflow-x-auto pb-4 items-center [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden">
           {CATEGORIES.map((cat) => (
-            <motion.button
+            <button
               key={cat}
               onClick={() => {
                 setActiveCategory(cat);
@@ -88,17 +89,16 @@ export default function Home() {
               }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className={[
-                'px-[18px] py-2 rounded-full text-[13px] font-semibold border whitespace-nowrap flex-shrink-0',
-                'font-[Inter,sans-serif] cursor-pointer transition-all duration-150',
-                activeCategory === cat
-                  ? 'border-transparent text-white shadow-[0_0_20px_rgba(124,58,237,0.4)]'
-                  : 'border-[var(--border-color)] bg-white/[0.04] text-[var(--text-secondary)] hover:bg-white/[0.08] hover:text-[var(--text-primary)]',
-              ].join(' ')}
-              style={activeCategory === cat ? { background: 'var(--accent-gradient)' } : {}}
+              className="relative px-4 py-2 flex flex-col items-center group whitespace-nowrap"
             >
-              {cat}
-            </motion.button>
+              <span className={`relative z-10 transition-colors duration-300 ${activeCategory === cat ? 'text-[var(--text-primary)] font-semibold' : 'text-[var(--text-secondary)] group-hover:text-[var(--primary)]'}`}>
+                {cat}
+              </span>
+              <span 
+                className={`absolute bottom-0 left-0 h-[2.5px] shadow-[0_0_8px_rgba(139,92,246,0.5)] transition-all duration-300 rounded-full ${activeCategory === cat ? 'w-full opacity-100' : 'w-0 opacity-0 group-hover:w-full group-hover:opacity-100'}`}
+                style={{ background: 'var(--accent-gradient)' }}
+              ></span>
+            </button>
           ))}
         </div>
       </div>
@@ -106,7 +106,7 @@ export default function Home() {
       {/* ── Video grid / skeleton / empty state ── */}
       {loading && videos.length === 0 ? (
         /* Skeleton grid */
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 items-start">
           {Array.from({ length: 12 }).map((_, i) => (
             <div key={i} className="rounded-xl overflow-hidden">
               {/* Thumbnail skeleton */}
@@ -124,7 +124,7 @@ export default function Home() {
         </div>
       ) : videos.length > 0 ? (
         <>
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-5 items-start">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 items-start">
             {videos.map((video, index) => (
               <VideoCard key={video._id} video={video} index={index} />
             ))}

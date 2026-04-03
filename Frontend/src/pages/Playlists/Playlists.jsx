@@ -5,7 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import API from '../../api/axios';
 import toast from 'react-hot-toast';
 import { HiOutlineFolderOpen, HiOutlinePlus, HiOutlinePlay, HiOutlineEye, HiX } from 'react-icons/hi';
-import './Playlists.css';
+
 
 export default function Playlists() {
   const { user } = useAuth();
@@ -76,40 +76,40 @@ export default function Playlists() {
   };
 
   return (
-    <div className="page-container">
-      <div className="playlists-header">
-        <motion.h1 className="page-title" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
-          <HiOutlineFolderOpen /> Your <span className="text-gradient">Playlists</span>
+    <div className="max-w-[1280px] mx-auto p-4 md:p-6 lg:px-8">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+        <motion.h1 className="flex items-center gap-3 text-2xl md:text-[28px] font-light text-[var(--text-primary)] m-0" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
+          <HiOutlineFolderOpen className="text-[var(--primary)]" /> Your <span className="bg-[var(--accent-gradient)] text-transparent bg-clip-text font-medium">Playlists</span>
         </motion.h1>
-        <motion.button className="btn btn-primary" onClick={() => setShowCreate(true)}
+        <motion.button className="btn-primary !px-4 !py-2.5 flex items-center gap-2 cursor-pointer outline-none border-none text-[14.5px]" onClick={() => setShowCreate(true)}
           whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-          <HiOutlinePlus /> New Playlist
+          <HiOutlinePlus className="text-[18px]" /> New Playlist
         </motion.button>
       </div>
 
       {/* Create playlist modal */}
       <AnimatePresence>
         {showCreate && (
-          <motion.div className="modal-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+          <motion.div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             onClick={() => setShowCreate(false)}>
-            <motion.div className="modal-content" onClick={e => e.stopPropagation()}
+            <motion.div className="bg-bg-elevated w-full max-w-[500px] border border-white/10 p-6 md:p-8 rounded-2xl shadow-2xl relative overflow-hidden" onClick={e => e.stopPropagation()}
               initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }}>
-              <h2 style={{ marginBottom: 20 }}>Create Playlist</h2>
-              <form onSubmit={handleCreate} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                <div className="input-group">
+              <h2 className="text-xl font-light text-[var(--text-primary)] m-0 mb-6 border-b border-white/10 pb-4">Create Playlist</h2>
+              <form onSubmit={handleCreate} className="flex flex-col gap-5">
+                <div className="flex flex-col gap-1.5 [&>label]:text-[13px] [&>label]:font-medium [&>label]:text-[var(--text-secondary)] [&>label]:ml-1">
                   <label>Name</label>
-                  <input className="input-field" placeholder="Playlist name" value={newPlaylist.name}
+                  <input className="w-full bg-[var(--glass-border)] border border-white/10 rounded-xl px-4 py-3 text-[14.5px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-teal-primary transition-colors" placeholder="Playlist name" value={newPlaylist.name}
                     onChange={e => setNewPlaylist({...newPlaylist, name: e.target.value})} />
                 </div>
-                <div className="input-group">
+                <div className="flex flex-col gap-1.5 [&>label]:text-[13px] [&>label]:font-medium [&>label]:text-[var(--text-secondary)] [&>label]:ml-1">
                   <label>Description</label>
-                  <textarea className="input-field" placeholder="Describe your playlist" rows={3}
+                  <textarea className="w-full bg-[var(--glass-border)] border border-white/10 rounded-xl px-4 py-3 text-[14.5px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-teal-primary transition-colors resize-y min-h-[80px]" placeholder="Describe your playlist" rows={3}
                     value={newPlaylist.description}
                     onChange={e => setNewPlaylist({...newPlaylist, description: e.target.value})} />
                 </div>
-                <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-                  <button type="button" className="btn btn-ghost" onClick={() => setShowCreate(false)}>Cancel</button>
-                  <button type="submit" className="btn btn-primary">Create</button>
+                <div className="flex justify-end gap-3 mt-2">
+                  <button type="button" className="btn-secondary !py-2 !px-4" onClick={() => setShowCreate(false)}>Cancel</button>
+                  <button type="submit" className="btn-primary !py-2 !px-6 border-none cursor-pointer outline-none">Create</button>
                 </div>
               </form>
             </motion.div>
@@ -120,35 +120,35 @@ export default function Playlists() {
       {/* Add video to playlist modal */}
       <AnimatePresence>
         {addVideoModal && (
-          <motion.div className="modal-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+          <motion.div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             onClick={() => { setAddVideoModal(null); setVideoUrl(''); }}>
-            <motion.div className="modal-content" onClick={e => e.stopPropagation()}
+            <motion.div className="bg-bg-elevated w-full max-w-[500px] border border-white/10 p-6 md:p-8 rounded-2xl shadow-2xl relative overflow-hidden" onClick={e => e.stopPropagation()}
               initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-                <h2>Add Video to "{addVideoModal.playlistName}"</h2>
-                <button className="btn btn-ghost" style={{ padding: '4px 8px' }}
+              <div className="flex items-center justify-between mb-6 border-b border-white/10 pb-4">
+                <h2 className="text-xl font-light text-[var(--text-primary)] m-0">Add Video to "{addVideoModal.playlistName}"</h2>
+                <button className="flex items-center justify-center p-2 rounded-lg bg-bg-surface border border-white/10 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--glass-border)] transition-colors cursor-pointer outline-none"
                   onClick={() => { setAddVideoModal(null); setVideoUrl(''); }}>
-                  <HiX />
+                  <HiX className="text-lg" />
                 </button>
               </div>
-              <form onSubmit={handleAddVideo} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                <div className="input-group">
+              <form onSubmit={handleAddVideo} className="flex flex-col gap-5">
+                <div className="flex flex-col gap-1.5 [&>label]:text-[13px] [&>label]:font-medium [&>label]:text-[var(--text-secondary)] [&>label]:ml-1">
                   <label>Video URL or ID</label>
                   <input
-                    className="input-field"
+                    className="w-full bg-[var(--glass-border)] border border-white/10 rounded-xl px-4 py-3 text-[14.5px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-teal-primary transition-colors"
                     placeholder="Paste video URL (e.g. /video/abc123) or video ID"
                     value={videoUrl}
                     onChange={e => setVideoUrl(e.target.value)}
                     autoFocus
                   />
-                  <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 6 }}>
+                  <p className="text-[12px] text-[var(--text-muted)] m-0 ml-1">
                     Copy the URL from the video page or paste just the video ID.
                   </p>
                 </div>
-                <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-                  <button type="button" className="btn btn-ghost"
+                <div className="flex justify-end gap-3 mt-2">
+                  <button type="button" className="btn-secondary !py-2 !px-4"
                     onClick={() => { setAddVideoModal(null); setVideoUrl(''); }}>Cancel</button>
-                  <button type="submit" className="btn btn-primary" disabled={addingVideo || !videoUrl.trim()}>
+                  <button type="submit" className="btn-primary !py-2 !px-6 border-none cursor-pointer outline-none" disabled={addingVideo || !videoUrl.trim()}>
                     {addingVideo ? 'Adding…' : 'Add Video'}
                   </button>
                 </div>
@@ -159,47 +159,50 @@ export default function Playlists() {
       </AnimatePresence>
 
       {loading ? (
-        <div className="playlists-grid">
+        <div className="video-grid">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="skeleton playlist-skeleton" />
+            <div key={i} className="w-full h-[280px] bg-[var(--glass-border)] rounded-2xl animate-pulse" />
           ))}
         </div>
       ) : playlists.length > 0 ? (
-        <div className="playlists-grid">
+        <div className="video-grid">
           {playlists.map((pl, i) => (
-            <motion.div key={pl._id} className="playlist-card glass-card"
+            <motion.div key={pl._id} className="flex flex-col bg-bg-surface border border-white/10 rounded-2xl overflow-hidden group"
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.05 }} whileHover={{ y: -4 }}>
-              <Link to={`/playlist/${pl._id}`} className="playlist-card-link">
-                <div className="playlist-thumb">
-                  <div className="playlist-count"><HiOutlinePlay /> {pl.totalVideos || 0}</div>
+              <Link to={`/playlist/${pl._id}`} className="flex flex-col no-underline">
+                <div className="relative w-full aspect-video bg-[var(--glass-border)] flex items-center justify-center overflow-hidden">
+                  <HiOutlineFolderOpen className="text-4xl text-[var(--border-color)]" />
+                  <div className="absolute bottom-2 right-2 bg-black/80 px-2 py-1 rounded text-xs font-medium flex items-center gap-1 backdrop-blur-md">
+                    <HiOutlinePlay /> {pl.totalVideos || 0}
+                  </div>
                 </div>
-                <div className="playlist-info">
-                  <h3>{pl.name}</h3>
-                  <p>{pl.description}</p>
-                  <span className="playlist-meta">
-                    <HiOutlineEye /> {pl.totalViews || 0} views
+                <div className="flex flex-col p-5 gap-2">
+                  <h3 className="text-lg font-light text-[var(--text-primary)] truncate m-0 group-hover:text-[var(--primary-soft)] transition-colors">{pl.name}</h3>
+                  <p className="text-[13.5px] text-[var(--text-muted)] line-clamp-2 m-0 min-h-[40px] leading-relaxed">{pl.description}</p>
+                  <span className="text-[12px] font-medium text-[var(--text-muted)] flex items-center gap-1.5 mt-1">
+                    <HiOutlineEye className="text-sm" /> {pl.totalViews || 0} views
                   </span>
                 </div>
               </Link>
               {/* Add video button — outside the Link so it doesn't navigate */}
-              <div className="playlist-actions">
+              <div className="px-5 pb-5 pt-0 mt-auto">
                 <button
-                  className="btn btn-ghost btn-sm playlist-add-btn"
+                  className="w-full !px-4 !py-2 bg-[var(--glass-border)] hover:bg-teal-primary/10 hover:text-[var(--primary-soft)] text-[var(--text-secondary)] border border-[var(--border-color)] hover:border-teal-primary/30 flex items-center justify-center gap-2 text-[13px] font-medium rounded-xl cursor-pointer transition-all outline-none"
                   id={`add-video-playlist-${pl._id}`}
                   onClick={() => setAddVideoModal({ playlistId: pl._id, playlistName: pl.name })}
                 >
-                  <HiOutlinePlus /> Add Video
+                  <HiOutlinePlus className="text-[16px]" /> Add Video
                 </button>
               </div>
             </motion.div>
           ))}
         </div>
       ) : (
-        <div className="empty-state">
-          <div className="empty-state-icon">📂</div>
-          <h3>No playlists yet</h3>
-          <p>Create your first playlist to organize videos</p>
+        <div className="flex flex-col items-center justify-center py-20 px-5 text-center">
+          <div className="text-[48px] mb-4 opacity-50">📂</div>
+          <h3 className="text-xl font-semibold mb-2 text-[var(--text-primary)]">No playlists yet</h3>
+          <p className="text-sm text-[var(--text-muted)]">Create your first playlist to organize videos</p>
         </div>
       )}
     </div>
