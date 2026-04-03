@@ -91,7 +91,7 @@ export default function AddToPlaylistModal({ videoId, onClose }) {
             <h2 className="flex items-center gap-2 text-base font-light tracking-tight m-0">
               <HiOutlineFolderOpen /> Save to Playlist
             </h2>
-            <button className="bg-transparent border-none text-white/70 cursor-pointer text-[20px] p-1 flex items-center rounded-full hover:text-white hover:bg-white/[0.06] transition-colors" onClick={onClose}>
+            <button className="bg-transparent border-none text-[var(--text-secondary)] cursor-pointer text-[20px] p-1 flex items-center rounded-full hover:text-[var(--text-primary)] hover:bg-white/[0.06] transition-colors" onClick={onClose}>
               <HiX />
             </button>
           </div>
@@ -99,14 +99,14 @@ export default function AddToPlaylistModal({ videoId, onClose }) {
           {/* Playlist list */}
           <div className="overflow-y-auto flex-1 p-2">
             {loading ? (
-              <div className="text-center text-white/50 py-6 px-4 text-sm">Loading playlists…</div>
+              <div className="text-center text-[var(--text-muted)] py-6 px-4 text-sm">Loading playlists…</div>
             ) : playlists.length === 0 ? (
-              <div className="text-center text-white/50 py-6 px-4 text-sm">No playlists yet. Create one below!</div>
+              <div className="text-center text-[var(--text-muted)] py-6 px-4 text-sm">No playlists yet. Create one below!</div>
             ) : (
               playlists.map(pl => (
                 <button
                   key={pl._id}
-                  className={`flex items-center gap-3 w-full p-3 bg-transparent border rounded-xl text-white text-left cursor-pointer transition-all ${
+                  className={`flex items-center gap-3 w-full p-3 bg-transparent border rounded-xl text-[var(--text-primary)] text-left cursor-pointer transition-all ${
                     added[pl._id]
                       ? 'border-teal bg-teal-mist'
                       : 'border-transparent hover:bg-white/[0.06] hover:border-white/10'
@@ -117,7 +117,7 @@ export default function AddToPlaylistModal({ videoId, onClose }) {
                   <span className="text-[18px] text-teal shrink-0"><HiOutlineFolderOpen /></span>
                   <span className="flex flex-col flex-1 min-w-0">
                     <span className="text-sm font-medium truncate">{pl.name}</span>
-                    <span className="text-xs text-white/50">{pl.totalVideos || 0} videos</span>
+                    <span className="text-xs text-[var(--text-muted)]">{pl.totalVideos || 0} videos</span>
                   </span>
                   {added[pl._id] && <HiCheck className="text-badge-green text-[18px] shrink-0" />}
                   {adding === pl._id && (
@@ -153,7 +153,7 @@ export default function AddToPlaylistModal({ videoId, onClose }) {
               </form>
             ) : (
               <button
-                className="flex items-center gap-2 w-full p-[10px_14px] bg-transparent border border-dashed border-white/15 rounded-xl text-white/70 cursor-pointer text-sm transition-all hover:text-white hover:border-teal hover:bg-teal-mist"
+                className="flex items-center gap-2 w-full p-[10px_14px] bg-transparent border border-dashed border-white/15 rounded-xl text-[var(--text-secondary)] cursor-pointer text-sm transition-all hover:text-[var(--text-primary)] hover:border-teal hover:bg-teal-mist"
                 onClick={() => setShowCreate(true)}
               >
                 <HiOutlinePlus /> New Playlist

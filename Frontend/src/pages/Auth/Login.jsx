@@ -41,22 +41,22 @@ export default function Login() {
         transition={{ duration: 0.5, ease: 'easeOut' }}
       >
         <div className="text-center mb-8">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-teal-primary to-teal-soft flex items-center justify-center text-[28px] text-[#051a18] mx-auto mb-4 shadow-[0_4px_20px_rgba(29,184,168,0.3)]">
+          <div className="w-14 h-14 rounded-2xl bg-[var(--accent-gradient)] flex items-center justify-center text-[28px] text-slate-900 mx-auto mb-4 shadow-[0_4px_20px_rgba(139,92,246,0.35)]">
             <HiOutlineVideoCamera />
           </div>
-          <h1 className="text-[26px] font-light text-white/90 mb-1.5">Welcome Back</h1>
-          <p className="text-white/70 text-sm">Sign in to continue to <span className="text-teal-gradient">VidTube</span></p>
+          <h1 className="text-[26px] font-light text-[var(--text-primary)] mb-1.5">Welcome Back</h1>
+          <p className="text-[var(--text-secondary)] text-sm">Sign in to continue to <span className="bg-[var(--accent-gradient)] text-transparent bg-clip-text font-medium">VidTube</span></p>
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="login-email" className="text-[13px] font-medium text-white/70 ml-1">Email or Username</label>
+            <label htmlFor="login-email" className="text-[13px] font-medium text-[var(--text-secondary)] ml-1">Email or Username</label>
             <div className="relative">
-              <HiOutlineMail className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50 text-[18px]" />
+              <HiOutlineMail className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] text-[18px]" />
               <input
                 id="login-email"
                 type="text"
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 pl-[46px] text-[14.5px] text-white/90 placeholder:text-white/40 focus:outline-none focus:border-teal-primary focus:bg-white/[0.08] transition-colors"
+                className="w-full bg-[var(--glass-border)] border border-white/10 rounded-xl px-4 py-3 pl-[46px] text-[14.5px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-teal-primary focus:bg-white/[0.08] transition-colors"
                 placeholder="Enter email or username"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -66,13 +66,13 @@ export default function Login() {
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="login-password" className="text-[13px] font-medium text-white/70 ml-1">Password</label>
+            <label htmlFor="login-password" className="text-[13px] font-medium text-[var(--text-secondary)] ml-1">Password</label>
             <div className="relative">
-              <HiOutlineLockClosed className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50 text-[18px]" />
+              <HiOutlineLockClosed className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] text-[18px]" />
               <input
                 id="login-password"
                 type="password"
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 pl-[46px] text-[14.5px] text-white/90 placeholder:text-white/40 focus:outline-none focus:border-teal-primary focus:bg-white/[0.08] transition-colors"
+                className="w-full bg-[var(--glass-border)] border border-white/10 rounded-xl px-4 py-3 pl-[46px] text-[14.5px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-teal-primary focus:bg-white/[0.08] transition-colors"
                 placeholder="Enter your password"
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
@@ -96,8 +96,8 @@ export default function Login() {
           </motion.button>
         </form>
 
-        <p className="text-center mt-6 text-[14px] text-white/70">
-          Don't have an account? <Link to="/register" className="text-teal-soft font-semibold no-underline hover:underline">Sign Up</Link>
+        <p className="text-center mt-6 text-[14px] text-[var(--text-secondary)]">
+          Don't have an account? <Link to="/register" className="text-[var(--primary-soft)] font-semibold no-underline hover:underline">Sign Up</Link>
         </p>
       </motion.div>
     </div>

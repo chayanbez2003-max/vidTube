@@ -66,9 +66,9 @@ export default function Tweets() {
 
   return (
     <div className="max-w-[1280px] mx-auto p-4 md:p-6 lg:px-8">
-      <motion.h1 className="flex items-center gap-3 text-2xl md:text-[28px] font-light text-white/90 mb-6"
+      <motion.h1 className="flex items-center gap-3 text-2xl md:text-[28px] font-light text-[var(--text-primary)] mb-6"
         initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
-        <HiOutlineChatAlt2 className="text-teal-primary" /> Community <span className="text-teal-gradient">Tweets</span>
+        <HiOutlineChatAlt2 className="text-[var(--primary)]" /> Community <span className="bg-[var(--accent-gradient)] text-transparent bg-clip-text font-medium">Tweets</span>
       </motion.h1>
 
       <div className="max-w-[700px] mx-auto w-full flex flex-col gap-6">
@@ -76,7 +76,7 @@ export default function Tweets() {
           <img src={user?.avatar} alt="" className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover shrink-0" />
           <div className="flex flex-col flex-1 gap-3">
             <textarea
-              className="w-full bg-transparent border-b border-white/10 text-[15px] text-white/90 focus:outline-none focus:border-teal-primary transition-colors resize-none placeholder:text-white/30 pb-2 min-h-[60px]"
+              className="w-full bg-transparent border-b border-white/10 text-[15px] text-[var(--text-primary)] focus:outline-none focus:border-teal-primary transition-colors resize-none placeholder:text-[var(--text-muted)] pb-2 min-h-[60px]"
               placeholder="What's on your mind?"
               value={newTweet}
               onChange={e => setNewTweet(e.target.value)}
@@ -99,19 +99,19 @@ export default function Tweets() {
                   <img src={tweet.ownerDetails?.avatar?.url || tweet.ownerDetails?.avatar || user?.avatar}
                     alt="" className="w-8 h-8 rounded-full object-cover shrink-0" />
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-medium text-[15px] text-white/90 leading-tight">{tweet.ownerDetails?.username || user?.username}</span>
-                    <span className="text-xs text-white/40 leading-tight">{timeAgo(tweet.createdAt)}</span>
+                    <span className="font-medium text-[15px] text-[var(--text-primary)] leading-tight">{tweet.ownerDetails?.username || user?.username}</span>
+                    <span className="text-xs text-[var(--text-muted)] leading-tight">{timeAgo(tweet.createdAt)}</span>
                   </div>
                 </div>
-                <p className="text-[15px] text-white/80 leading-relaxed whitespace-pre-wrap m-0 mb-2">{tweet.content}</p>
+                <p className="text-[15px] text-[var(--text-primary)] leading-relaxed whitespace-pre-wrap m-0 mb-2">{tweet.content}</p>
                 <div className="flex items-center gap-4">
-                  <motion.button className={`flex items-center gap-1.5 text-[14px] font-medium hover:text-white/80 bg-transparent border-none p-0 cursor-pointer transition-colors outline-none ${tweet.isLiked ? 'text-teal-primary' : 'text-white/40'}`}
+                  <motion.button className={`flex items-center gap-1.5 text-[14px] font-medium hover:text-[var(--text-primary)] bg-transparent border-none p-0 cursor-pointer transition-colors outline-none ${tweet.isLiked ? 'text-[var(--primary)]' : 'text-[var(--text-muted)]'}`}
                     onClick={() => handleLike(tweet._id)} whileTap={{ scale: 0.85 }}>
                     {tweet.isLiked ? <HiThumbUp className="text-[16px]" /> : <HiOutlineThumbUp className="text-[16px]" />}
                     <span>{tweet.likesCount || 0}</span>
                   </motion.button>
                   {tweet.ownerDetails?.username === user?.username && (
-                    <button className="flex items-center gap-1.5 text-[14px] font-medium text-white/40 hover:text-red-400 opacity-0 group-hover:opacity-100 absolute top-5 right-5 bg-transparent border-none p-0 cursor-pointer transition-all outline-none" onClick={() => handleDelete(tweet._id)}>
+                    <button className="flex items-center gap-1.5 text-[14px] font-medium text-[var(--text-muted)] hover:text-red-400 opacity-0 group-hover:opacity-100 absolute top-5 right-5 bg-transparent border-none p-0 cursor-pointer transition-all outline-none" onClick={() => handleDelete(tweet._id)}>
                       <HiOutlineTrash className="text-[16px]" />
                     </button>
                   )}
@@ -122,8 +122,8 @@ export default function Tweets() {
           {!loading && tweets.length === 0 && (
             <div className="flex flex-col items-center justify-center py-20 px-5 text-center">
               <div className="text-[48px] mb-4 opacity-50">💬</div>
-              <h3 className="text-xl font-semibold mb-2 text-white/90">No tweets yet</h3>
-              <p className="text-sm text-white/50 max-w-[400px]">Share your thoughts with the community</p>
+              <h3 className="text-xl font-semibold mb-2 text-[var(--text-primary)]">No tweets yet</h3>
+              <p className="text-sm text-[var(--text-muted)] max-w-[400px]">Share your thoughts with the community</p>
             </div>
           )}
         </div>

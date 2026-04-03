@@ -202,7 +202,7 @@ export default function WatchStream() {
   if (loading) {
     return (
       <div className="max-w-[1280px] mx-auto p-4 md:p-6 lg:px-8 flex items-center justify-center min-h-[50vh]">
-        <div className="flex flex-col items-center gap-4 text-white/50">
+        <div className="flex flex-col items-center gap-4 text-[var(--text-muted)]">
           <div className="w-10 h-10 border-2 border-teal-primary/30 border-t-teal-primary rounded-full animate-spin" />
           <p className="text-sm">Loading stream...</p>
         </div>
@@ -214,7 +214,7 @@ export default function WatchStream() {
     return (
       <div className="max-w-[1280px] mx-auto p-4 md:p-6 lg:px-8 flex flex-col items-center justify-center min-h-[50vh] text-center gap-4">
         <div className="text-[48px] opacity-50">📡</div>
-        <h3 className="text-xl font-semibold text-white/90 m-0">Stream not found</h3>
+        <h3 className="text-xl font-semibold text-[var(--text-primary)] m-0">Stream not found</h3>
         <Link to="/live" className="btn-primary px-5 py-2.5 no-underline border-none cursor-pointer outline-none text-sm font-medium flex items-center gap-2 mt-2">
           Browse Live Streams
         </Link>
@@ -227,24 +227,24 @@ export default function WatchStream() {
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Stream Area */}
         <div className="flex-[2] flex flex-col gap-6 min-w-0">
-          <div className="relative w-full aspect-video bg-black rounded-2xl overflow-hidden border border-white/5 shadow-[0_0_40px_rgba(0,0,0,0.5)] group">
+          <div className="relative w-full aspect-video bg-slate-900 rounded-2xl overflow-hidden border border-[var(--border-color)] shadow-[0_0_40px_rgba(0,0,0,0.15)] group">
             {streamEnded ? (
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-6 text-center bg-bg-elevated">
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-6 text-center bg-slate-100">
                 <div className="text-[56px] opacity-60">📡</div>
-                <h2 className="text-2xl font-bold text-white/90 m-0">Stream has ended</h2>
-                <p className="text-white/50 text-sm m-0">This stream is no longer live</p>
+                <h2 className="text-2xl font-bold text-[var(--text-primary)] m-0">Stream has ended</h2>
+                <p className="text-[var(--text-muted)] text-sm m-0">This stream is no longer live</p>
                 <Link to="/live" className="btn-primary px-5 py-2.5 no-underline border-none cursor-pointer outline-none text-sm font-medium flex items-center gap-2 mt-2">
                   Browse Live Streams
                 </Link>
               </div>
             ) : (
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-5 bg-bg-elevated">
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-5 bg-slate-100">
                 <div className="stream-wave-animation">
                   <span /><span /><span /><span /><span />
                 </div>
-                <p className="text-white/80 font-semibold text-base m-0">🔴 LIVE — Stream is active</p>
-                <p className="text-white/40 text-sm m-0">
-                  Peer-to-peer video coming from <strong className="text-white/70">{stream.streamer?.username}</strong>
+                <p className="text-[var(--text-primary)] font-semibold text-base m-0">🔴 LIVE — Stream is active</p>
+                <p className="text-[var(--text-muted)] text-sm m-0">
+                  Peer-to-peer video coming from <strong className="text-[var(--text-secondary)]">{stream.streamer?.username}</strong>
                 </p>
               </div>
             )}
@@ -255,7 +255,7 @@ export default function WatchStream() {
                   <span className="w-2 h-2 rounded-full bg-live animate-[livePulse_2s_infinite]" />
                   <span>LIVE</span>
                 </div>
-                <span className="bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-md text-white/90 text-sm font-medium flex items-center gap-1.5 border border-white/10">
+                <span className="bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-md text-[var(--text-primary)] text-sm font-medium flex items-center gap-1.5 border border-white/10">
                   <HiOutlineEye /> {formatViews(viewerCount)}
                 </span>
               </div>
@@ -263,7 +263,7 @@ export default function WatchStream() {
           </div>
 
           {/* Stream info */}
-          <div className="flex flex-col gap-4 p-5 bg-bg-surface border border-white/10 rounded-2xl">
+          <div className="flex flex-col gap-4 p-5 bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-2xl shadow-sm">
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
               <div className="flex items-start gap-4">
                 <img
@@ -272,9 +272,9 @@ export default function WatchStream() {
                   className="w-14 h-14 rounded-full object-cover shrink-0"
                 />
                 <div className="flex flex-col min-w-0">
-                  <h2 className="text-xl font-bold text-white/90 m-0 mb-1 leading-snug">{stream.title}</h2>
-                  <p className="text-sm text-white/50 m-0 flex items-center gap-2 flex-wrap">
-                    <Link to={`/channel/${stream.streamer?.username}`} className="font-semibold text-teal-soft no-underline hover:text-teal-primary transition-colors">
+                  <h2 className="text-xl font-bold text-[var(--text-primary)] m-0 mb-1 leading-snug">{stream.title}</h2>
+                  <p className="text-sm text-[var(--text-muted)] m-0 flex items-center gap-2 flex-wrap">
+                    <Link to={`/channel/${stream.streamer?.username}`} className="font-semibold text-[var(--primary-soft)] no-underline hover:text-[var(--primary)] transition-colors">
                       {stream.streamer?.fullName || stream.streamer?.username}
                     </Link>
                     <span>· Started {timeAgo(stream.startedAt)}</span>
@@ -283,7 +283,7 @@ export default function WatchStream() {
               </div>
 
               <motion.button 
-                className={`flex items-center gap-2 shrink-0 px-5 py-2.5 rounded-xl border transition-all font-medium text-sm cursor-pointer outline-none ${isLiked ? '!text-teal-primary !bg-teal-primary/10 !border-teal-primary/20' : 'border-white/10 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white'}`}
+                className={`flex items-center gap-2 shrink-0 px-5 py-2.5 rounded-xl border transition-all font-medium text-sm cursor-pointer outline-none ${isLiked ? '!text-[var(--primary)] !bg-[var(--primary)]/10 !border-[var(--primary)]/20' : 'border-[var(--border-color)] bg-slate-100 hover:bg-slate-200 text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
                 onClick={handleToggleLike}
                 whileTap={{ scale: 0.9 }}
               >
@@ -293,19 +293,19 @@ export default function WatchStream() {
             </div>
 
             {stream.description && (
-              <p className="text-[14.5px] text-white/60 leading-relaxed m-0 pt-4 border-t border-white/5">{stream.description}</p>
+              <p className="text-[14.5px] text-[var(--text-secondary)] leading-relaxed m-0 pt-4 border-t border-[var(--border-color)]">{stream.description}</p>
             )}
             <div className="flex flex-wrap items-center gap-2">
-              <span className="bg-teal-primary/10 text-teal-primary border border-teal-primary/20 px-2.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wider">{stream.category}</span>
+              <span className="bg-teal-primary/10 text-[var(--primary)] border border-teal-primary/20 px-2.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wider">{stream.category}</span>
               {stream.tags?.map(tag => (
-                <span key={tag} className="text-xs text-white/60 font-medium bg-white/5 px-2 py-1 rounded border border-white/5">#{tag}</span>
+                <span key={tag} className="text-xs text-[var(--text-secondary)] font-medium bg-slate-100 px-2 py-1 rounded border border-[var(--border-color)]">#{tag}</span>
               ))}
             </div>
           </div>
 
           {/* Comments Section */}
-          <div className="flex flex-col bg-bg-surface border border-white/10 rounded-2xl p-5 md:p-6 gap-5">
-            <h3 className="text-lg font-bold text-white/90 m-0">Comments ({comments.length})</h3>
+          <div className="flex flex-col bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-2xl p-5 md:p-6 gap-5 shadow-sm">
+            <h3 className="text-lg font-bold text-[var(--text-primary)] m-0">Comments ({comments.length})</h3>
             {user && (
               <form className="flex items-center gap-3" onSubmit={handleAddComment}>
                 <img src={user.avatar} alt="" className="w-8 h-8 rounded-full object-cover shrink-0" />
@@ -314,7 +314,7 @@ export default function WatchStream() {
                   placeholder="Add a public comment..." 
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
-                  className="flex-1 bg-white/5 border border-white/10 rounded-full px-4 py-2.5 text-[14px] text-white/90 placeholder:text-white/40 focus:outline-none focus:border-teal-primary transition-colors"
+                  className="flex-1 bg-slate-100 border border-[var(--border-color)] rounded-full px-4 py-2.5 text-[14px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--primary)] transition-colors"
                 />
                 <button type="submit" disabled={!newComment.trim()} className="bg-teal-primary hover:bg-teal-soft text-black font-semibold rounded-full px-4 py-2 text-sm border-none cursor-pointer transition-colors disabled:opacity-50">Post</button>
               </form>
@@ -322,39 +322,39 @@ export default function WatchStream() {
             
             <div className="flex flex-col gap-5">
               {comments.length === 0 ? (
-                <p className="text-center text-white/40 text-sm py-4 m-0">No comments yet.</p>
+                <p className="text-center text-[var(--text-muted)] text-sm py-4 m-0">No comments yet.</p>
               ) : (
                 comments.map((c) => (
                   <div key={c._id} className="flex gap-3 group">
                     <img src={c.owner?.avatar} alt="" className="w-8 h-8 rounded-full object-cover shrink-0" />
                     <div className="flex flex-col gap-1 min-w-0 flex-1">
                       <div className="flex items-baseline gap-2">
-                        <strong className="text-[13px] font-semibold text-white/90">{c.owner?.username}</strong>
-                        <span className="text-[11px] text-white/40">{timeAgo(c.createdAt)}</span>
+                        <strong className="text-[13px] font-semibold text-[var(--text-primary)]">{c.owner?.username}</strong>
+                        <span className="text-[11px] text-[var(--text-muted)]">{timeAgo(c.createdAt)}</span>
                       </div>
                       
                       {editingCommentId === c._id ? (
                         <div className="flex flex-col gap-2">
                           <input 
-                            className="w-full bg-black/40 border border-teal-primary/50 text-white text-sm rounded px-3 py-1.5 focus:outline-none focus:border-teal-primary"
+                            className="w-full bg-slate-100 border border-[var(--primary)]/50 text-[var(--text-primary)] text-sm rounded px-3 py-1.5 focus:outline-none focus:border-[var(--primary)]"
                             value={editContent}
                             onChange={(e) => setEditContent(e.target.value)}
                             autoFocus
                           />
                           <div className="flex gap-2">
-                            <button onClick={() => setEditingCommentId(null)} className="px-3 py-1 bg-white/5 hover:bg-white/10 rounded text-white/70 text-xs border-none cursor-pointer">Cancel</button>
-                            <button onClick={() => handleUpdateComment(c._id)} className="px-3 py-1 bg-teal-primary/20 hover:bg-teal-primary/40 rounded text-teal-soft text-xs font-semibold border border-teal-primary/30 cursor-pointer">Save</button>
+                            <button onClick={() => setEditingCommentId(null)} className="px-3 py-1 bg-slate-100 hover:bg-slate-200 rounded text-[var(--text-secondary)] text-xs border-none cursor-pointer">Cancel</button>
+                            <button onClick={() => handleUpdateComment(c._id)} className="px-3 py-1 bg-[var(--primary)]/10 hover:bg-[var(--primary)]/20 rounded text-[var(--primary)] text-xs font-semibold border border-[var(--primary)]/30 cursor-pointer">Save</button>
                           </div>
                         </div>
                       ) : (
                         <>
-                          <p className="text-[14px] text-white/80 m-0 leading-relaxed break-words">{c.content}</p>
+                          <p className="text-[14px] text-[var(--text-primary)] m-0 leading-relaxed break-words">{c.content}</p>
                           {user && String(user._id) === String(c.owner?._id || c.owner) && (
                             <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity mt-1">
-                              <button onClick={() => startEditing(c)} title="Edit" className="p-1 bg-white/5 hover:bg-white/10 rounded text-white/50 hover:text-white/90 border-none cursor-pointer">
+                              <button onClick={() => startEditing(c)} title="Edit" className="p-1 bg-slate-100 hover:bg-slate-200 rounded text-[var(--text-muted)] hover:text-[var(--text-primary)] border-none cursor-pointer">
                                 <HiOutlinePencil />
                               </button>
-                              <button className="p-1 bg-white/5 hover:bg-red-500/20 rounded text-white/50 hover:text-red-400 border-none cursor-pointer" onClick={() => handleDeleteComment(c._id)} title="Delete">
+                              <button className="p-1 bg-slate-100 hover:bg-red-50 rounded text-[var(--text-muted)] hover:text-red-500 border-none cursor-pointer" onClick={() => handleDeleteComment(c._id)} title="Delete">
                                 <HiOutlineTrash />
                               </button>
                             </div>
@@ -370,18 +370,18 @@ export default function WatchStream() {
         </div>
 
         {/* Chat */}
-        <div className="flex-1 flex flex-col bg-bg-surface border border-white/10 rounded-2xl overflow-hidden h-[600px] lg:h-auto lg:max-h-[900px]">
-          <div className="flex items-center gap-2 p-4 border-b border-white/10 bg-black/20">
-            <HiOutlineChatAlt2 className="text-xl text-white/70" />
-            <h3 className="m-0 text-base font-bold text-white/90 flex-1">Live Chat</h3>
-            <span className="flex items-center gap-1.5 text-xs font-semibold text-teal-primary bg-teal-primary/10 px-2 py-1 rounded-full">
+        <div className="flex-1 flex flex-col bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-2xl overflow-hidden h-[600px] lg:h-auto lg:max-h-[900px] shadow-sm">
+          <div className="flex items-center gap-2 p-4 border-b border-[var(--border-color)] bg-slate-50">
+            <HiOutlineChatAlt2 className="text-xl text-[var(--text-secondary)]" />
+            <h3 className="m-0 text-base font-bold text-[var(--text-primary)] flex-1">Live Chat</h3>
+            <span className="flex items-center gap-1.5 text-xs font-semibold text-[var(--primary)] bg-teal-primary/10 px-2 py-1 rounded-full">
               <HiOutlineUserGroup /> {viewerCount}
             </span>
           </div>
 
           <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4">
             {chatMessages.length === 0 ? (
-              <div className="flex flex-col items-center justify-center flex-1 h-full text-white/30 gap-2">
+              <div className="flex flex-col items-center justify-center flex-1 h-full text-[var(--text-muted)] gap-2">
                 <HiOutlineChatAlt2 className="text-[40px] opacity-50" />
                 <p className="m-0 text-sm">No messages yet</p>
               </div>
@@ -399,8 +399,8 @@ export default function WatchStream() {
                     className="w-7 h-7 rounded-full object-cover shrink-0 opacity-80"
                   />
                   <div className="flex flex-col min-w-0">
-                    <span className="text-[12px] font-bold text-white/60 block mb-0.5 leading-tight">{msg.username}</span>
-                    <span className="text-[14px] text-white/90 leading-snug">{msg.message}</span>
+                    <span className="text-[12px] font-bold text-[var(--text-secondary)] block mb-0.5 leading-tight">{msg.username}</span>
+                    <span className="text-[14px] text-[var(--text-primary)] leading-snug">{msg.message}</span>
                   </div>
                 </motion.div>
               ))
@@ -409,22 +409,22 @@ export default function WatchStream() {
           </div>
 
           {user && !streamEnded ? (
-            <form className="flex items-center gap-2 p-3 border-t border-white/10 bg-black/20" onSubmit={handleSendChat}>
+            <form className="flex items-center gap-2 p-3 border-t border-[var(--border-color)] bg-slate-50" onSubmit={handleSendChat}>
               <input
                 type="text"
                 placeholder="Say something..."
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
                 maxLength={300}
-                className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-[14px] text-white/90 placeholder:text-white/40 focus:outline-none focus:border-teal-primary transition-colors"
+                className="flex-1 bg-slate-100 border border-[var(--border-color)] rounded-lg px-3 py-2 text-[14px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--primary)] transition-colors"
               />
               <button type="submit" disabled={!chatInput.trim()} className="bg-teal-primary hover:bg-teal-soft text-black font-semibold rounded-lg px-4 py-2 text-sm border-none cursor-pointer transition-colors disabled:opacity-50">
                 Send
               </button>
             </form>
           ) : !user ? (
-            <div className="p-4 text-center text-sm text-white/50 border-t border-white/10">
-              <Link to="/login" className="text-teal-soft hover:text-teal-primary font-semibold no-underline transition-colors">Sign in</Link> to chat
+            <div className="p-4 text-center text-sm text-[var(--text-muted)] border-t border-[var(--border-color)]">
+              <Link to="/login" className="text-[var(--primary-soft)] hover:text-[var(--primary)] font-semibold no-underline transition-colors">Sign in</Link> to chat
             </div>
           ) : null}
         </div>

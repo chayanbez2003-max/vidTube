@@ -35,9 +35,9 @@ export default function VideoCard({ video, index = 0, isOwner = false, onDelete 
   return (
     <>
       <motion.div
-        className="rounded-xl overflow-hidden bg-[var(--bg-card)] border border-[var(--glass-border)]
-                   flex flex-col transition-all duration-300
-                   hover:border-[var(--border-accent)] hover:shadow-[0_8px_32px_rgba(124,58,237,0.1)]
+        className="rounded-xl overflow-hidden bg-[var(--bg-card)] border border-[var(--border-color)]
+                   flex flex-col transition-all duration-300 backdrop-blur-md
+                   hover:border-[var(--border-accent)] hover:shadow-[0_20px_40px_-15px_rgba(var(--primary-rgb),0.2)]
                    group"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -50,17 +50,17 @@ export default function VideoCard({ video, index = 0, isOwner = false, onDelete 
           id={`video-card-${video._id}`}
         >
           {/* ── Thumbnail ── */}
-          <div className="relative aspect-video overflow-hidden bg-white/[0.03] flex-shrink-0">
+          <div className="relative aspect-video overflow-hidden bg-[var(--bg-surface)] flex-shrink-0">
             <img
               src={thumbnailUrl}
               alt={video.title}
               loading="lazy"
-              className="w-full h-full object-cover transition-transform duration-400 group-hover:scale-105"
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             />
 
             {/* Duration badge */}
-            <div className="absolute bottom-2 right-2 bg-black/85 text-white px-2 py-[2px]
-                            rounded text-[12px] font-semibold tracking-[0.3px]">
+            <div className="absolute bottom-2 right-2 bg-white/90 text-slate-800 px-2 py-[2px]
+                            rounded text-[12px] font-semibold tracking-[0.3px] backdrop-blur-sm shadow-sm border border-slate-200/50">
               {formatDuration(video.duration)}
             </div>
 
@@ -89,7 +89,7 @@ export default function VideoCard({ video, index = 0, isOwner = false, onDelete 
             {user && (
               <button
                 className="absolute bottom-2 left-2 w-[34px] h-[34px] rounded-full
-                           bg-violet-600/85 border-none text-white flex items-center justify-center
+                           bg-violet-600/85 border-none text-[var(--text-primary)] flex items-center justify-center
                            text-base cursor-pointer backdrop-blur-sm z-10
                            opacity-0 scale-80 group-hover:opacity-100 group-hover:scale-100
                            transition-all duration-200

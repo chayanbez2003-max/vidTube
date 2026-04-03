@@ -57,9 +57,9 @@ export default function Settings() {
 
   return (
     <div className="max-w-[1280px] mx-auto p-4 md:p-6 lg:px-8">
-      <motion.h1 className="flex items-center gap-3 text-2xl md:text-[28px] font-light text-white/90 mb-8"
+      <motion.h1 className="flex items-center gap-3 text-2xl md:text-[28px] font-light text-[var(--text-primary)] mb-8"
         initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
-        <HiOutlineCog /> <span className="text-teal-gradient">Settings</span>
+        <HiOutlineCog /> <span className="bg-[var(--accent-gradient)] text-transparent bg-clip-text font-medium">Settings</span>
       </motion.h1>
 
       <div className="flex flex-col md:flex-row gap-6 lg:gap-10">
@@ -69,7 +69,7 @@ export default function Settings() {
             { id: 'password', icon: <HiOutlineLockClosed className="text-[20px]" />, label: 'Password' },
           ].map(tab => (
             <button key={tab.id} 
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-[14.5px] transition-all cursor-pointer whitespace-nowrap bg-transparent border-none outline-none ${activeTab === tab.id ? 'bg-teal-primary/10 text-teal-soft shadow-[inset_0_-3px_0_#1DB8A8] md:shadow-[inset_3px_0_0_#1DB8A8]' : 'text-white/50 hover:bg-white/[0.04] hover:text-white/80'}`}
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-[14.5px] transition-all cursor-pointer whitespace-nowrap bg-transparent border-none outline-none ${activeTab === tab.id ? 'bg-teal-primary/10 text-[var(--primary-soft)] shadow-[inset_0_-3px_0_#1DB8A8] md:shadow-[inset_3px_0_0_#1DB8A8]' : 'text-[var(--text-muted)] hover:bg-white/[0.04] hover:text-[var(--text-primary)]'}`}
               onClick={() => setActiveTab(tab.id)}>
               {tab.icon} {tab.label}
             </button>
@@ -79,8 +79,8 @@ export default function Settings() {
         <div className="flex-1 w-full bg-bg-surface border border-white/10 p-6 md:p-8 rounded-2xl glass-card">
           {activeTab === 'profile' && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-              <h2 className="text-[20px] font-light text-white/90 mb-6 m-0 border-b border-white/10 pb-4">Profile Settings</h2>
-              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-8 p-5 bg-white/[0.02] rounded-xl border border-white/5">
+              <h2 className="text-[20px] font-light text-[var(--text-primary)] mb-6 m-0 border-b border-white/10 pb-4">Profile Settings</h2>
+              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-8 p-5 bg-white/[0.02] rounded-xl border border-[var(--border-color)]">
                 <img src={user?.avatar} alt="" className="w-20 h-20 md:w-24 md:h-24 rounded-full object-cover ring-4 ring-bg-base shadow-lg" />
                 <label htmlFor="settings-avatar" className="btn-ghost !py-2 !px-4 flex items-center gap-2 cursor-pointer border-white/10 text-sm">
                   <HiOutlinePhotograph /> Change Avatar
@@ -88,14 +88,14 @@ export default function Settings() {
                 <input id="settings-avatar" type="file" accept="image/*" onChange={handleAvatarUpdate} hidden />
               </div>
               <form onSubmit={handleProfileUpdate} className="flex flex-col gap-5 max-w-[500px]">
-                <div className="flex flex-col gap-1.5 [&>label]:text-[13px] [&>label]:font-medium [&>label]:text-white/70 [&>label]:ml-1">
+                <div className="flex flex-col gap-1.5 [&>label]:text-[13px] [&>label]:font-medium [&>label]:text-[var(--text-secondary)] [&>label]:ml-1">
                   <label>Full Name</label>
-                  <input className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-[14.5px] text-white/90 focus:outline-none focus:border-teal-primary transition-colors" value={profileData.fullName}
+                  <input className="w-full bg-[var(--glass-border)] border border-white/10 rounded-xl px-4 py-3 text-[14.5px] text-[var(--text-primary)] focus:outline-none focus:border-teal-primary transition-colors" value={profileData.fullName}
                     onChange={e => setProfileData({...profileData, fullName: e.target.value})} />
                 </div>
-                <div className="flex flex-col gap-1.5 [&>label]:text-[13px] [&>label]:font-medium [&>label]:text-white/70 [&>label]:ml-1">
+                <div className="flex flex-col gap-1.5 [&>label]:text-[13px] [&>label]:font-medium [&>label]:text-[var(--text-secondary)] [&>label]:ml-1">
                   <label>Email</label>
-                  <input className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-[14.5px] text-white/90 focus:outline-none focus:border-teal-primary transition-colors" type="email" value={profileData.email}
+                  <input className="w-full bg-[var(--glass-border)] border border-white/10 rounded-xl px-4 py-3 text-[14.5px] text-[var(--text-primary)] focus:outline-none focus:border-teal-primary transition-colors" type="email" value={profileData.email}
                     onChange={e => setProfileData({...profileData, email: e.target.value})} />
                 </div>
                 <motion.button type="submit" className="btn-primary w-full md:w-auto mt-2 px-6 py-3 cursor-pointer outline-none border-none text-[15px]" disabled={loading}
@@ -108,16 +108,16 @@ export default function Settings() {
 
           {activeTab === 'password' && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-              <h2 className="text-[20px] font-light text-white/90 mb-6 m-0 border-b border-white/10 pb-4">Change Password</h2>
+              <h2 className="text-[20px] font-light text-[var(--text-primary)] mb-6 m-0 border-b border-white/10 pb-4">Change Password</h2>
               <form onSubmit={handlePasswordChange} className="flex flex-col gap-5 max-w-[500px]">
-                <div className="flex flex-col gap-1.5 [&>label]:text-[13px] [&>label]:font-medium [&>label]:text-white/70 [&>label]:ml-1">
+                <div className="flex flex-col gap-1.5 [&>label]:text-[13px] [&>label]:font-medium [&>label]:text-[var(--text-secondary)] [&>label]:ml-1">
                   <label>Current Password</label>
-                  <input className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-[14.5px] text-white/90 focus:outline-none focus:border-teal-primary transition-colors" type="password" value={passwordData.oldPassword}
+                  <input className="w-full bg-[var(--glass-border)] border border-white/10 rounded-xl px-4 py-3 text-[14.5px] text-[var(--text-primary)] focus:outline-none focus:border-teal-primary transition-colors" type="password" value={passwordData.oldPassword}
                     onChange={e => setPasswordData({...passwordData, oldPassword: e.target.value})} required />
                 </div>
-                <div className="flex flex-col gap-1.5 [&>label]:text-[13px] [&>label]:font-medium [&>label]:text-white/70 [&>label]:ml-1">
+                <div className="flex flex-col gap-1.5 [&>label]:text-[13px] [&>label]:font-medium [&>label]:text-[var(--text-secondary)] [&>label]:ml-1">
                   <label>New Password</label>
-                  <input className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-[14.5px] text-white/90 focus:outline-none focus:border-teal-primary transition-colors" type="password" value={passwordData.newPassword}
+                  <input className="w-full bg-[var(--glass-border)] border border-white/10 rounded-xl px-4 py-3 text-[14.5px] text-[var(--text-primary)] focus:outline-none focus:border-teal-primary transition-colors" type="password" value={passwordData.newPassword}
                     onChange={e => setPasswordData({...passwordData, newPassword: e.target.value})} required />
                 </div>
                 <motion.button type="submit" className="btn-primary w-full md:w-auto mt-2 px-6 py-3 cursor-pointer outline-none border-none text-[15px]" disabled={loading}

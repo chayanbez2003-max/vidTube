@@ -4,26 +4,39 @@
 
 
 :root {
+  /* Flawless Light Theme - Glossy & Slightly Darker */
+  --bg-rgb: 226, 232, 240; /* #E2E8F0 (Slate 200) */
+  --bg-base: #E2E8F0;
+  --bg-primary: #E2E8F0; 
+  --bg-surface: rgba(255, 255, 255, 0.6); /* Glossy surface base */
+  --bg-elevated: #CBD5E1; /* Slate 300 */
+  --bg-overlay: rgba(255, 255, 255, 0.7);
+  --bg-card: rgba(255, 255, 255, 0.5); /* Glassy card background */
 
-  /* Theme Sheerlink by RTX */
-  --bg-rgb: 42, 20, 33; /* #2A1421 */
-  --bg-base: #2A1421;
-  --bg-surface: #4A2C40;
-  --bg-elevated: #5d3a51;
-  --bg-overlay: #301927;
+  /* Primary: Vivid Cerulean Blue */
+  --primary-rgb: 14, 165, 233; /* #0EA5E9 */
+  --primary: #0EA5E9;
+  --primary-vivid: #0284C7;
+  --primary-soft: #38BDF8;
+  --primary-mist: rgba(14, 165, 233, 0.1);
 
-  --primary-rgb: 233, 189, 67; /* #E9BD43 */
-  --primary: #E9BD43;
-  --primary-vivid: #f2ca5a;
-  --primary-soft: #dbac25;
-  --primary-dim: #997410;
-  --primary-mist: rgba(233, 189, 67, 0.15);
+  /* Accent: Electric Violet */
+  --accent-rgb: 139, 92, 246; /* #8B5CF6 */
+  --accent: #8B5CF6;
+  --accent-secondary: #7C3AED;
+  --accent-gradient: linear-gradient(135deg, var(--primary), var(--accent));
 
-  --accent-rgb: 125, 55, 128; /* #7D3780 */
-  --accent: #7D3780;
+  /* Text Colors */
+  --text-primary: #0F172A; /* Slate 900 - very dark slate instead of black */
+  --text-secondary: #475569; /* Slate 600 */
+  --text-muted: #94A3B8; /* Slate 400 */
+  
+  --border-color: rgba(15, 23, 42, 0.08); /* Slate 900 with 8% opacity */
+  --glass-border: rgba(15, 23, 42, 0.05);
+  --border-accent: rgba(139, 92, 246, 0.25);
 
-  --header-height: 64px;
-  --sidebar-width: 240px;
+  --header-height: 70px;
+  --sidebar-width: 250px;
   --sidebar-collapsed: 72px;
   --border-radius: 12px;
   --r-md: 12px;
@@ -44,43 +57,44 @@
   }
 
   body {
-    @apply font-sans text-white antialiased;
+    @apply font-sans antialiased;
+    color: var(--text-primary);
     background-color: var(--bg-base);
     background-image:
-      radial-gradient(ellipse 80% 40% at 50% -10%,
-        rgba(var(--accent-rgb),0.08) 0%,
-        rgba(var(--accent-rgb),0.05) 50%,
-        transparent 100%),
-      radial-gradient(ellipse 50% 30% at 90% 80%,
+      radial-gradient(ellipse 60% 50% at 20% 0%,
         rgba(var(--primary-rgb),0.06) 0%,
-        transparent 70%);
+        rgba(var(--primary-rgb),0.02) 50%,
+        transparent 100%),
+      radial-gradient(ellipse 50% 50% at 80% 100%,
+        rgba(var(--accent-rgb),0.06) 0%,
+        transparent 80%);
     min-height: 100vh;
     overflow-x: hidden;
   }
 
   ::selection {
-    background: rgba(var(--primary-rgb),0.28);
-    color: #ffffff;
+    background: rgba(var(--primary-rgb),0.2);
+    color: var(--text-primary);
   }
 
-  ::-webkit-scrollbar        { width: 4px; height: 4px; }
+  ::-webkit-scrollbar        { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track  { background: transparent; }
   ::-webkit-scrollbar-thumb  {
-    background: rgba(var(--primary-rgb),0.28);
-    border-radius: 4px;
+    background: rgba(15, 23, 42, 0.15);
+    border-radius: 6px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(var(--primary-rgb),0.55);
+    background: rgba(15, 23, 42, 0.3);
   }
 
   * {
     scrollbar-width: thin;
-    scrollbar-color: rgba(var(--primary-rgb),0.28) transparent;
+    scrollbar-color: rgba(15, 23, 42, 0.2) transparent;
   }
 
   *:focus-visible {
     outline: none;
-    box-shadow: 0 0 0 2px rgba(var(--primary-rgb),0.60);
+    box-shadow: 0 0 0 2px rgba(var(--primary-rgb),0.5);
     border-radius: 4px;
   }
 
@@ -88,9 +102,9 @@
     font-family: inherit;
   }
 
-  h1 { @apply font-light tracking-tighter; }
-  h2 { @apply font-light tracking-tight; }
-  h3 { @apply font-light; }
+  h1 { @apply font-semibold tracking-tight; }
+  h2 { @apply font-medium tracking-tight; }
+  h3 { @apply font-medium; }
 
   img, video {
     max-width: 100%;
@@ -140,5 +154,122 @@
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
     }
+  }
+}
+
+@layer components {
+  /* ── Layout Structure ── */
+  .app-layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: var(--bg-base);
+  }
+
+  .main-content {
+    flex: 1;
+    padding-top: var(--header-height);
+    margin-left: 0;
+    transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    min-width: 0;
+  }
+
+  @media (min-width: 768px) {
+    .main-content {
+      margin-left: var(--sidebar-width);
+    }
+    .main-content.collapsed {
+      margin-left: var(--sidebar-collapsed);
+    }
+  }
+
+  /* ── Grids ── */
+  .video-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    padding: 20px 0;
+    width: 100%;
+  }
+
+  @media (min-width: 1024px) {
+    .video-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .video-grid {
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+    }
+  }
+
+  /* ── Specific Overrides & Components ── */
+  .search-results-title {
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+  }
+
+  .category-chips {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    scroll-behavior: smooth;
+    /* Hide scrollbar for category chips */
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;     /* Firefox */
+  }
+  .category-chips::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+  }
+
+  .video-info {
+    display: flex;
+    gap: 12px;
+    padding: 14px 12px 16px;
+    background: transparent;
+  }
+
+  .video-delete-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.5);
+    border: none;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    transition: all 0.2s;
+    z-index: 10;
+  }
+
+  .video-delete-btn:hover {
+    background: rgba(244, 160, 160, 0.85); /* highlight red */
+    color: #fff;
+    transform: scale(1.1);
+  }
+
+  .group:hover .video-delete-btn {
+    opacity: 1;
+  }
+
+  /* Centered load-more button container */
+  .load-more {
+    display: flex;
+    justify-content: center;
+    padding: 32px 0 40px;
+    width: 100%;
   }
 }

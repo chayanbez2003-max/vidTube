@@ -65,7 +65,7 @@ export default function Register() {
             <HiOutlineVideoCamera />
           </div>
           <h1 className="text-[26px] font-light mb-1.5">Create Account</h1>
-          <p className="text-white/70 text-sm">Join <span className="text-teal-gradient">VidTube</span> and start sharing</p>
+          <p className="text-[var(--text-secondary)] text-sm">Join <span className="bg-[var(--accent-gradient)] text-transparent bg-clip-text font-medium">VidTube</span> and start sharing</p>
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-[18px]">
@@ -74,7 +74,7 @@ export default function Register() {
               {avatarPreview ? (
                 <img src={avatarPreview} alt="Preview" className="w-full h-full object-cover" />
               ) : (
-                <div className="flex flex-col items-center gap-1 text-white/50 text-[12px] [&>svg]:text-[24px]">
+                <div className="flex flex-col items-center gap-1 text-[var(--text-muted)] text-[12px] [&>svg]:text-[24px]">
                   <HiOutlinePhotograph />
                   <span>Avatar (optional)</span>
                 </div>
@@ -84,45 +84,45 @@ export default function Register() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-[14px]">
-            <div className="flex flex-col gap-1.5 [&>label]:text-[13px] [&>label]:font-medium [&>label]:text-white/70 [&>label]:ml-1">
+            <div className="flex flex-col gap-1.5 [&>label]:text-[13px] [&>label]:font-medium [&>label]:text-[var(--text-secondary)] [&>label]:ml-1">
               <label htmlFor="reg-fullname">Full Name</label>
               <div className="relative">
-                <HiOutlineUser className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50 text-[18px] flex items-center" />
-                <input id="reg-fullname" type="text" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 pl-[46px] text-[14.5px] text-white/90 placeholder:text-white/40 focus:outline-none focus:border-teal-primary transition-colors" placeholder="Your full name"
+                <HiOutlineUser className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] text-[18px] flex items-center" />
+                <input id="reg-fullname" type="text" className="w-full bg-[var(--glass-border)] border border-white/10 rounded-xl px-4 py-3 pl-[46px] text-[14.5px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-teal-primary transition-colors" placeholder="Your full name"
                   value={formData.fullName} onChange={(e) => setFormData({ ...formData, fullName: e.target.value })} required />
               </div>
             </div>
-            <div className="flex flex-col gap-1.5 [&>label]:text-[13px] [&>label]:font-medium [&>label]:text-white/70 [&>label]:ml-1">
+            <div className="flex flex-col gap-1.5 [&>label]:text-[13px] [&>label]:font-medium [&>label]:text-[var(--text-secondary)] [&>label]:ml-1">
               <label htmlFor="reg-username">Username</label>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50 text-[18px] flex items-center">@</span>
-                <input id="reg-username" type="text" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 pl-[46px] text-[14.5px] text-white/90 placeholder:text-white/40 focus:outline-none focus:border-teal-primary transition-colors" placeholder="Choose a username"
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] text-[18px] flex items-center">@</span>
+                <input id="reg-username" type="text" className="w-full bg-[var(--glass-border)] border border-white/10 rounded-xl px-4 py-3 pl-[46px] text-[14.5px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-teal-primary transition-colors" placeholder="Choose a username"
                   value={formData.username} onChange={(e) => setFormData({ ...formData, username: e.target.value })} required />
               </div>
             </div>
           </div>
 
-          <div className="flex flex-col gap-1.5 [&>label]:text-[13px] [&>label]:font-medium [&>label]:text-white/70 [&>label]:ml-1">
+          <div className="flex flex-col gap-1.5 [&>label]:text-[13px] [&>label]:font-medium [&>label]:text-[var(--text-secondary)] [&>label]:ml-1">
             <label htmlFor="reg-email">Email</label>
             <div className="relative">
-              <HiOutlineMail className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50 text-[18px] flex items-center" />
-              <input id="reg-email" type="email" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 pl-[46px] text-[14.5px] text-white/90 placeholder:text-white/40 focus:outline-none focus:border-teal-primary transition-colors" placeholder="your@email.com"
+              <HiOutlineMail className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] text-[18px] flex items-center" />
+              <input id="reg-email" type="email" className="w-full bg-[var(--glass-border)] border border-white/10 rounded-xl px-4 py-3 pl-[46px] text-[14.5px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-teal-primary transition-colors" placeholder="your@email.com"
                 value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} required />
             </div>
           </div>
 
-          <div className="flex flex-col gap-1.5 [&>label]:text-[13px] [&>label]:font-medium [&>label]:text-white/70 [&>label]:ml-1">
+          <div className="flex flex-col gap-1.5 [&>label]:text-[13px] [&>label]:font-medium [&>label]:text-[var(--text-secondary)] [&>label]:ml-1">
             <label htmlFor="reg-password">Password</label>
             <div className="relative">
-              <HiOutlineLockClosed className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50 text-[18px] flex items-center" />
-              <input id="reg-password" type="password" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 pl-[46px] text-[14.5px] text-white/90 placeholder:text-white/40 focus:outline-none focus:border-teal-primary transition-colors" placeholder="Create a strong password"
+              <HiOutlineLockClosed className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] text-[18px] flex items-center" />
+              <input id="reg-password" type="password" className="w-full bg-[var(--glass-border)] border border-white/10 rounded-xl px-4 py-3 pl-[46px] text-[14.5px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-teal-primary transition-colors" placeholder="Create a strong password"
                 value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} required />
             </div>
           </div>
 
-          <div className="flex flex-col gap-1.5 [&>label]:text-[13px] [&>label]:font-medium [&>label]:text-white/70 [&>label]:ml-1">
+          <div className="flex flex-col gap-1.5 [&>label]:text-[13px] [&>label]:font-medium [&>label]:text-[var(--text-secondary)] [&>label]:ml-1">
             <label htmlFor="cover-input">Cover Image (optional)</label>
-            <input id="cover-input" type="file" accept="image/*" className="w-full bg-white/5 border border-white/10 rounded-xl p-2.5 file:bg-teal-primary file:text-[#051a18] file:border-none file:px-3.5 file:py-1.5 file:rounded-md file:font-semibold file:cursor-pointer file:mr-2.5 text-white/70 text-sm focus:outline-none focus:border-teal-primary transition-colors"
+            <input id="cover-input" type="file" accept="image/*" className="w-full bg-[var(--glass-border)] border border-white/10 rounded-xl p-2.5 file:bg-teal-primary file:text-[#051a18] file:border-none file:px-3.5 file:py-1.5 file:rounded-md file:font-semibold file:cursor-pointer file:mr-2.5 text-[var(--text-secondary)] text-sm focus:outline-none focus:border-teal-primary transition-colors"
               onChange={(e) => setCoverImage(e.target.files[0])} />
           </div>
 
@@ -132,8 +132,8 @@ export default function Register() {
           </motion.button>
         </form>
 
-        <p className="text-center mt-6 text-[14px] text-white/70">
-          Already have an account? <Link to="/login" className="text-teal-soft font-semibold no-underline hover:underline">Sign In</Link>
+        <p className="text-center mt-6 text-[14px] text-[var(--text-secondary)]">
+          Already have an account? <Link to="/login" className="text-[var(--primary-soft)] font-semibold no-underline hover:underline">Sign In</Link>
         </p>
       </motion.div>
     </div>

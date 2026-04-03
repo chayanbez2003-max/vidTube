@@ -22,7 +22,7 @@ const NOTIF_ICONS = {
 const NOTIF_ICON_CLASS = {
   like: 'bg-[rgba(244,160,160,0.12)] text-badge-pink',
   comment: 'bg-[rgba(160,244,192,0.12)] text-badge-green',
-  subscribe: 'bg-teal-mist text-teal-soft',
+  subscribe: 'bg-slate-100 text-[var(--primary)]',
   upload: 'bg-[rgba(160,196,244,0.12)] text-badge-blue',
 };
 
@@ -204,24 +204,24 @@ export default function Header({ onToggleSidebar }) {
   return (
     <header className="fixed top-0 left-0 right-0 h-[var(--header-height)] glass-nav flex items-center justify-between px-5 z-[100] gap-4">
       <div className="flex items-center gap-3 min-w-[auto] md:min-w-[200px]">
-        <button className="w-10 h-10 flex flex-col items-center justify-center gap-[5px] bg-transparent border-none cursor-pointer rounded-full transition-colors hover:bg-white/5 group" onClick={onToggleSidebar}>
-          <span className="block w-5 h-[2px] bg-[rgba(255,255,255,0.7)] rounded-sm transition-all" />
-          <span className="block w-5 h-[2px] bg-[rgba(255,255,255,0.7)] rounded-sm transition-all" />
-          <span className="block w-5 h-[2px] bg-[rgba(255,255,255,0.7)] rounded-sm transition-all" />
+        <button className="w-10 h-10 flex flex-col items-center justify-center gap-[5px] bg-transparent border-none cursor-pointer rounded-full transition-colors hover:bg-slate-100 group" onClick={onToggleSidebar}>
+          <span className="block w-5 h-[2px] bg-[var(--text-primary)] rounded-sm transition-all" />
+          <span className="block w-5 h-[2px] bg-[var(--text-primary)] rounded-sm transition-all" />
+          <span className="block w-5 h-[2px] bg-[var(--text-primary)] rounded-sm transition-all" />
         </button>
-        <Link to="/" className="flex items-center gap-2 text-white no-underline">
-          <div className="w-9 h-9 rounded-[10px] bg-[linear-gradient(135deg,#1DB8A8,#2ED4BC)] flex items-center justify-center text-xl text-[#051a18] drop-shadow-[0_0_8px_rgba(64,255,232,0.3)] transition-[filter] duration-300 hover:drop-shadow-[0_0_14px_rgba(64,255,232,0.55)]">
+        <Link to="/" className="flex items-center gap-2 text-[var(--text-primary)] no-underline group py-1">
+          <div className="w-9 h-9 flex-shrink-0 rounded-xl bg-[var(--accent-gradient)] flex items-center justify-center text-[20px] text-slate-900 shadow-[0_4px_14px_rgba(139,92,246,0.3)] transition-all group-hover:shadow-[0_4px_20px_rgba(139,92,246,0.5)]">
             <HiOutlineVideoCamera />
           </div>
           <span className="text-xl font-light tracking-[-0.02em] hidden md:block">
-            Vid<span className="text-teal-gradient">Tube</span>
+            Vid<span className="text-[var(--primary)] font-medium">Tube</span>
           </span>
         </Link>
       </div>
 
       <div className="flex-1 max-w-[160px] md:max-w-[300px] lg:max-w-[600px] relative" ref={searchRef}>
         <form className="relative flex items-center group" onSubmit={handleSearch}>
-          <HiOutlineSearch className={`absolute left-3.5 text-[18px] pointer-events-none transition-colors ${searchFocused ? 'text-teal-primary' : 'text-white/40'}`} />
+          <HiOutlineSearch className={`absolute left-3.5 text-[18px] pointer-events-none transition-colors ${searchFocused ? 'text-[var(--primary)]' : 'text-[var(--text-secondary)]'}`} />
           <input
             type="text"
             placeholder="Search videos..."
@@ -233,36 +233,36 @@ export default function Header({ onToggleSidebar }) {
             }}
             onBlur={() => setSearchFocused(false)}
             onKeyDown={handleSearchKeyDown}
-            className="w-full py-2.5 pl-[42px] pr-10 bg-white/5 border border-white/10 rounded-full text-white text-sm outline-none transition-all focus:border-teal-dim focus:bg-white/10 focus:shadow-[0_0_0_3px_rgba(29,184,168,0.12)] placeholder:text-white/40"
+            className="w-full py-2.5 pl-[42px] pr-10 bg-white border border-[var(--border-color)] rounded-full text-[var(--text-primary)] text-sm outline-none transition-all focus:border-teal-dim focus:bg-white focus:shadow-[0_0_0_3px_rgba(29,184,168,0.12)] placeholder:text-[var(--text-secondary)] shadow-sm"
           />
           {searchLoading && <span className="absolute right-3 w-4 h-4 border-2 border-[rgba(29,184,168,0.15)] border-t-[#1DB8A8] rounded-full animate-spin" />}
           {searchQuery && !searchLoading && (
-            <button type="button" className="absolute right-3 text-white/50 text-sm hover:text-white" onClick={handleClearSearch}>✕</button>
+            <button type="button" className="absolute right-3 text-[var(--text-secondary)] text-sm hover:text-[var(--text-primary)]" onClick={handleClearSearch}>✕</button>
           )}
         </form>
 
         <AnimatePresence>
           {showSuggestions && suggestions.length > 0 && (
             <motion.div
-              className="absolute top-[calc(100%+8px)] left-0 right-0 bg-bg-elevated border border-white/10 rounded-[var(--border-radius)] shadow-[0_16px_48px_rgba(13,11,24,0.7)] overflow-hidden z-[200] bg-[radial-gradient(ellipse_80%_30%_at_50%_0%,rgba(205,184,232,0.04)_0%,transparent_70%)]"
+              className="absolute top-[calc(100%+8px)] left-0 right-0 bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-[var(--border-radius)] shadow-[0_16px_48px_rgba(13,11,24,0.7)] overflow-hidden z-[200] bg-[radial-gradient(ellipse_80%_30%_at_50%_0%,rgba(205,184,232,0.04)_0%,transparent_70%)]"
               initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.15 }}
             >
               {suggestions.map((video, idx) => (
                 <button
                   key={video._id}
-                  className={`flex items-center gap-3 px-3.5 py-2.5 w-full bg-transparent border-none text-white text-left cursor-pointer transition-colors hover:bg-teal-mist ${selectedIndex === idx ? 'bg-teal-mist' : ''}`}
+                  className={`flex items-center gap-3 px-3.5 py-2.5 w-full bg-transparent border-none text-[var(--text-primary)] hover:bg-slate-100 text-left cursor-pointer transition-colors hover:bg-slate-50 ${selectedIndex === idx ? 'bg-slate-100' : ''}`}
                   onMouseDown={(e) => { e.preventDefault(); handleSuggestionClick(video._id); }}
                   onMouseEnter={() => setSelectedIndex(idx)}
                 >
-                  <div className="w-16 h-9 rounded-md overflow-hidden shrink-0 relative bg-white/5 group/thumb">
+                  <div className="w-16 h-9 rounded-md overflow-hidden shrink-0 relative bg-slate-100 group/thumb">
                     <img src={video.thumbnail?.url || video.thumbnail} alt="" className="w-full h-full object-cover" />
-                    <div className={`absolute inset-0 flex items-center justify-center bg-[rgba(13,11,24,0.4)] text-white text-sm transition-opacity opacity-0 group-hover/thumb:opacity-100 ${selectedIndex === idx ? '!opacity-100' : ''}`}>
+                    <div className={`absolute inset-0 flex items-center justify-center bg-[rgba(13,11,24,0.4)] text-[var(--text-primary)] text-sm transition-opacity opacity-0 group-hover/thumb:opacity-100 ${selectedIndex === idx ? '!opacity-100' : ''}`}>
                       <HiOutlinePlay />
                     </div>
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-[13px] font-medium truncate mb-0.5">{video.title}</p>
-                    <p className="text-[11px] text-white/50 capitalize truncate">
+                    <p className="text-[11px] text-[var(--text-muted)] capitalize truncate">
                       {video.ownerDetails?.username || video.owner?.username || 'Unknown'}
                       {video.views !== undefined && ` • ${video.views} views`}
                     </p>
@@ -270,7 +270,7 @@ export default function Header({ onToggleSidebar }) {
                 </button>
               ))}
               <button
-                className="flex items-center justify-center gap-1.5 p-3 w-full bg-transparent border-t border-white/10 text-teal-soft text-[13px] font-semibold cursor-pointer transition-colors hover:bg-teal-mist"
+                className="flex items-center justify-center gap-1.5 p-3 w-full bg-transparent border-t border-[var(--border-color)] text-[var(--primary)] text-[13px] font-semibold cursor-pointer transition-colors hover:bg-slate-50"
                 onMouseDown={(e) => { e.preventDefault(); handleSearch(e); }}
               >
                 <HiOutlineSearch /> See all results for "{searchQuery}"
@@ -283,16 +283,20 @@ export default function Header({ onToggleSidebar }) {
       <div className="flex items-center gap-2.5 justify-end min-w-[auto] md:min-w-[200px]">
         {user ? (
           <>
-            <Link to="/upload" className="btn btn-primary !gap-1.5 md:!gap-2 flex">
-              <HiOutlineVideoCamera className="text-lg" />
-              <span className="hidden md:inline">Upload</span>
+            <Link to="/upload" className="relative flex items-center gap-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors duration-300 no-underline font-medium text-sm md:text-base group py-1.5">
+              <HiOutlineVideoCamera className="text-[20px] group-hover:text-[var(--primary)] transition-colors duration-300" />
+              <span className="hidden md:inline relative z-10">Upload</span>
+              <span 
+                className="absolute bottom-0 left-0 h-[2.5px] rounded-full opacity-0 w-0 group-hover:w-full group-hover:opacity-100 transition-all duration-300 shadow-[0_0_8px_rgba(139,92,246,0.5)] origin-left"
+                style={{ background: 'var(--accent-gradient)' }}
+              ></span>
             </Link>
 
             <div className="relative" ref={notifRef}>
-              <button className="btn-icon" onClick={handleNotifToggle}>
+              <button className="w-10 h-10 rounded-full flex items-center justify-center bg-white shadow-sm border border-[var(--border-color)] text-[var(--text-primary)] hover:bg-slate-50 transition-colors relative" onClick={handleNotifToggle}>
                 <HiOutlineBell className="text-xl" />
                 {unreadCount > 0 && (
-                  <span className="absolute top-1 right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-teal-primary text-[#051a18] text-[10px] font-bold flex items-center justify-center border-2 border-[var(--bg-base)] shadow-[0_0_6px_rgba(var(--primary-rgb),0.5)] animate-[pulse-glow_2s_ease-in-out_infinite]">
+                  <span className="absolute top-1 right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-teal-primary text-[var(--text-primary)] text-[10px] font-bold flex items-center justify-center border-2 border-[var(--bg-base)] shadow-[0_0_6px_rgba(var(--primary-rgb),0.5)] animate-[pulse-glow_2s_ease-in-out_infinite]">
                     {unreadCount > 9 ? '9+' : unreadCount}
                   </span>
                 )}
@@ -301,19 +305,19 @@ export default function Header({ onToggleSidebar }) {
               <AnimatePresence>
                 {showNotifications && (
                   <motion.div
-                    className="absolute top-[calc(100%+8px)] right-[-80px] md:right-[-40px] lg:right-0 w-[290px] md:w-[320px] lg:w-[400px] max-h-[520px] bg-bg-elevated border border-white/10 rounded-[var(--r-lg)] shadow-[0_24px_80px_rgba(13,11,24,0.8),inset_0_1px_0_rgba(255,255,255,0.08)] overflow-hidden z-[200] flex flex-col bg-[radial-gradient(ellipse_80%_30%_at_50%_0%,rgba(142,197,214,0.04)_0%,transparent_70%)]"
+                    className="absolute top-[calc(100%+8px)] right-[-80px] md:right-[-40px] lg:right-0 w-[290px] md:w-[320px] lg:w-[400px] max-h-[520px] bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-[var(--r-lg)] shadow-[0_24px_80px_rgba(13,11,24,0.8),inset_0_1px_0_rgba(255,255,255,0.08)] overflow-hidden z-[200] flex flex-col bg-[radial-gradient(ellipse_80%_30%_at_50%_0%,rgba(142,197,214,0.04)_0%,transparent_70%)]"
                     initial={{ opacity: 0, y: -10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -10, scale: 0.95 }} transition={{ duration: 0.15 }}
                   >
-                    <div className="flex items-center justify-between p-3.5 px-4 border-b border-white/10">
+                    <div className="flex items-center justify-between p-3.5 px-4 border-b border-[var(--border-color)]">
                       <h3 className="text-[15px] font-light tracking-[-0.01em] m-0">Notifications</h3>
                       <div className="flex items-center gap-1.5">
                         {notifications.some(n => !n.isRead) && (
-                          <button className="flex items-center gap-1 bg-transparent border-none text-teal-soft text-[11px] font-semibold cursor-pointer px-2 py-1 rounded-md transition-colors hover:bg-teal-mist" onClick={handleMarkAllRead}>
+                          <button className="flex items-center gap-1 bg-transparent border-none text-[var(--primary)] text-[11px] font-semibold cursor-pointer px-2 py-1 rounded-md transition-colors hover:bg-slate-50" onClick={handleMarkAllRead}>
                             <HiOutlineCheck /> Read all
                           </button>
                         )}
                         {notifications.length > 0 && (
-                          <button className="flex items-center gap-1 bg-transparent border-none text-white/50 text-[13px] font-semibold cursor-pointer px-2 py-1 rounded-md transition-colors hover:text-badge-pink hover:bg-[rgba(244,160,160,0.08)]" onClick={handleClearAll}>
+                          <button className="flex items-center gap-1 bg-transparent border-none text-[var(--text-muted)] text-[13px] font-semibold cursor-pointer px-2 py-1 rounded-md transition-colors hover:text-badge-pink hover:bg-[rgba(244,160,160,0.08)]" onClick={handleClearAll}>
                             <HiOutlineTrash />
                           </button>
                         )}
@@ -321,7 +325,7 @@ export default function Header({ onToggleSidebar }) {
                     </div>
                     <div className="overflow-y-auto flex-1">
                       {notifLoading ? (
-                        <div className="flex flex-col items-center gap-3 p-10 text-white/50 text-[13px]">
+                        <div className="flex flex-col items-center gap-3 p-10 text-[var(--text-muted)] text-[13px]">
                           <span className="w-6 h-6 border-2 border-[rgba(29,184,168,0.15)] border-t-[#1DB8A8] rounded-full animate-spin" />
                           <p>Loading notifications...</p>
                         </div>
@@ -329,7 +333,7 @@ export default function Header({ onToggleSidebar }) {
                         notifications.map((notif, i) => (
                           <motion.div key={notif._id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.03 }}>
                             <button
-                              className={`flex items-start gap-3 p-3 px-4 w-full text-left bg-transparent border-none cursor-pointer transition-colors relative hover:bg-white/5 ${!notif.isRead ? 'bg-teal-mist hover:bg-[rgba(29,184,168,0.12)]' : ''}`}
+                              className={`flex items-start gap-3 p-3 px-4 w-full text-left bg-transparent border-none cursor-pointer transition-colors relative hover:bg-slate-100 ${!notif.isRead ? 'bg-slate-100 hover:bg-[rgba(29,184,168,0.12)]' : ''}`}
                               onClick={() => handleNotifClick(notif)}
                             >
                               <div className="w-10 h-10 rounded-full overflow-hidden shrink-0">
@@ -342,10 +346,10 @@ export default function Header({ onToggleSidebar }) {
                                 )}
                               </div>
                               <div className="flex-1 min-w-0">
-                                <p className={`text-[13px] line-clamp-2 leading-[1.4] m-0 ${!notif.isRead ? 'text-white font-medium' : 'text-white/70 font-normal'}`}>
+                                <p className={`text-[13px] line-clamp-2 leading-[1.4] m-0 ${!notif.isRead ? 'text-[var(--text-primary)] font-medium' : 'text-[var(--text-secondary)] font-normal'}`}>
                                   {notif.message}
                                 </p>
-                                <span className="block mt-1 text-[11px] text-white/50">{timeAgo(notif.createdAt)}</span>
+                                <span className="block mt-1 text-[11px] text-[var(--text-muted)]">{timeAgo(notif.createdAt)}</span>
                               </div>
                               {notif.video?.thumbnail?.url && (
                                 <div className="w-[50px] h-[30px] rounded shrink-0 overflow-hidden">
@@ -357,9 +361,9 @@ export default function Header({ onToggleSidebar }) {
                           </motion.div>
                         ))
                       ) : (
-                        <div className="flex flex-col items-center gap-1.5 py-10 px-5 text-white/50 text-center">
+                        <div className="flex flex-col items-center gap-1.5 py-10 px-5 text-[var(--text-muted)] text-center">
                           <HiOutlineBell className="text-[32px] mb-1 opacity-50" />
-                          <p className="text-[14px] text-white/70 m-0">No notifications yet</p>
+                          <p className="text-[14px] text-[var(--text-secondary)] m-0">No notifications yet</p>
                           <span className="text-[12px]">When someone likes, comments or subscribes, you'll see it here</span>
                         </div>
                       )}
@@ -379,28 +383,28 @@ export default function Header({ onToggleSidebar }) {
               <AnimatePresence>
                 {showDropdown && (
                   <motion.div
-                    className="absolute top-[calc(100%+8px)] right-0 w-[280px] bg-bg-elevated border border-white/10 rounded-[var(--r-lg)] shadow-[0_24px_80px_rgba(13,11,24,0.8),inset_0_1px_0_rgba(255,255,255,0.08)] overflow-hidden z-[200] bg-[radial-gradient(ellipse_80%_30%_at_50%_0%,rgba(205,184,232,0.04)_0%,transparent_70%)]"
+                    className="absolute top-[calc(100%+8px)] right-0 w-[280px] bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-[var(--r-lg)] shadow-[0_24px_80px_rgba(13,11,24,0.8),inset_0_1px_0_rgba(255,255,255,0.08)] overflow-hidden z-[200] bg-[radial-gradient(ellipse_80%_30%_at_50%_0%,rgba(205,184,232,0.04)_0%,transparent_70%)]"
                     initial={{ opacity: 0, y: -10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -10, scale: 0.95 }} transition={{ duration: 0.15 }}
                   >
                     <div className="flex items-center gap-3 p-4">
                       <img src={user.avatar} alt="" className="w-12 h-12 rounded-full object-cover shrink-0" />
                       <div className="min-w-0">
                         <p className="font-medium text-[14px] capitalize m-0 truncate">{user.fullName}</p>
-                        <p className="text-[13px] text-white/70 m-0 truncate">@{user.username}</p>
+                        <p className="text-[13px] text-[var(--text-secondary)] m-0 truncate">@{user.username}</p>
                       </div>
                     </div>
                     <div className="h-[1px] bg-[var(--border-color)]" />
-                    <Link to={`/channel/${user.username}`} className="flex items-center gap-2.5 px-4 py-3 text-white/70 text-[14px] no-underline transition-colors hover:bg-white/5 hover:text-white" onClick={() => setShowDropdown(false)}>
+                    <Link to={`/channel/${user.username}`} className="flex items-center gap-2.5 px-4 py-3 text-[var(--text-secondary)] text-[14px] no-underline transition-colors hover:bg-slate-100 hover:text-[var(--text-primary)]" onClick={() => setShowDropdown(false)}>
                       <HiOutlineUser className="text-[18px]" /> Your Channel
                     </Link>
-                    <Link to="/dashboard" className="flex items-center gap-2.5 px-4 py-3 text-white/70 text-[14px] no-underline transition-colors hover:bg-white/5 hover:text-white" onClick={() => setShowDropdown(false)}>
+                    <Link to="/dashboard" className="flex items-center gap-2.5 px-4 py-3 text-[var(--text-secondary)] text-[14px] no-underline transition-colors hover:bg-slate-100 hover:text-[var(--text-primary)]" onClick={() => setShowDropdown(false)}>
                       <HiOutlineChartBar className="text-[18px]" /> Dashboard
                     </Link>
-                    <Link to="/settings" className="flex items-center gap-2.5 px-4 py-3 text-white/70 text-[14px] no-underline transition-colors hover:bg-white/5 hover:text-white" onClick={() => setShowDropdown(false)}>
+                    <Link to="/settings" className="flex items-center gap-2.5 px-4 py-3 text-[var(--text-secondary)] text-[14px] no-underline transition-colors hover:bg-slate-100 hover:text-[var(--text-primary)]" onClick={() => setShowDropdown(false)}>
                       <HiOutlineCog className="text-[18px]" /> Settings
                     </Link>
                     <div className="h-[1px] bg-[var(--border-color)]" />
-                    <button className="flex items-center gap-2.5 px-4 py-3 w-full text-white/70 text-[14px] bg-transparent border-none cursor-pointer transition-colors hover:bg-[rgba(244,160,160,0.08)] hover:text-badge-pink text-left" onClick={handleLogout}>
+                    <button className="flex items-center gap-2.5 px-4 py-3 w-full text-[var(--text-secondary)] text-[14px] bg-transparent border-none cursor-pointer transition-colors hover:bg-[rgba(244,160,160,0.08)] hover:text-badge-pink text-left" onClick={handleLogout}>
                       <HiOutlineLogout className="text-[18px]" /> Sign Out
                     </button>
                   </motion.div>

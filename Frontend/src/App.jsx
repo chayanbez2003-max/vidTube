@@ -107,12 +107,28 @@ export default function App() {
           position="top-center"
           toastOptions={{
             style: {
-              background: 'var(--bg-elevated)',
-              color: '#ffffff',
-              border: '1px solid rgba(255,255,255,0.10)',
+              background: 'var(--bg-card)',
+              color: 'var(--text-primary)',
+              border: '1px solid var(--border-color)',
               borderRadius: '12px',
               fontFamily: '"DM Sans", system-ui, sans-serif',
-              boxShadow: '0 8px 40px rgba(var(--bg-rgb),0.65)',
+              boxShadow: '0 8px 40px rgba(var(--bg-rgb),0.2)',
+            },
+            success: {
+              style: {
+                background: 'rgba(16, 185, 129, 0.1)',
+                border: '1px solid rgba(16, 185, 129, 0.3)',
+                color: '#065F46',
+              },
+              iconTheme: { primary: '#10B981', secondary: '#ffffff' },
+            },
+            error: {
+              style: {
+                background: 'rgba(239, 68, 68, 0.1)',
+                border: '1px solid rgba(239, 68, 68, 0.3)',
+                color: '#991B1B',
+              },
+              iconTheme: { primary: '#EF4444', secondary: '#ffffff' },
             },
           }}
         />

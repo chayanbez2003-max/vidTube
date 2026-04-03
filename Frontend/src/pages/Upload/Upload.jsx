@@ -30,15 +30,17 @@ export default function Upload() {
     }
   };
 
-  const uploadToCloudinary = async (file, signatureData, onProgress) => {
+  const uploadToCloudinary = async (file, signatureData, resourceType, onProgress) => {
     const fData = new FormData();
     fData.append("file", file);
     fData.append("api_key", signatureData.apiKey);
     fData.append("timestamp", signatureData.timestamp);
     fData.append("signature", signatureData.signature);
 
+    // Use explicit resource type endpoint: /video/upload or /image/upload
+    const uploadType = resourceType || 'auto';
     const res = await axios.post(
-      `https://api.cloudinary.com/v1_1/${signatureData.cloudName}/auto/upload`,
+      `https://api.cloudinary.com/v1_1/${signatureData.cloudName}/${uploadType}/upload`,
       fData,
       { onUploadProgress: onProgress }
     );
@@ -58,11 +60,11 @@ export default function Upload() {
       const sigRes = await API.get('/video/sign-upload');
       const signatureData = sigRes.data.data;
 
-      // 2. Upload Thumbnail first (lightweight)
-      const thumbData = await uploadToCloudinary(thumbnail, signatureData, () => {});
+      // 2. Upload Thumbnail as IMAGE (lightweight)
+      const thumbData = await uploadToCloudinary(thumbnail, signatureData, 'image', () => {});
 
-      // 3. Upload Video (heavyweight)
-      const vidData = await uploadToCloudinary(videoFile, signatureData, (e) => {
+      // 3. Upload Video as VIDEO (heavyweight) — must use 'video' resource type
+      const vidData = await uploadToCloudinary(videoFile, signatureData, 'video', (e) => {
         setProgress(Math.round((e.loaded * 100) / e.total));
       });
 
@@ -97,8 +99,8 @@ export default function Upload() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        <h1 className="flex items-center gap-3 text-2xl md:text-[28px] font-light text-white/90 mb-8 pb-4 border-b border-white/10">
-          <HiOutlineCloudUpload className="text-teal-primary" /> Upload <span className="text-teal-gradient">Video</span>
+        <h1 className="flex items-center gap-3 text-2xl md:text-[28px] font-light text-[var(--text-primary)] mb-8 pb-4 border-b border-white/10">
+          <HiOutlineCloudUpload className="text-[var(--primary)]" /> Upload <span className="bg-[var(--accent-gradient)] text-transparent bg-clip-text font-medium">Video</span>
         </h1>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
@@ -107,15 +109,15 @@ export default function Upload() {
               <label htmlFor="video-file" className={`flex flex-col items-center justify-center w-full h-full border-2 border-dashed rounded-xl cursor-pointer transition-all p-5 text-center ${videoFile ? 'border-teal-primary/50 bg-teal-primary/5' : 'border-white/20 bg-white/[0.02] hover:bg-white/[0.04] hover:border-teal-soft'}`}>
                 {videoFile ? (
                   <div className="flex flex-col items-center text-center gap-2 w-full truncate">
-                    <HiOutlinePlay className="text-[40px] text-teal-primary" />
-                    <p className="text-sm font-semibold text-white/90 m-0 truncate w-full">{videoFile.name}</p>
-                    <p className="text-xs text-white/50 m-0">{(videoFile.size / (1024*1024)).toFixed(1)} MB</p>
+                    <HiOutlinePlay className="text-[40px] text-[var(--primary)]" />
+                    <p className="text-sm font-semibold text-[var(--text-primary)] m-0 truncate w-full">{videoFile.name}</p>
+                    <p className="text-xs text-[var(--text-muted)] m-0">{(videoFile.size / (1024*1024)).toFixed(1)} MB</p>
                   </div>
                 ) : (
                   <div className="flex flex-col items-center gap-2">
-                    <HiOutlineCloudUpload className="text-[40px] text-teal-primary" />
-                    <p className="text-sm font-semibold text-white/90 m-0">Click to select a video file</p>
-                    <span className="text-xs text-white/50">MP4, WebM, MOV up to 500MB</span>
+                    <HiOutlineCloudUpload className="text-[40px] text-[var(--primary)]" />
+                    <p className="text-sm font-semibold text-[var(--text-primary)] m-0">Click to select a video file</p>
+                    <span className="text-xs text-[var(--text-muted)]">MP4, WebM, MOV up to 500MB</span>
                   </div>
                 )}
               </label>
@@ -128,9 +130,9 @@ export default function Upload() {
                   <img src={thumbnailPreview} alt="Thumbnail" className="w-full h-full object-cover rounded-lg" />
                 ) : (
                   <div className="flex flex-col items-center gap-2">
-                    <HiOutlinePhotograph className="text-[40px] text-teal-primary" />
-                    <p className="text-sm font-semibold text-white/90 m-0">Thumbnail</p>
-                    <span className="text-xs text-white/50">16:9 recommended</span>
+                    <HiOutlinePhotograph className="text-[40px] text-[var(--primary)]" />
+                    <p className="text-sm font-semibold text-[var(--text-primary)] m-0">Thumbnail</p>
+                    <span className="text-xs text-[var(--text-muted)]">16:9 recommended</span>
                   </div>
                 )}
               </label>
@@ -138,15 +140,15 @@ export default function Upload() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-1.5 [&>label]:text-[13px] [&>label]:font-medium [&>label]:text-white/70 [&>label]:ml-1">
+          <div className="flex flex-col gap-1.5 [&>label]:text-[13px] [&>label]:font-medium [&>label]:text-[var(--text-secondary)] [&>label]:ml-1">
             <label htmlFor="video-title">Title</label>
-            <input id="video-title" type="text" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-[14.5px] text-white/90 placeholder:text-white/40 focus:outline-none focus:border-teal-primary transition-colors" placeholder="Enter video title"
+            <input id="video-title" type="text" className="w-full bg-[var(--glass-border)] border border-white/10 rounded-xl px-4 py-3 text-[14.5px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-teal-primary transition-colors" placeholder="Enter video title"
               value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} required />
           </div>
 
-          <div className="flex flex-col gap-1.5 [&>label]:text-[13px] [&>label]:font-medium [&>label]:text-white/70 [&>label]:ml-1">
+          <div className="flex flex-col gap-1.5 [&>label]:text-[13px] [&>label]:font-medium [&>label]:text-[var(--text-secondary)] [&>label]:ml-1">
             <label htmlFor="video-desc">Description</label>
-            <textarea id="video-desc" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-[14.5px] text-white/90 placeholder:text-white/40 focus:outline-none focus:border-teal-primary transition-colors resize-y min-h-[100px]" placeholder="Tell viewers about your video"
+            <textarea id="video-desc" className="w-full bg-[var(--glass-border)] border border-white/10 rounded-xl px-4 py-3 text-[14.5px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-teal-primary transition-colors resize-y min-h-[100px]" placeholder="Tell viewers about your video"
               rows={4} value={formData.description}
               onChange={(e) => setFormData({...formData, description: e.target.value})} required />
           </div>
@@ -160,7 +162,7 @@ export default function Upload() {
                   animate={{ width: `${progress}%` }}
                 />
               </div>
-              <span className="text-xs font-semibold text-teal-soft text-right">{progress}%</span>
+              <span className="text-xs font-semibold text-[var(--primary-soft)] text-right">{progress}%</span>
             </div>
           )}
 

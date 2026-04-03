@@ -33,10 +33,10 @@ const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-bg-elevated/95 backdrop-blur-md border border-white/10 p-3 rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.4)]">
-        <p className="text-white/60 text-xs font-semibold mb-2 m-0 uppercase tracking-wider">{label}</p>
+        <p className="text-[var(--text-secondary)] text-xs font-semibold mb-2 m-0 uppercase tracking-wider">{label}</p>
         {payload.map((entry, index) => (
           <p key={index} className="text-[13.5px] m-0 mb-1 last:mb-0" style={{ color: entry.color }}>
-            {entry.name}: <strong className="font-bold text-white ml-1">{formatNumber(entry.value)}</strong>
+            {entry.name}: <strong className="font-bold text-[var(--text-primary)] ml-1">{formatNumber(entry.value)}</strong>
           </p>
         ))}
       </div>
@@ -80,7 +80,7 @@ export default function Dashboard() {
       <div className="max-w-[1280px] mx-auto p-4 md:p-6 lg:px-8">
         <div className="flex flex-col items-center justify-center py-32">
           <div className="w-10 h-10 border-4 border-white/10 border-t-teal-primary rounded-full animate-spin mb-4" />
-          <p className="text-white/50 font-medium">Loading your analytics...</p>
+          <p className="text-[var(--text-muted)] font-medium">Loading your analytics...</p>
         </div>
       </div>
     );
@@ -90,9 +90,9 @@ export default function Dashboard() {
     return (
       <div className="max-w-[1280px] mx-auto p-4 md:p-6 lg:px-8">
         <div className="flex flex-col items-center justify-center py-20 px-5 text-center">
-          <div className="text-[48px] text-white/20 mb-4">📊</div>
+          <div className="text-[48px] text-[var(--border-color)] mb-4">📊</div>
           <h3 className="text-xl font-semibold mb-2">No analytics available</h3>
-          <p className="text-white/50 text-sm">Start uploading videos to see your channel analytics.</p>
+          <p className="text-[var(--text-muted)] text-sm">Start uploading videos to see your channel analytics.</p>
         </div>
       </div>
     );
@@ -166,14 +166,14 @@ export default function Dashboard() {
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8">
         <div>
           <motion.h1
-            className="flex items-center gap-2 text-2xl md:text-3xl font-light mb-1 m-0 text-white/90"
+            className="flex items-center gap-2 text-2xl md:text-3xl font-light mb-1 m-0 text-[var(--text-primary)]"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <HiOutlineChartBar className="text-teal-primary text-[26px] md:text-[32px]" />
-            Creator <span className="text-teal-gradient">Dashboard</span>
+            <HiOutlineChartBar className="text-[var(--primary)] text-[26px] md:text-[32px]" />
+            Creator <span className="bg-[var(--accent-gradient)] text-transparent bg-clip-text font-medium">Dashboard</span>
           </motion.h1>
-          <p className="text-white/60 text-[14.5px] m-0 mt-1">
+          <p className="text-[var(--text-secondary)] text-[14.5px] m-0 mt-1">
             Welcome back, <strong>{user?.fullName || user?.username}</strong> — here's how your channel is performing.
           </p>
         </div>
@@ -208,7 +208,7 @@ export default function Dashboard() {
               {stat.icon}
             </div>
             <div className="flex flex-col">
-              <p className="text-[13.5px] text-white/60 font-medium mb-1">{stat.label}</p>
+              <p className="text-[13.5px] text-[var(--text-secondary)] font-medium mb-1">{stat.label}</p>
               <h2 className="text-2xl font-bold m-0 tracking-tight" style={{ color: stat.color }}>{stat.value}</h2>
             </div>
           </motion.div>
@@ -225,8 +225,8 @@ export default function Dashboard() {
           transition={{ delay: 0.3 }}
         >
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-base font-semibold text-white/90 flex items-center gap-2 m-0"><HiOutlineUserGroup className="text-teal-soft text-[18px]" /> Subscriber Growth</h3>
-            <span className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-white/5 text-white/60 border border-white/10">Last 30 days</span>
+            <h3 className="text-base font-semibold text-[var(--text-primary)] flex items-center gap-2 m-0"><HiOutlineUserGroup className="text-[var(--primary-soft)] text-[18px]" /> Subscriber Growth</h3>
+            <span className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-[var(--glass-border)] text-[var(--text-secondary)] border border-white/10">Last 30 days</span>
           </div>
           {subscriberGrowth && subscriberGrowth.length > 0 ? (
             <ResponsiveContainer width="100%" height={280}>
@@ -259,7 +259,7 @@ export default function Dashboard() {
               </AreaChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-[280px] flex flex-col items-center justify-center text-white/30 gap-3">
+            <div className="h-[280px] flex flex-col items-center justify-center text-[var(--text-muted)] gap-3">
               <HiOutlineUserGroup className="text-4xl" />
               <p>No subscriber data yet</p>
             </div>
@@ -274,8 +274,8 @@ export default function Dashboard() {
           transition={{ delay: 0.4 }}
         >
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-base font-semibold text-white/90 flex items-center gap-2 m-0"><HiOutlineEye className="text-teal-primary text-[18px]" /> Views Over Time</h3>
-            <span className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-white/5 text-white/60 border border-white/10">Last 30 days</span>
+            <h3 className="text-base font-semibold text-[var(--text-primary)] flex items-center gap-2 m-0"><HiOutlineEye className="text-[var(--primary)] text-[18px]" /> Views Over Time</h3>
+            <span className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-[var(--glass-border)] text-[var(--text-secondary)] border border-white/10">Last 30 days</span>
           </div>
           {viewsOverTime && viewsOverTime.length > 0 ? (
             <ResponsiveContainer width="100%" height={280}>
@@ -305,7 +305,7 @@ export default function Dashboard() {
               </BarChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-[280px] flex flex-col items-center justify-center text-white/30 gap-3">
+            <div className="h-[280px] flex flex-col items-center justify-center text-[var(--text-muted)] gap-3">
               <HiOutlineEye className="text-4xl" />
               <p>No view data yet</p>
             </div>
@@ -323,7 +323,7 @@ export default function Dashboard() {
           transition={{ delay: 0.5 }}
         >
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-base font-semibold text-white/90 flex items-center gap-2 m-0"><HiOutlineVideoCamera className="text-teal-primary text-[18px]" /> Top Performing Videos</h3>
+            <h3 className="text-base font-semibold text-[var(--text-primary)] flex items-center gap-2 m-0"><HiOutlineVideoCamera className="text-[var(--primary)] text-[18px]" /> Top Performing Videos</h3>
           </div>
           {topVideos && topVideos.length > 0 ? (
             <div className="flex flex-col gap-4">
@@ -336,7 +336,7 @@ export default function Dashboard() {
                   transition={{ delay: 0.5 + index * 0.08 }}
                   whileHover={{ x: 4 }}
                 >
-                  <div className="w-6 flex-shrink-0 text-center font-bold text-sm text-white/40 group-hover:text-white/80 transition-colors">
+                  <div className="w-6 flex-shrink-0 text-center font-bold text-sm text-[var(--text-muted)] group-hover:text-[var(--text-primary)] transition-colors">
                     <span>#{index + 1}</span>
                   </div>
                   <div className="relative w-24 h-14 md:w-28 md:h-16 rounded-lg overflow-hidden shrink-0">
@@ -345,16 +345,16 @@ export default function Dashboard() {
                       alt={video.title}
                       className="w-full h-full object-cover"
                     />
-                    <div className="absolute bottom-1 right-1 bg-black/80 text-white text-[10px] px-1.5 py-0.5 rounded font-medium backdrop-blur-sm">
+                    <div className="absolute bottom-1 right-1 bg-white/90 text-slate-800 px-1.5 py-[1px] rounded text-[10px] font-semibold tracking-[0.3px] backdrop-blur-sm shadow-sm border border-slate-200/50">
                       {video.duration ? `${Math.floor(video.duration / 60)}:${String(Math.floor(video.duration % 60)).padStart(2, '0')}` : ''}
                     </div>
                   </div>
                   <div className="flex flex-col gap-1.5 flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-white/90 truncate m-0 group-hover:text-teal-soft transition-colors">{video.title}</p>
-                    <div className="flex items-center gap-3 text-[12px] text-white/50 m-0">
+                    <p className="text-sm font-semibold text-[var(--text-primary)] truncate m-0 group-hover:text-[var(--primary-soft)] transition-colors">{video.title}</p>
+                    <div className="flex items-center gap-3 text-[12px] text-[var(--text-muted)] m-0">
                       <span><HiOutlineEye /> {formatNumber(video.views)} views</span>
                       {video.trendingScore > 0 && (
-                        <span className="flex items-center gap-1 text-teal-primary bg-teal-primary/10 px-1.5 py-0.5 rounded border border-teal-primary/20">
+                        <span className="flex items-center gap-1 text-[var(--primary)] bg-teal-primary/10 px-1.5 py-0.5 rounded border border-teal-primary/20">
                           <HiOutlineTrendingUp /> {video.trendingScore}
                         </span>
                       )}
@@ -364,7 +364,7 @@ export default function Dashboard() {
               ))}
             </div>
           ) : (
-            <div className="h-[280px] flex flex-col items-center justify-center text-white/30 gap-3">
+            <div className="h-[280px] flex flex-col items-center justify-center text-[var(--text-muted)] gap-3">
               <HiOutlineVideoCamera className="text-4xl" />
               <p>No videos uploaded yet</p>
             </div>
@@ -379,7 +379,7 @@ export default function Dashboard() {
           transition={{ delay: 0.6 }}
         >
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-base font-semibold text-white/90 flex items-center gap-2 m-0"><HiOutlineTrendingUp className="text-teal-soft text-[18px]" /> Engagement Breakdown</h3>
+            <h3 className="text-base font-semibold text-[var(--text-primary)] flex items-center gap-2 m-0"><HiOutlineTrendingUp className="text-[var(--primary-soft)] text-[18px]" /> Engagement Breakdown</h3>
           </div>
           <div className="flex flex-col items-center">
             <ResponsiveContainer width="100%" height={250}>
@@ -403,13 +403,13 @@ export default function Dashboard() {
             </ResponsiveContainer>
             <div className="w-full grid grid-cols-2 gap-3 mt-4">
               {pieData.map((entry, index) => (
-                <div key={entry.name} className="flex items-center gap-2 p-2.5 rounded-lg bg-white/[0.02] border border-white/5">
+                <div key={entry.name} className="flex items-center gap-2 p-2.5 rounded-lg bg-white/[0.02] border border-[var(--border-color)]">
                   <span
                     className="w-2.5 h-2.5 rounded-full shrink-0"
                     style={{ background: CHART_COLORS[index % CHART_COLORS.length] }}
                   />
-                  <span className="text-[13px] text-white/60 font-medium flex-1">{entry.name}</span>
-                  <span className="text-[13px] text-white/90 font-bold m-0">{formatNumber(entry.value)}</span>
+                  <span className="text-[13px] text-[var(--text-secondary)] font-medium flex-1">{entry.name}</span>
+                  <span className="text-[13px] text-[var(--text-primary)] font-bold m-0">{formatNumber(entry.value)}</span>
                 </div>
               ))}
             </div>
@@ -418,12 +418,12 @@ export default function Dashboard() {
           {/* Quick Stats Summary */}
           <div className="flex items-center gap-4 mt-6 pt-5 border-t border-white/10">
             <div className="flex-1 bg-white/[0.03] rounded-xl p-4 flex flex-col gap-1 text-center">
-              <span className="text-[12px] text-white/50 font-medium uppercase tracking-wider">Avg. Views / Video</span>
-              <span className="text-[22px] font-bold text-white/90">{formatNumber(overview.avgViewsPerVideo)}</span>
+              <span className="text-[12px] text-[var(--text-muted)] font-medium uppercase tracking-wider">Avg. Views / Video</span>
+              <span className="text-[22px] font-bold text-[var(--text-primary)]">{formatNumber(overview.avgViewsPerVideo)}</span>
             </div>
             <div className="flex-1 bg-white/[0.03] rounded-xl p-4 flex flex-col gap-1 text-center">
-              <span className="text-[12px] text-white/50 font-medium uppercase tracking-wider">Total Videos</span>
-              <span className="text-[22px] font-bold text-white/90">{overview.totalVideos}</span>
+              <span className="text-[12px] text-[var(--text-muted)] font-medium uppercase tracking-wider">Total Videos</span>
+              <span className="text-[22px] font-bold text-[var(--text-primary)]">{overview.totalVideos}</span>
             </div>
           </div>
         </motion.div>

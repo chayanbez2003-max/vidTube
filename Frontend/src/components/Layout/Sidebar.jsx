@@ -36,7 +36,7 @@ export default function Sidebar({ collapsed, mobileOpen, onClose }) {
               `flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-[14px] transition-all whitespace-nowrap relative overflow-hidden ${
                 isActive
                   ? 'bg-violet-500/15 text-[var(--accent-secondary)] border border-[var(--border-accent)] before:content-[""] before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:w-[3px] before:h-[60%] before:bg-[var(--accent-gradient)] before:rounded-r-[3px] [&>span>svg]:drop-shadow-[0_0_4px_rgba(124,58,237,0.4)]'
-                  : 'text-[var(--text-secondary)] hover:bg-white/5 hover:text-[var(--text-primary)] border border-transparent'
+                  : 'text-[var(--text-secondary)] hover:bg-slate-100 hover:text-[var(--text-primary)] border border-transparent'
               } ${collapsed ? 'justify-center !px-3 [&.active]:before:hidden' : ''}`
             }
             end={item.to === '/'}
@@ -62,7 +62,7 @@ export default function Sidebar({ collapsed, mobileOpen, onClose }) {
                 `flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-[14px] transition-all whitespace-nowrap relative overflow-hidden ${
                   isActive
                     ? 'bg-violet-500/15 text-[var(--accent-secondary)] border border-[var(--border-accent)] before:content-[""] before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:w-[3px] before:h-[60%] before:bg-[var(--accent-gradient)] before:rounded-r-[3px] [&>span>svg]:drop-shadow-[0_0_4px_rgba(124,58,237,0.4)]'
-                    : 'text-[var(--text-secondary)] hover:bg-white/5 hover:text-[var(--text-primary)] border border-transparent'
+                    : 'text-[var(--text-secondary)] hover:bg-slate-100 hover:text-[var(--text-primary)] border border-transparent'
                 } ${collapsed ? 'justify-center !px-3 [&.active]:before:hidden' : ''}`
               }
               title={item.label}

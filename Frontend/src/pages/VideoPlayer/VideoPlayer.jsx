@@ -139,7 +139,15 @@ export default function VideoPlayer() {
     );
   }
 
-  if (!video) return <div className="max-w-[1280px] mx-auto p-4"><div className="flex justify-center py-20 text-white/50 text-xl font-medium">Video not found</div></div>;
+  if (!video) return <div className="max-w-[1280px] mx-auto p-4"><div className="flex justify-center py-20 text-[var(--text-muted)] text-xl font-medium">Video not found</div></div>;
+
+  // Fix Cloudinary URLs where video was uploaded as 'image' resource type
+  // e.g. /image/upload/ → /video/upload/ so the browser can play it properly
+  const getVideoUrl = (url) => {
+    if (!url) return '';
+    // If the Cloudinary URL has /image/upload/ instead of /video/upload/, fix it
+    return url.replace('/image/upload/', '/video/upload/');
+  };
 
   return (
     <div className="max-w-[1280px] mx-auto p-4 md:p-6 lg:px-8">
@@ -154,21 +162,21 @@ export default function VideoPlayer() {
             controls
             autoPlay
             className="w-full h-full object-contain outline-none"
-            src={video.videoFile?.url}
+            src={getVideoUrl(video.videoFile?.url)}
             poster={video.thumbnail?.url}
           />
         </motion.div>
 
         <div className="flex flex-col gap-3">
-          <h1 className="text-xl md:text-2xl font-light text-white/90 leading-tight">{video.title}</h1>
+          <h1 className="text-xl md:text-2xl font-light text-[var(--text-primary)] leading-tight">{video.title}</h1>
 
           <div className="flex flex-wrap items-center justify-between gap-4 mt-1 border-b border-white/10 pb-4">
             <div className="flex items-center gap-5">
               <Link to={`/channel/${video.owner?.username}`} className="flex items-center gap-3 group outline-none">
                 <img src={video.owner?.avatar?.url || video.owner?.avatar} alt="" className="w-10 h-10 md:w-11 md:h-11 rounded-full object-cover ring-2 ring-transparent group-hover:ring-teal-primary/30 transition-all" />
                 <div>
-                  <p className="font-medium text-[15px] text-white/90 group-hover:text-white transition-colors">{video.owner?.username}</p>
-                  <p className="text-xs text-white/50">{formatViews(subscribersCount)} subscribers</p>
+                  <p className="font-medium text-[15px] text-[var(--text-primary)] group-hover:text-[var(--text-primary)] transition-colors">{video.owner?.username}</p>
+                  <p className="text-xs text-[var(--text-muted)]">{formatViews(subscribersCount)} subscribers</p>
                 </div>
               </Link>
               {user && String(user._id) !== String(video.owner?._id) && (
@@ -183,31 +191,31 @@ export default function VideoPlayer() {
             </div>
 
             <div className="flex items-center gap-2">
-              <motion.button className={`flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-medium transition-colors ${isLiked ? 'bg-teal-primary/10 border-teal-primary/30 text-teal-primary' : 'bg-white/5 border-white/10 text-white/80 hover:bg-white/10 md:hover:border-white/20'}`} onClick={handleLike} whileTap={{ scale: 0.9 }}>
+              <motion.button className={`flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-medium transition-colors ${isLiked ? 'bg-teal-primary/10 border-teal-primary/30 text-[var(--primary)]' : 'bg-[var(--glass-border)] border-white/10 text-[var(--text-primary)] hover:bg-white/10 md:hover:border-white/20'}`} onClick={handleLike} whileTap={{ scale: 0.9 }}>
                 {isLiked ? <HiThumbUp className="text-[17px]" /> : <HiOutlineThumbUp className="text-[17px]" />}
                 <span>{formatViews(likesCount)}</span>
               </motion.button>
-              <motion.button className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-white/80 text-sm font-medium hover:bg-white/10 md:hover:border-white/20 transition-colors" onClick={handleShare} whileTap={{ scale: 0.9 }}>
+              <motion.button className="flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--glass-border)] border border-white/10 text-[var(--text-primary)] text-sm font-medium hover:bg-white/10 md:hover:border-white/20 transition-colors" onClick={handleShare} whileTap={{ scale: 0.9 }}>
                 <HiOutlineShare className="text-[17px]" /> Share
               </motion.button>
             </div>
           </div>
 
-          <motion.div className="bg-white/5 border border-white/10 rounded-xl p-3.5 mt-2 cursor-pointer hover:bg-white/[0.07] transition-colors" onClick={() => setShowDesc(!showDesc)}>
-            <div className="flex items-center gap-3 text-sm font-medium text-white/90 mb-1.5">
+          <motion.div className="bg-[var(--glass-border)] border border-white/10 rounded-xl p-3.5 mt-2 cursor-pointer hover:bg-white/[0.07] transition-colors" onClick={() => setShowDesc(!showDesc)}>
+            <div className="flex items-center gap-3 text-sm font-medium text-[var(--text-primary)] mb-1.5">
               <span className="flex items-center gap-1.5"><HiOutlineEye className="text-base" /> {formatViews(video.views)} views</span>
               <span className="w-1 h-1 rounded-full bg-white/30" />
               <span>{timeAgo(video.createdAt)}</span>
             </div>
-            <p className={`text-[13.5px] leading-relaxed text-white/70 whitespace-pre-wrap ${showDesc ? '' : 'line-clamp-2'}`}>
+            <p className={`text-[13.5px] leading-relaxed text-[var(--text-secondary)] whitespace-pre-wrap ${showDesc ? '' : 'line-clamp-2'}`}>
               {video.description}
             </p>
-            <button className="text-[13px] font-medium text-white/50 hover:text-white/80 mt-1 cursor-pointer bg-transparent border-none p-0 outline-none">{showDesc ? 'Show less' : '...more'}</button>
+            <button className="text-[13px] font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] mt-1 cursor-pointer bg-transparent border-none p-0 outline-none">{showDesc ? 'Show less' : '...more'}</button>
           </motion.div>
         </div>
 
         <div className="mt-8">
-          <h2 className="text-[18px] font-light text-white/90 mb-5">{comments.length} Comments</h2>
+          <h2 className="text-[18px] font-light text-[var(--text-primary)] mb-5">{comments.length} Comments</h2>
 
           {user && (
             <form className="flex items-start gap-3 mb-8" onSubmit={handleComment}>
@@ -215,7 +223,7 @@ export default function VideoPlayer() {
               <div className="flex-1 flex flex-col items-end gap-2">
                 <input
                   type="text"
-                  className="w-full bg-transparent border-b border-white/20 text-[14px] text-white/90 pb-1.5 focus:border-teal-primary focus:outline-none transition-colors placeholder:text-white/40"
+                  className="w-full bg-transparent border-b border-white/20 text-[14px] text-[var(--text-primary)] pb-1.5 focus:border-teal-primary focus:outline-none transition-colors placeholder:text-[var(--text-muted)]"
                   placeholder="Add a comment..."
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
@@ -249,14 +257,14 @@ export default function VideoPlayer() {
                   />
                   <div className="flex-1 flex flex-col">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="text-[13px] font-medium text-white/90">@{comment.owner?.username || 'User'}</span>
-                      <span className="text-[12px] text-white/40">{timeAgo(comment.createdAt)}</span>
+                      <span className="text-[13px] font-medium text-[var(--text-primary)]">@{comment.owner?.username || 'User'}</span>
+                      <span className="text-[12px] text-[var(--text-muted)]">{timeAgo(comment.createdAt)}</span>
                     </div>
                     
                     {editingCommentId === comment._id ? (
                       <div className="flex flex-col gap-2 mt-1">
                         <textarea
-                          className="w-full bg-transparent border-b border-teal-primary text-[14px] text-white/90 pb-1.5 focus:outline-none resize-none overflow-hidden"
+                          className="w-full bg-transparent border-b border-teal-primary text-[14px] text-[var(--text-primary)] pb-1.5 focus:outline-none resize-none overflow-hidden"
                           value={editContent}
                           onChange={(e) => setEditContent(e.target.value)}
                           autoFocus
@@ -269,14 +277,14 @@ export default function VideoPlayer() {
                       </div>
                     ) : (
                       <>
-                        <p className="text-[14px] text-white/80 leading-relaxed whitespace-pre-wrap">{comment.content}</p>
+                        <p className="text-[14px] text-[var(--text-primary)] leading-relaxed whitespace-pre-wrap">{comment.content}</p>
                         <div className="flex items-center gap-4 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
                           {user && String(user._id) === String(comment.owner?._id || comment.owner) && (
                             <div className="flex items-center gap-3">
-                              <button className="flex items-center gap-1.5 text-[12px] font-medium text-white/50 hover:text-white/80 bg-transparent border-none p-0 cursor-pointer" onClick={() => startEditing(comment)}>
+                              <button className="flex items-center gap-1.5 text-[12px] font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-transparent border-none p-0 cursor-pointer" onClick={() => startEditing(comment)}>
                                 <HiOutlinePencil /> Edit
                               </button>
-                              <button className="flex items-center gap-1.5 text-[12px] font-medium text-white/50 hover:text-red-400 bg-transparent border-none p-0 cursor-pointer" onClick={() => handleDeleteComment(comment._id)}>
+                              <button className="flex items-center gap-1.5 text-[12px] font-medium text-[var(--text-muted)] hover:text-red-400 bg-transparent border-none p-0 cursor-pointer" onClick={() => handleDeleteComment(comment._id)}>
                                 <HiOutlineTrash /> Delete
                               </button>
                             </div>

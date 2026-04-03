@@ -82,7 +82,7 @@ export default function Channel() {
     );
   }
 
-  if (!channel) return <div className="max-w-[1280px] mx-auto p-4"><div className="flex justify-center py-20 text-white/50 text-xl font-medium">Channel not found</div></div>;
+  if (!channel) return <div className="max-w-[1280px] mx-auto p-4"><div className="flex justify-center py-20 text-[var(--text-muted)] text-xl font-medium">Channel not found</div></div>;
 
   return (
     <div className="w-full">
@@ -104,9 +104,9 @@ export default function Channel() {
         >
           <img src={channel.avatar} alt={channel.username} className="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-bg-base object-cover bg-bg-surface shrink-0 ring-2 ring-transparent" />
           <div className="flex flex-col items-center md:items-start flex-1 min-w-0">
-            <h1 className="text-2xl md:text-3xl font-light text-white/90 m-0 text-center md:text-left">{channel.fullName}</h1>
-            <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mt-2 text-[14px] text-white/60">
-              <span className="font-medium text-white/80">@{channel.username}</span>
+            <h1 className="text-2xl md:text-3xl font-light text-[var(--text-primary)] m-0 text-center md:text-left">{channel.fullName}</h1>
+            <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mt-2 text-[14px] text-[var(--text-secondary)]">
+              <span className="font-medium text-[var(--text-primary)]">@{channel.username}</span>
               <span className="w-1 h-1 rounded-full bg-white/30" />
               <span className="flex items-center gap-1.5"><HiOutlineUsers className="text-[16px]" /> {formatCount(channel.subscribersCount)} subscribers</span>
               <span className="w-1 h-1 rounded-full bg-white/30" />
@@ -128,7 +128,7 @@ export default function Channel() {
           {['videos', 'playlists'].map(tab => (
             <button
               key={tab}
-              className={`pb-3 font-medium text-sm transition-colors relative cursor-pointer outline-none bg-transparent border-none p-0 ${activeTab === tab ? 'text-teal-soft before:absolute before:bottom-[-1px] before:left-0 before:right-0 before:h-[2px] before:bg-teal-primary before:shadow-[0_0_8px_rgba(29,184,168,0.5)]' : 'text-white/50 hover:text-white/80'}`}
+              className={`pb-3 font-medium text-sm transition-colors relative cursor-pointer outline-none bg-transparent border-none p-0 ${activeTab === tab ? 'text-[var(--primary-soft)] before:absolute before:bottom-[-1px] before:left-0 before:right-0 before:h-[2px] before:bg-teal-primary before:shadow-[0_0_8px_rgba(29,184,168,0.5)]' : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'}`}
               onClick={() => setActiveTab(tab)}
             >
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -138,7 +138,7 @@ export default function Channel() {
 
         {activeTab === 'videos' && (
           videos.length > 0 ? (
-            <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-5 items-start">
+            <div className="video-grid items-start">
               {videos.map((v, i) => (
                 <VideoCard
                   key={v._id}
@@ -151,9 +151,9 @@ export default function Channel() {
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center py-[60px] px-5 text-center">
-              <div className="text-[48px] text-white/20 mb-4"><HiOutlineVideoCamera /></div>
-              <h3 className="text-xl font-semibold mb-2 text-white/90">No videos yet</h3>
-              <p className="text-sm text-white/50 max-w-[400px]">This channel hasn't uploaded any videos.</p>
+              <div className="text-[48px] text-[var(--border-color)] mb-4"><HiOutlineVideoCamera /></div>
+              <h3 className="text-xl font-semibold mb-2 text-[var(--text-primary)]">No videos yet</h3>
+              <p className="text-sm text-[var(--text-muted)] max-w-[400px]">This channel hasn't uploaded any videos.</p>
             </div>
           )
         )}

@@ -81,27 +81,32 @@ export default function Home() {
         
         <div className="category-chips">
           {CATEGORIES.map((cat) => (
-            <motion.button
+            <button
               key={cat}
               onClick={() => {
                 setActiveCategory(cat);
                 setPage(1);
               }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className={[
-                'category-chip',
-                activeCategory === cat ? 'active' : '',
-                'px-[18px] py-2 rounded-full text-[13px] font-semibold border whitespace-nowrap flex-shrink-0',
-                'font-[Inter,sans-serif] cursor-pointer transition-all duration-150',
-                activeCategory === cat
-                  ? 'border-transparent text-white shadow-[0_0_20px_rgba(124,58,237,0.4)]'
-                  : 'border-[var(--border-color)] bg-white/[0.04] text-[var(--text-secondary)] hover:bg-white/[0.08] hover:text-[var(--text-primary)]',
-              ].filter(Boolean).join(' ')}
-              style={activeCategory === cat ? { background: 'var(--accent-gradient)' } : {}}
+              className="relative group px-1 py-1.5 mx-3 whitespace-nowrap flex-shrink-0 font-[Inter,sans-serif] text-[14px] font-medium cursor-pointer transition-colors duration-300 bg-transparent border-none outline-none"
             >
-              {cat}
-            </motion.button>
+              <span className={`relative z-10 transition-colors duration-300 ${activeCategory === cat ? 'text-[var(--text-primary)] font-semibold' : 'text-[var(--text-secondary)] group-hover:text-[var(--primary)]'}`}>
+                {cat}
+              </span>
+              <span 
+                className="absolute bottom-0 left-0 h-[2.5px] shadow-[0_0_8px_rgba(139,92,246,0.5)] transition-all duration-300 rounded-full"
+                style={{
+                  background: 'var(--accent-gradient)',
+                  width: activeCategory === cat ? '100%' : '0%',
+                }}
+              ></span>
+              <span 
+                className="absolute bottom-0 left-0 h-[2.5px] shadow-[0_0_8px_rgba(139,92,246,0.5)] transition-all duration-300 rounded-full group-hover:w-full w-0"
+                style={{
+                  background: 'var(--accent-gradient)',
+                  opacity: activeCategory === cat ? '0' : '1',
+                }}
+              ></span>
+            </button>
           ))}
         </div>
       </div>
