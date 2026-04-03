@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: '/api/v1',
+  baseURL: 'https://vidtube-bemr.onrender.com/api/v1',
   withCredentials: true,
 });
 
