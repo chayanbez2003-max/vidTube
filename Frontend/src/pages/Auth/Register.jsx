@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
 import { HiOutlineMail, HiOutlineLockClosed, HiOutlineUser, HiOutlineVideoCamera, HiOutlinePhotograph } from 'react-icons/hi';
 import toast from 'react-hot-toast';
+import './Auth.css';
 
 export default function Register() {
   const { register } = useAuth();
@@ -47,34 +48,34 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-10 px-5 relative overflow-hidden">
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute rounded-full blur-[80px] opacity-40 w-[400px] h-[400px] bg-teal-primary -top-[100px] -right-[100px] animate-[float_8s_ease-in-out_infinite]" />
-        <div className="absolute rounded-full blur-[80px] opacity-40 w-[300px] h-[300px] bg-sky-top -bottom-[80px] -left-[80px] animate-[float_10s_ease-in-out_infinite_reverse]" />
-        <div className="absolute rounded-full blur-[80px] opacity-40 w-[200px] h-[200px] bg-badge-pink top-[40%] left-[60%] animate-[float_6s_ease-in-out_infinite]" />
+    <div className="auth-page">
+      <div className="auth-bg-effects">
+        <div className="glow-orb orb-1" />
+        <div className="glow-orb orb-2" />
+        <div className="glow-orb orb-3" />
       </div>
 
       <motion.div
-        className="w-full p-7 sm:p-10 relative z-10 glass-card max-w-[500px]"
+        className="auth-card glass-card auth-card-wide"
         initial={{ opacity: 0, y: 30, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.5, ease: 'easeOut' }}
       >
-        <div className="text-center mb-8">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-teal-primary to-teal-soft flex items-center justify-center text-[28px] text-[#051a18] mx-auto mb-4 shadow-[0_4px_20px_rgba(29,184,168,0.3)]">
+        <div className="auth-header">
+          <div className="auth-logo">
             <HiOutlineVideoCamera />
           </div>
-          <h1 className="text-[26px] font-light mb-1.5">Create Account</h1>
-          <p className="text-white/70 text-sm">Join <span className="text-teal-gradient">VidTube</span> and start sharing</p>
+          <h1>Create Account</h1>
+          <p>Join <span className="text-gradient">VidTube</span> and start sharing</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-[18px]">
-          <div className="flex justify-center">
-            <label htmlFor="avatar-input" className="w-[100px] h-[100px] rounded-full border-2 border-dashed border-teal-dim flex items-center justify-center cursor-pointer overflow-hidden transition-all duration-200 hover:border-teal-soft hover:shadow-[0_4px_20px_rgba(29,184,168,0.3)]">
+        <form onSubmit={handleSubmit} className="auth-form">
+          <div className="avatar-upload">
+            <label htmlFor="avatar-input" className="avatar-upload-label">
               {avatarPreview ? (
-                <img src={avatarPreview} alt="Preview" className="w-full h-full object-cover" />
+                <img src={avatarPreview} alt="Preview" className="avatar-preview" />
               ) : (
-                <div className="flex flex-col items-center gap-1 text-white/50 text-[12px] [&>svg]:text-[24px]">
+                <div className="avatar-placeholder">
                   <HiOutlinePhotograph />
                   <span>Avatar (optional)</span>
                 </div>
@@ -83,57 +84,57 @@ export default function Register() {
             <input type="file" id="avatar-input" accept="image/*" onChange={handleAvatarChange} hidden />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-[14px]">
-            <div className="flex flex-col gap-1.5 [&>label]:text-[13px] [&>label]:font-medium [&>label]:text-white/70 [&>label]:ml-1">
+          <div className="auth-form-grid">
+            <div className="input-group">
               <label htmlFor="reg-fullname">Full Name</label>
-              <div className="relative">
-                <HiOutlineUser className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50 text-[18px] flex items-center" />
-                <input id="reg-fullname" type="text" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 pl-[46px] text-[14.5px] text-white/90 placeholder:text-white/40 focus:outline-none focus:border-teal-primary transition-colors" placeholder="Your full name"
+              <div className="input-with-icon">
+                <HiOutlineUser className="input-icon" />
+                <input id="reg-fullname" type="text" className="input-field" placeholder="Your full name"
                   value={formData.fullName} onChange={(e) => setFormData({ ...formData, fullName: e.target.value })} required />
               </div>
             </div>
-            <div className="flex flex-col gap-1.5 [&>label]:text-[13px] [&>label]:font-medium [&>label]:text-white/70 [&>label]:ml-1">
+            <div className="input-group">
               <label htmlFor="reg-username">Username</label>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50 text-[18px] flex items-center">@</span>
-                <input id="reg-username" type="text" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 pl-[46px] text-[14.5px] text-white/90 placeholder:text-white/40 focus:outline-none focus:border-teal-primary transition-colors" placeholder="Choose a username"
+              <div className="input-with-icon">
+                <span className="input-icon">@</span>
+                <input id="reg-username" type="text" className="input-field" placeholder="Choose a username"
                   value={formData.username} onChange={(e) => setFormData({ ...formData, username: e.target.value })} required />
               </div>
             </div>
           </div>
 
-          <div className="flex flex-col gap-1.5 [&>label]:text-[13px] [&>label]:font-medium [&>label]:text-white/70 [&>label]:ml-1">
+          <div className="input-group">
             <label htmlFor="reg-email">Email</label>
-            <div className="relative">
-              <HiOutlineMail className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50 text-[18px] flex items-center" />
-              <input id="reg-email" type="email" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 pl-[46px] text-[14.5px] text-white/90 placeholder:text-white/40 focus:outline-none focus:border-teal-primary transition-colors" placeholder="your@email.com"
+            <div className="input-with-icon">
+              <HiOutlineMail className="input-icon" />
+              <input id="reg-email" type="email" className="input-field" placeholder="your@email.com"
                 value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} required />
             </div>
           </div>
 
-          <div className="flex flex-col gap-1.5 [&>label]:text-[13px] [&>label]:font-medium [&>label]:text-white/70 [&>label]:ml-1">
+          <div className="input-group">
             <label htmlFor="reg-password">Password</label>
-            <div className="relative">
-              <HiOutlineLockClosed className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50 text-[18px] flex items-center" />
-              <input id="reg-password" type="password" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 pl-[46px] text-[14.5px] text-white/90 placeholder:text-white/40 focus:outline-none focus:border-teal-primary transition-colors" placeholder="Create a strong password"
+            <div className="input-with-icon">
+              <HiOutlineLockClosed className="input-icon" />
+              <input id="reg-password" type="password" className="input-field" placeholder="Create a strong password"
                 value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} required />
             </div>
           </div>
 
-          <div className="flex flex-col gap-1.5 [&>label]:text-[13px] [&>label]:font-medium [&>label]:text-white/70 [&>label]:ml-1">
+          <div className="input-group">
             <label htmlFor="cover-input">Cover Image (optional)</label>
-            <input id="cover-input" type="file" accept="image/*" className="w-full bg-white/5 border border-white/10 rounded-xl p-2.5 file:bg-teal-primary file:text-[#051a18] file:border-none file:px-3.5 file:py-1.5 file:rounded-md file:font-semibold file:cursor-pointer file:mr-2.5 text-white/70 text-sm focus:outline-none focus:border-teal-primary transition-colors"
+            <input id="cover-input" type="file" accept="image/*" className="input-field file-input"
               onChange={(e) => setCoverImage(e.target.files[0])} />
           </div>
 
-          <motion.button type="submit" className="btn-primary w-full justify-center p-[14px] text-[15px] mt-1 border-none cursor-pointer outline-none" disabled={loading}
+          <motion.button type="submit" className="btn btn-primary auth-submit" disabled={loading}
             whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-            {loading ? <span className="w-5 h-5 border-2 border-[rgba(255,255,255,0.3)] border-t-white rounded-full animate-spin" /> : 'Create Account'}
+            {loading ? <span className="spinner" /> : 'Create Account'}
           </motion.button>
         </form>
 
-        <p className="text-center mt-6 text-[14px] text-white/70">
-          Already have an account? <Link to="/login" className="text-teal-soft font-semibold no-underline hover:underline">Sign In</Link>
+        <p className="auth-switch">
+          Already have an account? <Link to="/login">Sign In</Link>
         </p>
       </motion.div>
     </div>

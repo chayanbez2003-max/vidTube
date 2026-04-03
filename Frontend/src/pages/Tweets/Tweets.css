@@ -1,0 +1,115 @@
+.tweets-container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.tweet-composer {
+    display: flex;
+    gap: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.tweet-input-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.tweet-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    resize: none;
+    outline: none;
+    line-height: 1.5;
+}
+
+.tweet-input::placeholder {
+    color: var(--text-muted);
+}
+
+.tweet-post-btn {
+    align-self: flex-end;
+    border-radius: 100px;
+    padding: 8px 24px;
+}
+
+.tweets-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.tweet-card {
+    padding: 18px;
+}
+
+.tweet-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.tweet-author {
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: capitalize;
+}
+
+.tweet-time {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-left: 8px;
+}
+
+.tweet-content {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+}
+
+.tweet-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.tweet-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all var(--transition-fast);
+}
+
+.tweet-action-btn:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.tweet-action-btn.liked {
+    color: var(--accent-secondary);
+}
+
+.tweet-action-btn.delete:hover {
+    color: var(--neon-red);
+    background: rgba(239, 68, 68, 0.08);
+}
+
+.tweet-action-btn svg {
+    font-size: 16px;
+}

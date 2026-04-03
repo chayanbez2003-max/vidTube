@@ -12,7 +12,7 @@ import {
 import API from '../../api/axios';
 import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
-
+import './Dashboard.css';
 
 const CHART_COLORS = ['#7c3aed', '#a855f7', '#c084fc', '#06b6d4', '#3b82f6', '#10b981'];
 
@@ -32,11 +32,11 @@ function formatWatchTime(hours) {
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-bg-elevated/95 backdrop-blur-md border border-white/10 p-3 rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.4)]">
-        <p className="text-white/60 text-xs font-semibold mb-2 m-0 uppercase tracking-wider">{label}</p>
+      <div className="dash-tooltip">
+        <p className="dash-tooltip-label">{label}</p>
         {payload.map((entry, index) => (
-          <p key={index} className="text-[13.5px] m-0 mb-1 last:mb-0" style={{ color: entry.color }}>
-            {entry.name}: <strong className="font-bold text-white ml-1">{formatNumber(entry.value)}</strong>
+          <p key={index} className="dash-tooltip-value" style={{ color: entry.color }}>
+            {entry.name}: <strong>{formatNumber(entry.value)}</strong>
           </p>
         ))}
       </div>
@@ -77,10 +77,10 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="max-w-[1280px] mx-auto p-4 md:p-6 lg:px-8">
-        <div className="flex flex-col items-center justify-center py-32">
-          <div className="w-10 h-10 border-4 border-white/10 border-t-teal-primary rounded-full animate-spin mb-4" />
-          <p className="text-white/50 font-medium">Loading your analytics...</p>
+      <div className="page-container">
+        <div className="dash-loading">
+          <div className="dash-loading-spinner" />
+          <p>Loading your analytics...</p>
         </div>
       </div>
     );
@@ -88,11 +88,11 @@ export default function Dashboard() {
 
   if (!analytics) {
     return (
-      <div className="max-w-[1280px] mx-auto p-4 md:p-6 lg:px-8">
-        <div className="flex flex-col items-center justify-center py-20 px-5 text-center">
-          <div className="text-[48px] text-white/20 mb-4">📊</div>
-          <h3 className="text-xl font-semibold mb-2">No analytics available</h3>
-          <p className="text-white/50 text-sm">Start uploading videos to see your channel analytics.</p>
+      <div className="page-container">
+        <div className="empty-state">
+          <div className="empty-state-icon">📊</div>
+          <h3>No analytics available</h3>
+          <p>Start uploading videos to see your channel analytics.</p>
         </div>
       </div>
     );
@@ -161,40 +161,40 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="max-w-[1280px] mx-auto p-4 md:p-6 lg:px-8">
+    <div className="page-container">
       {/* Header */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8">
-        <div>
+      <div className="dash-header">
+        <div className="dash-header-left">
           <motion.h1
-            className="flex items-center gap-2 text-2xl md:text-3xl font-light mb-1 m-0 text-white/90"
+            className="dash-title"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <HiOutlineChartBar className="text-teal-primary text-[26px] md:text-[32px]" />
-            Creator <span className="text-teal-gradient">Dashboard</span>
+            <HiOutlineChartBar className="dash-title-icon" />
+            Creator <span className="text-gradient">Dashboard</span>
           </motion.h1>
-          <p className="text-white/60 text-[14.5px] m-0 mt-1">
+          <p className="dash-subtitle">
             Welcome back, <strong>{user?.fullName || user?.username}</strong> — here's how your channel is performing.
           </p>
         </div>
         <motion.button
-          className="btn-ghost !py-2 !px-4 flex items-center gap-2 text-sm border-white/10"
+          className="btn btn-secondary dash-refresh-btn"
           onClick={handleRefresh}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           disabled={refreshing}
         >
-          <HiOutlineRefresh className={refreshing ? 'animate-spin' : ''} />
+          <HiOutlineRefresh className={refreshing ? 'spin' : ''} />
           {refreshing ? 'Refreshing...' : 'Refresh'}
         </motion.button>
       </div>
 
       {/* Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
+      <div className="dash-stats-grid">
         {statCards.map((stat, index) => (
           <motion.div
             key={stat.label}
-            className="relative overflow-hidden p-6 rounded-2xl border bg-bg-surface flex items-center gap-5 transition-all"
+            className="dash-stat-card"
             style={{
               background: stat.gradient,
               borderColor: stat.border,
@@ -204,29 +204,29 @@ export default function Dashboard() {
             transition={{ delay: index * 0.07 }}
             whileHover={{ y: -4, boxShadow: `0 12px 30px ${stat.border}` }}
           >
-            <div className="w-[52px] h-[52px] rounded-xl flex items-center justify-center text-[26px] shrink-0" style={{ color: stat.color, background: `${stat.color}15` }}>
+            <div className="dash-stat-icon" style={{ color: stat.color, background: `${stat.color}15` }}>
               {stat.icon}
             </div>
-            <div className="flex flex-col">
-              <p className="text-[13.5px] text-white/60 font-medium mb-1">{stat.label}</p>
-              <h2 className="text-2xl font-bold m-0 tracking-tight" style={{ color: stat.color }}>{stat.value}</h2>
+            <div className="dash-stat-info">
+              <p className="dash-stat-label">{stat.label}</p>
+              <h2 className="dash-stat-value" style={{ color: stat.color }}>{stat.value}</h2>
             </div>
           </motion.div>
         ))}
       </div>
 
       {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <div className="dash-charts-grid">
         {/* Subscriber Growth Chart */}
         <motion.div
-          className="bg-bg-surface border border-white/10 rounded-2xl p-5 md:p-6"
+          className="dash-chart-card"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
         >
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-base font-semibold text-white/90 flex items-center gap-2 m-0"><HiOutlineUserGroup className="text-teal-soft text-[18px]" /> Subscriber Growth</h3>
-            <span className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-white/5 text-white/60 border border-white/10">Last 30 days</span>
+          <div className="dash-chart-header">
+            <h3><HiOutlineUserGroup /> Subscriber Growth</h3>
+            <span className="dash-chart-badge">Last 30 days</span>
           </div>
           {subscriberGrowth && subscriberGrowth.length > 0 ? (
             <ResponsiveContainer width="100%" height={280}>
@@ -259,8 +259,8 @@ export default function Dashboard() {
               </AreaChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-[280px] flex flex-col items-center justify-center text-white/30 gap-3">
-              <HiOutlineUserGroup className="text-4xl" />
+            <div className="dash-chart-empty">
+              <HiOutlineUserGroup />
               <p>No subscriber data yet</p>
             </div>
           )}
@@ -268,14 +268,14 @@ export default function Dashboard() {
 
         {/* Views Over Time Chart */}
         <motion.div
-          className="bg-bg-surface border border-white/10 rounded-2xl p-5 md:p-6"
+          className="dash-chart-card"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
         >
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-base font-semibold text-white/90 flex items-center gap-2 m-0"><HiOutlineEye className="text-teal-primary text-[18px]" /> Views Over Time</h3>
-            <span className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-white/5 text-white/60 border border-white/10">Last 30 days</span>
+          <div className="dash-chart-header">
+            <h3><HiOutlineEye /> Views Over Time</h3>
+            <span className="dash-chart-badge">Last 30 days</span>
           </div>
           {viewsOverTime && viewsOverTime.length > 0 ? (
             <ResponsiveContainer width="100%" height={280}>
@@ -305,8 +305,8 @@ export default function Dashboard() {
               </BarChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-[280px] flex flex-col items-center justify-center text-white/30 gap-3">
-              <HiOutlineEye className="text-4xl" />
+            <div className="dash-chart-empty">
+              <HiOutlineEye />
               <p>No view data yet</p>
             </div>
           )}
@@ -314,47 +314,46 @@ export default function Dashboard() {
       </div>
 
       {/* Bottom Row: Top Videos + Engagement Pie */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="dash-bottom-grid">
         {/* Top Performing Videos */}
         <motion.div
-          className="bg-bg-surface border border-white/10 rounded-2xl p-5 md:p-6"
+          className="dash-chart-card dash-top-videos"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
         >
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-base font-semibold text-white/90 flex items-center gap-2 m-0"><HiOutlineVideoCamera className="text-teal-primary text-[18px]" /> Top Performing Videos</h3>
+          <div className="dash-chart-header">
+            <h3><HiOutlineVideoCamera /> Top Performing Videos</h3>
           </div>
           {topVideos && topVideos.length > 0 ? (
-            <div className="flex flex-col gap-4">
+            <div className="dash-top-videos-list">
               {topVideos.map((video, index) => (
                 <motion.div
                   key={video._id}
-                  className="flex items-center gap-4 p-3 rounded-xl hover:bg-white/[0.03] transition-colors group cursor-pointer"
+                  className="dash-top-video-item"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.5 + index * 0.08 }}
                   whileHover={{ x: 4 }}
                 >
-                  <div className="w-6 flex-shrink-0 text-center font-bold text-sm text-white/40 group-hover:text-white/80 transition-colors">
-                    <span>#{index + 1}</span>
+                  <div className="dash-top-video-rank">
+                    <span className={`rank-num rank-${index + 1}`}>#{index + 1}</span>
                   </div>
-                  <div className="relative w-24 h-14 md:w-28 md:h-16 rounded-lg overflow-hidden shrink-0">
+                  <div className="dash-top-video-thumb">
                     <img
                       src={video.thumbnail?.url || video.thumbnail}
                       alt={video.title}
-                      className="w-full h-full object-cover"
                     />
-                    <div className="absolute bottom-1 right-1 bg-black/80 text-white text-[10px] px-1.5 py-0.5 rounded font-medium backdrop-blur-sm">
+                    <div className="dash-top-video-duration">
                       {video.duration ? `${Math.floor(video.duration / 60)}:${String(Math.floor(video.duration % 60)).padStart(2, '0')}` : ''}
                     </div>
                   </div>
-                  <div className="flex flex-col gap-1.5 flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-white/90 truncate m-0 group-hover:text-teal-soft transition-colors">{video.title}</p>
-                    <div className="flex items-center gap-3 text-[12px] text-white/50 m-0">
+                  <div className="dash-top-video-info">
+                    <p className="dash-top-video-title">{video.title}</p>
+                    <div className="dash-top-video-stats">
                       <span><HiOutlineEye /> {formatNumber(video.views)} views</span>
                       {video.trendingScore > 0 && (
-                        <span className="flex items-center gap-1 text-teal-primary bg-teal-primary/10 px-1.5 py-0.5 rounded border border-teal-primary/20">
+                        <span className="trending-badge">
                           <HiOutlineTrendingUp /> {video.trendingScore}
                         </span>
                       )}
@@ -364,8 +363,8 @@ export default function Dashboard() {
               ))}
             </div>
           ) : (
-            <div className="h-[280px] flex flex-col items-center justify-center text-white/30 gap-3">
-              <HiOutlineVideoCamera className="text-4xl" />
+            <div className="dash-chart-empty">
+              <HiOutlineVideoCamera />
               <p>No videos uploaded yet</p>
             </div>
           )}
@@ -373,15 +372,15 @@ export default function Dashboard() {
 
         {/* Engagement Breakdown Pie */}
         <motion.div
-          className="bg-bg-surface border border-white/10 rounded-2xl p-5 md:p-6"
+          className="dash-chart-card"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
         >
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-base font-semibold text-white/90 flex items-center gap-2 m-0"><HiOutlineTrendingUp className="text-teal-soft text-[18px]" /> Engagement Breakdown</h3>
+          <div className="dash-chart-header">
+            <h3><HiOutlineTrendingUp /> Engagement Breakdown</h3>
           </div>
-          <div className="flex flex-col items-center">
+          <div className="dash-pie-container">
             <ResponsiveContainer width="100%" height={250}>
               <PieChart>
                 <Pie
@@ -401,29 +400,29 @@ export default function Dashboard() {
                 <Tooltip content={<CustomTooltip />} />
               </PieChart>
             </ResponsiveContainer>
-            <div className="w-full grid grid-cols-2 gap-3 mt-4">
+            <div className="dash-pie-legend">
               {pieData.map((entry, index) => (
-                <div key={entry.name} className="flex items-center gap-2 p-2.5 rounded-lg bg-white/[0.02] border border-white/5">
+                <div key={entry.name} className="dash-pie-legend-item">
                   <span
-                    className="w-2.5 h-2.5 rounded-full shrink-0"
+                    className="dash-pie-legend-dot"
                     style={{ background: CHART_COLORS[index % CHART_COLORS.length] }}
                   />
-                  <span className="text-[13px] text-white/60 font-medium flex-1">{entry.name}</span>
-                  <span className="text-[13px] text-white/90 font-bold m-0">{formatNumber(entry.value)}</span>
+                  <span className="dash-pie-legend-label">{entry.name}</span>
+                  <span className="dash-pie-legend-value">{formatNumber(entry.value)}</span>
                 </div>
               ))}
             </div>
           </div>
 
           {/* Quick Stats Summary */}
-          <div className="flex items-center gap-4 mt-6 pt-5 border-t border-white/10">
-            <div className="flex-1 bg-white/[0.03] rounded-xl p-4 flex flex-col gap-1 text-center">
-              <span className="text-[12px] text-white/50 font-medium uppercase tracking-wider">Avg. Views / Video</span>
-              <span className="text-[22px] font-bold text-white/90">{formatNumber(overview.avgViewsPerVideo)}</span>
+          <div className="dash-quick-stats">
+            <div className="dash-quick-stat">
+              <span className="dash-quick-label">Avg. Views / Video</span>
+              <span className="dash-quick-value">{formatNumber(overview.avgViewsPerVideo)}</span>
             </div>
-            <div className="flex-1 bg-white/[0.03] rounded-xl p-4 flex flex-col gap-1 text-center">
-              <span className="text-[12px] text-white/50 font-medium uppercase tracking-wider">Total Videos</span>
-              <span className="text-[22px] font-bold text-white/90">{overview.totalVideos}</span>
+            <div className="dash-quick-stat">
+              <span className="dash-quick-label">Total Videos</span>
+              <span className="dash-quick-value">{overview.totalVideos}</span>
             </div>
           </div>
         </motion.div>

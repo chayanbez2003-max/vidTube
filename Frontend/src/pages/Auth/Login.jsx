@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
 import { HiOutlineMail, HiOutlineLockClosed, HiOutlineUser, HiOutlineVideoCamera } from 'react-icons/hi';
 import toast from 'react-hot-toast';
-
+import './Auth.css';
 
 export default function Login() {
   const { login } = useAuth();
@@ -27,36 +27,36 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-10 px-5 relative overflow-hidden">
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute rounded-full blur-[80px] opacity-40 w-[400px] h-[400px] bg-teal-primary -top-[100px] -right-[100px] animate-[float_8s_ease-in-out_infinite]" />
-        <div className="absolute rounded-full blur-[80px] opacity-40 w-[300px] h-[300px] bg-sky-top -bottom-[80px] -left-[80px] animate-[float_10s_ease-in-out_infinite_reverse]" />
-        <div className="absolute rounded-full blur-[80px] opacity-40 w-[200px] h-[200px] bg-badge-pink top-[40%] left-[60%] animate-[float_6s_ease-in-out_infinite]" />
+    <div className="auth-page">
+      <div className="auth-bg-effects">
+        <div className="glow-orb orb-1" />
+        <div className="glow-orb orb-2" />
+        <div className="glow-orb orb-3" />
       </div>
       
       <motion.div
-        className="w-full max-w-[440px] p-8 md:p-10 relative z-10 glass-card bg-bg-surface border border-white/10 rounded-2xl"
+        className="auth-card glass-card"
         initial={{ opacity: 0, y: 30, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.5, ease: 'easeOut' }}
       >
-        <div className="text-center mb-8">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-teal-primary to-teal-soft flex items-center justify-center text-[28px] text-[#051a18] mx-auto mb-4 shadow-[0_4px_20px_rgba(29,184,168,0.3)]">
+        <div className="auth-header">
+          <div className="auth-logo">
             <HiOutlineVideoCamera />
           </div>
-          <h1 className="text-[26px] font-light text-white/90 mb-1.5">Welcome Back</h1>
-          <p className="text-white/70 text-sm">Sign in to continue to <span className="text-teal-gradient">VidTube</span></p>
+          <h1>Welcome Back</h1>
+          <p>Sign in to continue to <span className="text-gradient">VidTube</span></p>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="login-email" className="text-[13px] font-medium text-white/70 ml-1">Email or Username</label>
-            <div className="relative">
-              <HiOutlineMail className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50 text-[18px]" />
+        <form onSubmit={handleSubmit} className="auth-form">
+          <div className="input-group">
+            <label htmlFor="login-email">Email or Username</label>
+            <div className="input-with-icon">
+              <HiOutlineMail className="input-icon" />
               <input
                 id="login-email"
                 type="text"
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 pl-[46px] text-[14.5px] text-white/90 placeholder:text-white/40 focus:outline-none focus:border-teal-primary focus:bg-white/[0.08] transition-colors"
+                className="input-field"
                 placeholder="Enter email or username"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -65,14 +65,14 @@ export default function Login() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="login-password" className="text-[13px] font-medium text-white/70 ml-1">Password</label>
-            <div className="relative">
-              <HiOutlineLockClosed className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50 text-[18px]" />
+          <div className="input-group">
+            <label htmlFor="login-password">Password</label>
+            <div className="input-with-icon">
+              <HiOutlineLockClosed className="input-icon" />
               <input
                 id="login-password"
                 type="password"
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 pl-[46px] text-[14.5px] text-white/90 placeholder:text-white/40 focus:outline-none focus:border-teal-primary focus:bg-white/[0.08] transition-colors"
+                className="input-field"
                 placeholder="Enter your password"
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
@@ -83,21 +83,21 @@ export default function Login() {
 
           <motion.button
             type="submit"
-            className="btn-primary w-full justify-center p-[14px] text-[15px] mt-2 border-none cursor-pointer outline-none"
+            className="btn btn-primary auth-submit"
             disabled={loading}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
             {loading ? (
-              <span className="w-5 h-5 border-2 border-[rgba(255,255,255,0.3)] border-t-white rounded-full animate-spin" />
+              <span className="spinner" />
             ) : (
               'Sign In'
             )}
           </motion.button>
         </form>
 
-        <p className="text-center mt-6 text-[14px] text-white/70">
-          Don't have an account? <Link to="/register" className="text-teal-soft font-semibold no-underline hover:underline">Sign Up</Link>
+        <p className="auth-switch">
+          Don't have an account? <Link to="/register">Sign Up</Link>
         </p>
       </motion.div>
     </div>

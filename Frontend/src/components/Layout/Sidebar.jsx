@@ -5,7 +5,8 @@ import {
   HiOutlineHome, HiOutlineFire, HiOutlineFolderOpen,
   HiOutlineThumbUp, HiOutlineClock, HiOutlineUserGroup,
   HiOutlineChatAlt2, HiOutlineChartBar, HiOutlineStatusOnline
-} from "react-icons/hi";
+} from 'react-icons/hi';
+import './Sidebar.css';
 
 export default function Sidebar({ collapsed, mobileOpen, onClose }) {
   const { user } = useAuth();
@@ -26,57 +27,45 @@ export default function Sidebar({ collapsed, mobileOpen, onClose }) {
   ];
 
   const navContent = (
-    <nav className="p-3 flex flex-col h-full">
-      <div className="flex flex-col gap-0.5">
+    <nav className="sidebar-nav">
+      <div className="nav-section">
         {mainNav.map((item) => (
           <NavLink
             key={item.to}
             to={item.to}
-            className={({ isActive }) =>
-              `flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-[14px] transition-all whitespace-nowrap relative overflow-hidden ${
-                isActive
-                  ? 'bg-teal-mist text-teal-soft border border-[rgba(29,184,168,0.2)] before:content-[""] before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:w-[3px] before:h-[60%] before:bg-[linear-gradient(180deg,#1DB8A8,#40FFE8)] before:rounded-r-[3px] [&>span>svg]:drop-shadow-[0_0_4px_rgba(64,255,232,0.4)]'
-                  : 'text-white/70 hover:bg-white/5 hover:text-white border border-transparent'
-              } ${collapsed ? 'justify-center !px-3 [&.active]:before:hidden' : ''}`
-            }
+            className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
             end={item.to === '/'}
             title={item.label}
             onClick={onClose}
           >
-            <span className="text-[20px] flex items-center shrink-0">{item.icon}</span>
-            {!collapsed && <span className="truncate">{item.label}</span>}
+            <span className="nav-icon">{item.icon}</span>
+            {!collapsed && <span className="nav-label">{item.label}</span>}
           </NavLink>
         ))}
       </div>
 
-      <div className="mx-3 my-2 divider-sky" />
+      <div className="nav-divider" />
 
       {user && (
-        <div className="flex flex-col gap-0.5">
-          {!collapsed && <p className="px-4 pt-3 pb-2 text-[11px] font-semibold uppercase tracking-[1px] text-white/50">Library</p>}
+        <div className="nav-section">
+          {!collapsed && <p className="nav-section-title">Library</p>}
           {libraryNav.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
-              className={({ isActive }) =>
-                `flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-[14px] transition-all whitespace-nowrap relative overflow-hidden ${
-                  isActive
-                    ? 'bg-teal-mist text-teal-soft border border-[rgba(29,184,168,0.2)] before:content-[""] before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:w-[3px] before:h-[60%] before:bg-[linear-gradient(180deg,#1DB8A8,#40FFE8)] before:rounded-r-[3px] [&>span>svg]:drop-shadow-[0_0_4px_rgba(64,255,232,0.4)]'
-                    : 'text-white/70 hover:bg-white/5 hover:text-white border border-transparent'
-                } ${collapsed ? 'justify-center !px-3 [&.active]:before:hidden' : ''}`
-              }
+              className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
               title={item.label}
               onClick={onClose}
             >
-              <span className="text-[20px] flex items-center shrink-0">{item.icon}</span>
-              {!collapsed && <span className="truncate">{item.label}</span>}
+              <span className="nav-icon">{item.icon}</span>
+              {!collapsed && <span className="nav-label">{item.label}</span>}
             </NavLink>
           ))}
         </div>
       )}
 
       {!collapsed && (
-        <div className="mt-auto p-4 text-center text-[11px] text-white/50 leading-relaxed">
+        <div className="sidebar-footer">
           <p>© 2026 VidTube</p>
         </div>
       )}
@@ -85,10 +74,11 @@ export default function Sidebar({ collapsed, mobileOpen, onClose }) {
 
   return (
     <>
+      {/* Mobile backdrop overlay */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
-            className="md:hidden fixed inset-0 bg-[rgba(13,11,24,0.7)] backdrop-blur-[4px] z-[199]"
+            className="sidebar-backdrop"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -98,8 +88,9 @@ export default function Sidebar({ collapsed, mobileOpen, onClose }) {
         )}
       </AnimatePresence>
 
+      {/* Desktop sidebar — animated width */}
       <motion.aside
-        className="hidden md:flex flex-col fixed top-[var(--header-height)] left-0 bottom-0 bg-bg-surface border-r border-white/10 overflow-y-auto overflow-x-hidden z-[200] bg-[radial-gradient(ellipse_100%_30%_at_50%_0%,rgba(142,197,214,0.05)_0%,transparent_70%)]"
+        className={`sidebar sidebar-desktop ${collapsed ? 'collapsed' : ''}`}
         initial={false}
         animate={{ width: collapsed ? 72 : 240 }}
         transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
@@ -107,8 +98,9 @@ export default function Sidebar({ collapsed, mobileOpen, onClose }) {
         {navContent}
       </motion.aside>
 
+      {/* Mobile sidebar — slide in drawer */}
       <motion.aside
-        className="md:hidden flex flex-col fixed top-[var(--header-height)] left-0 bottom-0 w-[240px] bg-bg-surface border-r border-white/10 overflow-y-auto overflow-x-hidden z-[200] bg-[radial-gradient(ellipse_100%_30%_at_50%_0%,rgba(142,197,214,0.05)_0%,transparent_70%)]"
+        className="sidebar sidebar-mobile"
         initial={false}
         animate={{ x: mobileOpen ? 0 : '-100%' }}
         transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}

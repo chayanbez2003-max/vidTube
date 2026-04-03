@@ -57,10 +57,10 @@ function AppLayout() {
   };
 
   return (
-    <div className="flex min-h-screen bg-bg-base text-text-primary font-sans">
+    <div className="app-layout">
       <Header onToggleSidebar={handleToggle} />
       <Sidebar collapsed={sidebarCollapsed} mobileOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
-      <main className={`flex-1 pt-16 min-h-[100vh] transition-all duration-300 ${!isMobile ? (sidebarCollapsed ? 'ml-[72px]' : 'ml-[240px]') : 'w-full'}`}>
+      <main className={`main-content ${sidebarCollapsed && !isMobile ? 'collapsed' : ''}`}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/video/:videoId" element={<VideoPlayer />} />
@@ -114,12 +114,11 @@ export default function App() {
           position="top-center"
           toastOptions={{
             style: {
-              background: 'var(--bg-elevated)',
-              color: '#ffffff',
-              border: '1px solid rgba(255,255,255,0.10)',
+              background: '#1e1e2e',
+              color: '#f1f5f9',
+              border: '1px solid rgba(255,255,255,0.08)',
               borderRadius: '12px',
-              fontFamily: '"DM Sans", system-ui, sans-serif',
-              boxShadow: '0 8px 40px rgba(var(--bg-rgb),0.65)',
+              fontFamily: 'Inter, sans-serif',
             },
           }}
         />

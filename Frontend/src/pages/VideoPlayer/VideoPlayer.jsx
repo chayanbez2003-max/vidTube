@@ -10,7 +10,7 @@ import {
   HiOutlineEye, HiOutlinePencil, HiOutlineTrash
 } from 'react-icons/hi';
 import { formatViews, timeAgo } from '../../utils/formatters';
-
+import './VideoPlayer.css';
 
 
 
@@ -131,21 +131,21 @@ export default function VideoPlayer() {
 
   if (loading) {
     return (
-      <div className="max-w-[1280px] mx-auto p-4 md:p-6 lg:p-8">
-        <div className="w-full max-w-[1024px] mx-auto">
-          <div className="w-full aspect-video rounded-2xl skeleton" />
+      <div className="page-container video-player-page">
+        <div className="vp-main">
+          <div className="skeleton skeleton-player" />
         </div>
       </div>
     );
   }
 
-  if (!video) return <div className="max-w-[1280px] mx-auto p-4"><div className="flex justify-center py-20 text-white/50 text-xl font-medium">Video not found</div></div>;
+  if (!video) return <div className="page-container"><div className="empty-state"><h3>Video not found</h3></div></div>;
 
   return (
-    <div className="max-w-[1280px] mx-auto p-4 md:p-6 lg:px-8">
-      <div className="w-full max-w-[1024px] mx-auto flex flex-col gap-6">
+    <div className="page-container video-player-page">
+      <div className="vp-main">
         <motion.div
-          className="relative w-full aspect-video bg-bg-base rounded-2xl overflow-hidden shadow-glass-lg"
+          className="vp-player-wrapper"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
@@ -153,91 +153,88 @@ export default function VideoPlayer() {
           <video
             controls
             autoPlay
-            className="w-full h-full object-contain outline-none"
+            className="vp-player"
             src={video.videoFile?.url}
             poster={video.thumbnail?.url}
           />
         </motion.div>
 
-        <div className="flex flex-col gap-3">
-          <h1 className="text-xl md:text-2xl font-light text-white/90 leading-tight">{video.title}</h1>
+        <div className="vp-details">
+          <h1 className="vp-title">{video.title}</h1>
 
-          <div className="flex flex-wrap items-center justify-between gap-4 mt-1 border-b border-white/10 pb-4">
-            <div className="flex items-center gap-5">
-              <Link to={`/channel/${video.owner?.username}`} className="flex items-center gap-3 group outline-none">
-                <img src={video.owner?.avatar?.url || video.owner?.avatar} alt="" className="w-10 h-10 md:w-11 md:h-11 rounded-full object-cover ring-2 ring-transparent group-hover:ring-teal-primary/30 transition-all" />
+          <div className="vp-actions-row">
+            <div className="vp-channel-info">
+              <Link to={`/channel/${video.owner?.username}`} className="vp-channel-link">
+                <img src={video.owner?.avatar?.url || video.owner?.avatar} alt="" className="avatar avatar-md" />
                 <div>
-                  <p className="font-medium text-[15px] text-white/90 group-hover:text-white transition-colors">{video.owner?.username}</p>
-                  <p className="text-xs text-white/50">{formatViews(subscribersCount)} subscribers</p>
+                  <p className="vp-channel-name">{video.owner?.username}</p>
+                  <p className="vp-subscribers">{formatViews(subscribersCount)} subscribers</p>
                 </div>
               </Link>
               {user && String(user._id) !== String(video.owner?._id) && (
                 <motion.button
-                  className={`${isSubscribed ? 'btn-ghost' : 'btn-primary'} !py-2 !px-4 !text-sm`}
+                  className={`btn ${isSubscribed ? 'btn-secondary' : 'btn-primary'} subscribe-btn`}
                   onClick={handleSubscribe}
                   whileTap={{ scale: 0.95 }}
                 >
-                  {isSubscribed ? <><HiUserAdd className="text-lg" /> Subscribed</> : <><HiOutlineUserAdd className="text-lg" /> Subscribe</>}
+                  {isSubscribed ? <><HiUserAdd /> Subscribed</> : <><HiOutlineUserAdd /> Subscribe</>}
                 </motion.button>
               )}
             </div>
 
-            <div className="flex items-center gap-2">
-              <motion.button className={`flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-medium transition-colors ${isLiked ? 'bg-teal-primary/10 border-teal-primary/30 text-teal-primary' : 'bg-white/5 border-white/10 text-white/80 hover:bg-white/10 md:hover:border-white/20'}`} onClick={handleLike} whileTap={{ scale: 0.9 }}>
-                {isLiked ? <HiThumbUp className="text-[17px]" /> : <HiOutlineThumbUp className="text-[17px]" />}
+            <div className="vp-action-buttons">
+              <motion.button className={`action-btn ${isLiked ? 'liked' : ''}`} onClick={handleLike} whileTap={{ scale: 0.9 }}>
+                {isLiked ? <HiThumbUp /> : <HiOutlineThumbUp />}
                 <span>{formatViews(likesCount)}</span>
               </motion.button>
-              <motion.button className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-white/80 text-sm font-medium hover:bg-white/10 md:hover:border-white/20 transition-colors" onClick={handleShare} whileTap={{ scale: 0.9 }}>
-                <HiOutlineShare className="text-[17px]" /> Share
+              <motion.button className="action-btn" onClick={handleShare} whileTap={{ scale: 0.9 }}>
+                <HiOutlineShare /> Share
               </motion.button>
             </div>
           </div>
 
-          <motion.div className="bg-white/5 border border-white/10 rounded-xl p-3.5 mt-2 cursor-pointer hover:bg-white/[0.07] transition-colors" onClick={() => setShowDesc(!showDesc)}>
-            <div className="flex items-center gap-3 text-sm font-medium text-white/90 mb-1.5">
-              <span className="flex items-center gap-1.5"><HiOutlineEye className="text-base" /> {formatViews(video.views)} views</span>
-              <span className="w-1 h-1 rounded-full bg-white/30" />
+          <motion.div className="vp-description glass-card" onClick={() => setShowDesc(!showDesc)}>
+            <div className="vp-desc-stats">
+              <span><HiOutlineEye /> {formatViews(video.views)} views</span>
               <span>{timeAgo(video.createdAt)}</span>
             </div>
-            <p className={`text-[13.5px] leading-relaxed text-white/70 whitespace-pre-wrap ${showDesc ? '' : 'line-clamp-2'}`}>
+            <p className={`vp-desc-text ${showDesc ? 'expanded' : ''}`}>
               {video.description}
             </p>
-            <button className="text-[13px] font-medium text-white/50 hover:text-white/80 mt-1 cursor-pointer bg-transparent border-none p-0 outline-none">{showDesc ? 'Show less' : '...more'}</button>
+            <button className="show-more-btn">{showDesc ? 'Show less' : '...more'}</button>
           </motion.div>
         </div>
 
-        <div className="mt-8">
-          <h2 className="text-[18px] font-light text-white/90 mb-5">{comments.length} Comments</h2>
+        <div className="vp-comments-section">
+          <h2 className="vp-comments-title">{comments.length} Comments</h2>
 
           {user && (
-            <form className="flex items-start gap-3 mb-8" onSubmit={handleComment}>
-              <img src={user.avatar} alt="" className="w-10 h-10 rounded-full object-cover shrink-0" />
-              <div className="flex-1 flex flex-col items-end gap-2">
-                <input
-                  type="text"
-                  className="w-full bg-transparent border-b border-white/20 text-[14px] text-white/90 pb-1.5 focus:border-teal-primary focus:outline-none transition-colors placeholder:text-white/40"
-                  placeholder="Add a comment..."
-                  value={newComment}
-                  onChange={(e) => setNewComment(e.target.value)}
-                />
-                <motion.button
-                  type="submit"
-                  className="btn-primary !py-1.5 !px-4 !text-[13px] disabled:opacity-50 disabled:cursor-not-allowed"
-                  disabled={!newComment.trim()}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  Comment
-                </motion.button>
-              </div>
+            <form className="comment-form" onSubmit={handleComment}>
+              <img src={user.avatar} alt="" className="avatar avatar-sm" />
+              <input
+                type="text"
+                className="input-field"
+                placeholder="Add a comment..."
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+              />
+              <motion.button
+                type="submit"
+                className="btn btn-primary"
+                disabled={!newComment.trim()}
+                whileTap={{ scale: 0.95 }}
+              >
+                Comment
+              </motion.button>
             </form>
           )}
 
-          <div className="flex flex-col gap-6">
+          <div className="comments-list">
             <AnimatePresence>
               {comments.map((comment, i) => (
                 <motion.div
                   key={comment._id}
-                  className="flex gap-3 group"
+                  className="comment-item"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.05 }}
@@ -245,38 +242,37 @@ export default function VideoPlayer() {
                   <img
                     src={comment.owner?.avatar?.url || comment.owner?.avatar || ''}
                     alt=""
-                    className="w-10 h-10 rounded-full object-cover shrink-0"
+                    className="avatar avatar-sm"
                   />
-                  <div className="flex-1 flex flex-col">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-[13px] font-medium text-white/90">@{comment.owner?.username || 'User'}</span>
-                      <span className="text-[12px] text-white/40">{timeAgo(comment.createdAt)}</span>
+                  <div className="comment-body">
+                    <div className="comment-header">
+                      <span className="comment-author">{comment.owner?.username || 'User'}</span>
+                      <span className="comment-time">{timeAgo(comment.createdAt)}</span>
                     </div>
                     
                     {editingCommentId === comment._id ? (
-                      <div className="flex flex-col gap-2 mt-1">
+                      <div className="comment-edit-form">
                         <textarea
-                          className="w-full bg-transparent border-b border-teal-primary text-[14px] text-white/90 pb-1.5 focus:outline-none resize-none overflow-hidden"
+                          className="input-field"
                           value={editContent}
                           onChange={(e) => setEditContent(e.target.value)}
                           autoFocus
-                          rows={1}
                         />
-                        <div className="flex items-center justify-end gap-2">
-                          <button type="button" className="btn-ghost !py-1 !px-3 !text-[12px]" onClick={() => setEditingCommentId(null)}>Cancel</button>
-                          <button type="button" className="btn-primary !py-1 !px-3 !text-[12px]" onClick={() => handleUpdateComment(comment._id)}>Save</button>
+                        <div className="comment-edit-actions">
+                          <button type="button" className="btn btn-ghost btn-sm" onClick={() => setEditingCommentId(null)}>Cancel</button>
+                          <button type="button" className="btn btn-primary btn-sm" onClick={() => handleUpdateComment(comment._id)}>Save</button>
                         </div>
                       </div>
                     ) : (
                       <>
-                        <p className="text-[14px] text-white/80 leading-relaxed whitespace-pre-wrap">{comment.content}</p>
-                        <div className="flex items-center gap-4 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <p className="comment-text">{comment.content}</p>
+                        <div className="comment-actions">
                           {user && String(user._id) === String(comment.owner?._id || comment.owner) && (
-                            <div className="flex items-center gap-3">
-                              <button className="flex items-center gap-1.5 text-[12px] font-medium text-white/50 hover:text-white/80 bg-transparent border-none p-0 cursor-pointer" onClick={() => startEditing(comment)}>
+                            <div className="comment-owner-actions">
+                              <button className="comment-action-btn" onClick={() => startEditing(comment)}>
                                 <HiOutlinePencil /> Edit
                               </button>
-                              <button className="flex items-center gap-1.5 text-[12px] font-medium text-white/50 hover:text-red-400 bg-transparent border-none p-0 cursor-pointer" onClick={() => handleDeleteComment(comment._id)}>
+                              <button className="comment-action-btn delete" onClick={() => handleDeleteComment(comment._id)}>
                                 <HiOutlineTrash /> Delete
                               </button>
                             </div>
