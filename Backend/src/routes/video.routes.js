@@ -12,8 +12,8 @@ import {
 } from "../controllers/video.controller.js";
 import { upload} from "../middlewares/multer.middleware.js";
 
-import {verifyJWT} from "../middlewares/auth.middleware.js";
-import {authorizeRoles} from "../middlewares/role.middleware.js";
+import { verifyJWT, optionalVerifyJWT } from "../middlewares/auth.middleware.js";
+import { authorizeRoles } from "../middlewares/role.middleware.js";
 
 const router = Router();
 
@@ -34,9 +34,9 @@ router
 
     router
          .route("/:videoId")
-         .get(verifyJWT, getVideoById)
+         .get(optionalVerifyJWT, getVideoById)
          .delete(verifyJWT, deleteVideo)
-         .patch(verifyJWT, upload.single("thumbnail"),updateVideo)
+         .patch(verifyJWT, upload.single("thumbnail"), updateVideo)
          
     router
         .route("/toggle/publish/:videoId")

@@ -15,6 +15,8 @@ import { timeAgo, formatViews } from '../../utils/formatters';
 
 
 
+import VideoBuffering from '../../components/VideoBuffering/VideoBuffering';
+
 export default function WatchStream() {
   const { streamId } = useParams();
   const { user } = useAuth();
@@ -202,9 +204,12 @@ export default function WatchStream() {
   if (loading) {
     return (
       <div className="max-w-[1280px] mx-auto p-4 md:p-6 lg:px-8 flex items-center justify-center min-h-[50vh]">
-        <div className="flex flex-col items-center gap-4 text-[var(--text-muted)]">
-          <div className="w-10 h-10 border-2 border-teal-primary/30 border-t-teal-primary rounded-full animate-spin" />
-          <p className="text-sm">Loading stream...</p>
+        <div className="w-full max-w-[600px] aspect-video rounded-2xl overflow-hidden bg-black/90 border border-white/10 shadow-2xl flex items-center justify-center">
+          <VideoBuffering 
+            overlay={false} 
+            message="Connecting to stream..." 
+            subtext="Establishing live broadcast channel"
+          />
         </div>
       </div>
     );

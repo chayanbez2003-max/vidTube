@@ -1,8 +1,16 @@
 import axios from 'axios';
 
-const API = axios.create({
-  baseURL: 'https://vidtube-bemr.onrender.com/api/v1',
+const isLocalhost = Boolean(
+  typeof window !== 'undefined' &&
+  (window.location.hostname === 'localhost' ||
+   window.location.hostname === '[::1]' ||
+   window.location.hostname.match(/^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/))
+);
 
+export const BASE_URL = import.meta.env.VITE_API_BASE_URL || (isLocalhost ? 'http://localhost:8000/api/v1' : 'https://vidtube-bemr.onrender.com/api/v1');
+
+const API = axios.create({
+  baseURL: BASE_URL,
   withCredentials: true,
 });
 
@@ -23,18 +31,21 @@ API.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    const token = localStorage.getItem('accessToken');
+    if (error.response?.status === 401 && token && !originalRequest._retry) {
       originalRequest._retry = true;
       try {
-        const { data } = await axios.post('https://vidtube-bemr.onrender.com/api/v1/users/refresh-token', {}, { withCredentials: true });
-        const newToken = data.data.accessToken;
-        localStorage.setItem('accessToken', newToken);
-        originalRequest.headers.Authorization = `Bearer ${newToken}`;
-        return API(originalRequest);
+        const { data } = await axios.post(`${BASE_URL}/users/refresh-token`, {}, { withCredentials: true });
+        const newToken = data?.data?.accessToken;
+        if (newToken) {
+          localStorage.setItem('accessToken', newToken);
+          originalRequest.headers.Authorization = `Bearer ${newToken}`;
+          return API(originalRequest);
+        }
       } catch (refreshError) {
         localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
         localStorage.removeItem('user');
-        window.location.href = '/login';
         return Promise.reject(refreshError);
       }
     }
@@ -43,3 +54,4 @@ API.interceptors.response.use(
 );
 
 export default API;
+

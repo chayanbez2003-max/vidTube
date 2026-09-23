@@ -437,20 +437,21 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
     return res.status(200).json(
         new ApiResponse(200, user.toObject(), "Cover image updated successfully")
     );
-})
+});
     
 const getUserchannelProfile = asyncHandler(async (req,res)=>{
-    const {username}= req.params
+    const {username}= req.params;
     if(!username?.trim())
-        {
-        throw new ApiError(400,"username is missing")
-        
+    {
+        throw new ApiError(400,"username is missing");
     }
     
+    const userId = req.user?._id ? new mongoose.Types.ObjectId(req.user._id) : null;
+
     const channel = await User.aggregate([
         {
             $match: {
-                username:username?.toLowerCase()
+                username: username?.toLowerCase()
             }
         },
         {
@@ -480,8 +481,11 @@ const getUserchannelProfile = asyncHandler(async (req,res)=>{
                isSubscribed:{
                 $cond:{
                     if:{
-                        $in:[ req.user?._id,"$subscribers.subscriber"]
-               },
+                        $and: [
+                            { $ne: [userId, null] },
+                            { $in: [userId, "$subscribers.subscriber"] }
+                        ]
+                    },
                     then:true,
                     else:false
                } 
@@ -498,13 +502,12 @@ const getUserchannelProfile = asyncHandler(async (req,res)=>{
             coverImage:1,
             avatar:1,
             email:1 
-        
         }
         }
-  ])
+  ]);
 
   if(!channel?.length){
-    throw new ApiError(404,"Channel not found")
+    throw new ApiError(404,"Channel not found");
   }
 
   return res
@@ -515,9 +518,8 @@ const getUserchannelProfile = asyncHandler(async (req,res)=>{
         channel[0],
         "User channel fetched successfully"
     )
-  )
-
-})
+  );
+});
 
 const getWatchHistory = asyncHandler(async(req, res) => {
     const user = await User.aggregate([

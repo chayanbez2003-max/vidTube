@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import API from '../../api/axios.js';
 import VideoCard from '../../components/VideoCard/VideoCard.jsx';
 import toast from 'react-hot-toast';
+import VideoBuffering from '../../components/VideoBuffering/VideoBuffering.jsx';
 
 
 const CATEGORIES = ['All', 'Music', 'Gaming', 'Education', 'Tech', 'Comedy', 'Sports', 'News'];
@@ -103,24 +104,40 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ── Video grid / skeleton / empty state ── */}
+      {/* ── Video grid / loading state / empty state ── */}
       {loading && videos.length === 0 ? (
-        /* Skeleton grid */
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 items-start">
-          {Array.from({ length: 12 }).map((_, i) => (
-            <div key={i} className="rounded-xl overflow-hidden">
-              {/* Thumbnail skeleton */}
-              <div className="aspect-video rounded-xl bg-[linear-gradient(90deg,rgba(255,255,255,0.04)_25%,rgba(255,255,255,0.08)_50%,rgba(255,255,255,0.04)_75%)] bg-[length:200%_100%] animate-[shimmer_1.5s_infinite]" />
-              {/* Info skeleton */}
-              <div className="flex gap-3 pt-[14px] items-start">
-                <div className="w-9 h-9 rounded-full flex-shrink-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.04)_25%,rgba(255,255,255,0.08)_50%,rgba(255,255,255,0.04)_75%)] bg-[length:200%_100%] animate-[shimmer_1.5s_infinite]" />
-                <div className="flex-1 flex flex-col gap-2">
-                  <div className="h-4 w-4/5 rounded bg-[linear-gradient(90deg,rgba(255,255,255,0.04)_25%,rgba(255,255,255,0.08)_50%,rgba(255,255,255,0.04)_75%)] bg-[length:200%_100%] animate-[shimmer_1.5s_infinite]" />
-                  <div className="h-3 w-1/2 rounded bg-[linear-gradient(90deg,rgba(255,255,255,0.04)_25%,rgba(255,255,255,0.08)_50%,rgba(255,255,255,0.04)_75%)] bg-[length:200%_100%] animate-[shimmer_1.5s_infinite]" />
+        <div className="flex flex-col gap-6">
+          {/* Centered Loading Spinner Card */}
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="w-full py-8 px-4 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-color)] shadow-sm backdrop-blur-md flex items-center justify-center"
+          >
+            <VideoBuffering 
+              overlay={false}
+              message="Loading videos..." 
+              subtext="Connecting to VidTube and fetching the latest content"
+              size="md"
+            />
+          </motion.div>
+
+          {/* Skeleton grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 items-start">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="rounded-xl overflow-hidden flex flex-col gap-3">
+                {/* Thumbnail skeleton */}
+                <div className="aspect-video rounded-xl bg-slate-300/60 dark:bg-slate-800/80 animate-pulse border border-[var(--border-color)]" />
+                {/* Info skeleton */}
+                <div className="flex gap-3 pt-1 items-start">
+                  <div className="w-9 h-9 rounded-full flex-shrink-0 bg-slate-300/60 dark:bg-slate-800/80 animate-pulse" />
+                  <div className="flex-1 flex flex-col gap-2">
+                    <div className="h-4 w-4/5 rounded bg-slate-300/60 dark:bg-slate-800/80 animate-pulse" />
+                    <div className="h-3 w-1/2 rounded bg-slate-300/60 dark:bg-slate-800/80 animate-pulse" />
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       ) : videos.length > 0 ? (
         <>

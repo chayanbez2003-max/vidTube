@@ -4,6 +4,8 @@ import API from '../../api/axios';
 import VideoCard from '../../components/VideoCard/VideoCard';
 import { HiOutlineThumbUp } from 'react-icons/hi';
 
+import VideoBuffering from '../../components/VideoBuffering/VideoBuffering';
+
 export default function LikedVideos() {
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -25,10 +27,15 @@ export default function LikedVideos() {
         <HiOutlineThumbUp className="text-[var(--primary)]" /> Liked <span className="bg-[var(--accent-gradient)] text-transparent bg-clip-text font-medium">Videos</span>
       </motion.h1>
       {loading ? (
-        <div className="video-grid">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="flex flex-col gap-3"><div className="w-full aspect-video rounded-xl bg-[var(--glass-border)] animate-pulse" /></div>
-          ))}
+        <div className="flex flex-col gap-6">
+          <div className="w-full py-8 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-color)] shadow-sm flex items-center justify-center">
+            <VideoBuffering overlay={false} message="Loading liked videos..." subtext="Fetching your favorite videos" size="sm" />
+          </div>
+          <div className="video-grid">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="flex flex-col gap-3"><div className="w-full aspect-video rounded-xl bg-slate-300/60 dark:bg-slate-800/80 animate-pulse border border-[var(--border-color)]" /></div>
+            ))}
+          </div>
         </div>
       ) : videos.length > 0 ? (
         <div className="video-grid">

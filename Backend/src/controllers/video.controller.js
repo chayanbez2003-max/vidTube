@@ -97,7 +97,10 @@ const getAllVideos = asyncHandler(async (req, res)=>{
         }
     },
     {
-        $unwind: "$ownerDetails"
+        $unwind: {
+            path: "$ownerDetails",
+            preserveNullAndEmptyArrays: true
+        }
     }
     )
 
@@ -165,9 +168,7 @@ const publishVideo = asyncHandler(async(req, res)=>{
             url: thumbnailUrl,
             publicId: thumbnailPublicId
         },
-        owner:{
-            _id: req.user?._id
-        },
+        owner: req.user?._id,
         isPublished: true,
         tags: parsedTags,
         category: category || 'other'
@@ -205,9 +206,7 @@ const getVideoById = asyncHandler(async(req, res)=>{
             throw new ApiError(400, "Invalid videoId")
         }
 
-        if(!isValidObjectId(req.user?._id)){
-            throw new ApiError(400, "Invalid userId")
-        }
+        const userId = req.user?._id ? new mongoose.Types.ObjectId(req.user._id) : null;
 
         const video = await Video.aggregate([
 
@@ -247,9 +246,9 @@ const getVideoById = asyncHandler(async(req, res)=>{
                                 isSubscribed: {
                                     $cond: {
                                         if: {
-                                            $in: [
-                                                req.user?._id,
-                                                "$subscribers.subscriber"
+                                            $and: [
+                                                { $ne: [userId, null] },
+                                                { $in: [userId, "$subscribers.subscriber"] }
                                             ]
                                         },
                                         then: true,
@@ -282,9 +281,9 @@ const getVideoById = asyncHandler(async(req, res)=>{
                     isLiked: {
                         $cond: {
                             if: {
-                                $in: [
-                                    req.user?._id,
-                                    "$likes.likedBy"
+                                $and: [
+                                    { $ne: [userId, null] },
+                                    { $in: [userId, "$likes.likedBy"] }
                                 ]
                             },
                             then: true,
@@ -310,32 +309,36 @@ const getVideoById = asyncHandler(async(req, res)=>{
             } 
         ]);
 
-        if(!video){
-            throw new ApiError(500,"failed to fetch video, please try again")
+        if(!video || video.length === 0){
+            throw new ApiError(404, "Video not found")
         }
 
-        // Only increment view count if user hasn't viewed this video before
-        const currentUser = await User.findById(req.user?._id).select("watchHistory");
-        const alreadyViewed = currentUser?.watchHistory?.some(
-            (id) => id.toString() === videoId
-        );
+        // Increment view count
+        if (req.user?._id) {
+            const currentUser = await User.findById(req.user._id).select("watchHistory");
+            const alreadyViewed = currentUser?.watchHistory?.some(
+                (id) => id.toString() === videoId
+            );
 
-        if (!alreadyViewed) {
+            if (!alreadyViewed) {
+                await Video.findByIdAndUpdate(videoId, {
+                    $inc: { views: 1 }
+                });
+            }
+
+            // add video to user's watch history — always move to front
+            await User.findByIdAndUpdate(req.user._id, {
+                $pull: { watchHistory: new mongoose.Types.ObjectId(videoId) }
+            });
+            await User.findByIdAndUpdate(req.user._id, {
+                $push: { watchHistory: { $each: [new mongoose.Types.ObjectId(videoId)], $position: 0 } }
+            });
+        } else {
+            // Unauthenticated guest view count increment
             await Video.findByIdAndUpdate(videoId, {
                 $inc: { views: 1 }
             });
         }
-
-        // add video to user's watch history — always move to front
-        // so the array is always newest-first.
-        // Step 1: remove existing occurrence (if any)
-        await User.findByIdAndUpdate(req.user?._id, {
-            $pull: { watchHistory: new mongoose.Types.ObjectId(videoId) }
-        });
-        // Step 2: push to the front of the array
-        await User.findByIdAndUpdate(req.user?._id, {
-            $push: { watchHistory: { $each: [new mongoose.Types.ObjectId(videoId)], $position: 0 } }
-        });
 
         return res
             .status(200)

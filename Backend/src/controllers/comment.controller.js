@@ -19,6 +19,8 @@ const getVideoCommnets =  asyncHandler(async(req , res) =>{
         throw new ApiError (404, "Video not found");
     }
     
+    const userId = req.user?._id ? new mongoose.Types.ObjectId(req.user._id) : null;
+
     const commentsAggregate = Comment.aggregate([
         {
             $match: {
@@ -52,7 +54,10 @@ const getVideoCommnets =  asyncHandler(async(req , res) =>{
                 isLiked:{
                     $cond:{
                         if:{
-                            $in:[req.user?._id, "$likes.likedBy"]
+                            $and: [
+                                { $ne: [userId, null] },
+                                { $in: [userId, "$likes.likedBy"] }
+                            ]
                         },
                         then:true,
                         else:false
@@ -155,12 +160,14 @@ const getVideoCommnets =  asyncHandler(async(req , res) =>{
 // get all comments for a stream
 const getStreamComments = asyncHandler(async (req, res) => {
     const { streamId } = req.params;
-    const { page = 1, limit = 10 } = req.query;
+    const { page = 1, limit = 20 } = req.query;
 
     const stream = await Stream.findById(streamId);
     if (!stream) {
         throw new ApiError(404, "Stream not found");
     }
+
+    const userId = req.user?._id ? new mongoose.Types.ObjectId(req.user._id) : null;
 
     const commentsAggregate = Comment.aggregate([
         {
@@ -195,7 +202,10 @@ const getStreamComments = asyncHandler(async (req, res) => {
                 isLiked: {
                     $cond: {
                         if: {
-                            $in: [req.user?._id, "$likes.likedBy"]
+                            $and: [
+                                { $ne: [userId, null] },
+                                { $in: [userId, "$likes.likedBy"] }
+                            ]
                         },
                         then: true,
                         else: false

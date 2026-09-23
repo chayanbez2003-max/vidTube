@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
@@ -7,18 +7,19 @@ import toast from 'react-hot-toast';
 import {
   HiOutlineThumbUp, HiThumbUp, HiOutlineShare,
   HiOutlineDotsHorizontal, HiOutlineUserAdd, HiUserAdd,
-  HiOutlineEye, HiOutlinePencil, HiOutlineTrash
+  HiOutlineEye, HiOutlinePencil, HiOutlineTrash,
+  HiOutlineRefresh
 } from 'react-icons/hi';
 import { formatViews, timeAgo } from '../../utils/formatters';
-
-
-
+import VideoBuffering from '../../components/VideoBuffering/VideoBuffering';
 
 export default function VideoPlayer() {
   const { videoId } = useParams();
   const { user } = useAuth();
   const [video, setVideo] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isBuffering, setIsBuffering] = useState(true);
+  const [videoError, setVideoError] = useState(null);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
   const [isLiked, setIsLiked] = useState(false);
@@ -29,7 +30,11 @@ export default function VideoPlayer() {
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editContent, setEditContent] = useState('');
 
+  const videoRef = useRef(null);
+
   useEffect(() => {
+    setIsBuffering(true);
+    setVideoError(null);
     fetchVideo();
     fetchComments();
   }, [videoId]);
@@ -129,42 +134,144 @@ export default function VideoPlayer() {
     toast.success('Link copied!');
   };
 
-  if (loading) {
-    return (
-      <div className="max-w-[1280px] mx-auto p-4 md:p-6 lg:p-8">
-        <div className="w-full max-w-[1024px] mx-auto">
-          <div className="w-full aspect-video rounded-2xl skeleton" />
-        </div>
-      </div>
-    );
-  }
-
-  if (!video) return <div className="max-w-[1280px] mx-auto p-4"><div className="flex justify-center py-20 text-[var(--text-muted)] text-xl font-medium">Video not found</div></div>;
+  const handleRetry = () => {
+    setVideoError(null);
+    setIsBuffering(true);
+    if (videoRef.current) {
+      videoRef.current.load();
+      videoRef.current.play().catch(() => {});
+    }
+  };
 
   // Fix Cloudinary URLs where video was uploaded as 'image' resource type
   // e.g. /image/upload/ → /video/upload/ so the browser can play it properly
   const getVideoUrl = (url) => {
     if (!url) return '';
-    // If the Cloudinary URL has /image/upload/ instead of /video/upload/, fix it
     return url.replace('/image/upload/', '/video/upload/');
   };
+
+  if (loading) {
+    return (
+      <div className="max-w-[1280px] mx-auto p-4 md:p-6 lg:px-8 animate-[fadeInUp_0.4s_ease]">
+        <div className="w-full max-w-[1024px] mx-auto flex flex-col gap-6">
+          {/* Buffering Frame when landing on the page */}
+          <div className="relative w-full aspect-video bg-black/90 rounded-2xl overflow-hidden shadow-2xl border border-white/10 flex items-center justify-center">
+            <VideoBuffering 
+              overlay={false} 
+              message="Loading video..." 
+              subtext="Connecting to video stream" 
+            />
+          </div>
+
+          {/* Skeleton Layout Underneath */}
+          <div className="flex flex-col gap-4">
+            <div className="h-6 w-3/4 rounded-lg bg-[linear-gradient(90deg,rgba(255,255,255,0.04)_25%,rgba(255,255,255,0.08)_50%,rgba(255,255,255,0.04)_75%)] bg-[length:200%_100%] animate-[shimmer_1.5s_infinite]" />
+            <div className="flex items-center justify-between gap-4 border-b border-white/10 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-full bg-[linear-gradient(90deg,rgba(255,255,255,0.04)_25%,rgba(255,255,255,0.08)_50%,rgba(255,255,255,0.04)_75%)] bg-[length:200%_100%] animate-[shimmer_1.5s_infinite]" />
+                <div className="flex flex-col gap-2">
+                  <div className="h-4 w-28 rounded bg-[linear-gradient(90deg,rgba(255,255,255,0.04)_25%,rgba(255,255,255,0.08)_50%,rgba(255,255,255,0.04)_75%)] bg-[length:200%_100%] animate-[shimmer_1.5s_infinite]" />
+                  <div className="h-3 w-20 rounded bg-[linear-gradient(90deg,rgba(255,255,255,0.04)_25%,rgba(255,255,255,0.08)_50%,rgba(255,255,255,0.04)_75%)] bg-[length:200%_100%] animate-[shimmer_1.5s_infinite]" />
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <div className="h-9 w-24 rounded-full bg-[linear-gradient(90deg,rgba(255,255,255,0.04)_25%,rgba(255,255,255,0.08)_50%,rgba(255,255,255,0.04)_75%)] bg-[length:200%_100%] animate-[shimmer_1.5s_infinite]" />
+                <div className="h-9 w-20 rounded-full bg-[linear-gradient(90deg,rgba(255,255,255,0.04)_25%,rgba(255,255,255,0.08)_50%,rgba(255,255,255,0.04)_75%)] bg-[length:200%_100%] animate-[shimmer_1.5s_infinite]" />
+              </div>
+            </div>
+            <div className="h-20 w-full rounded-xl bg-[linear-gradient(90deg,rgba(255,255,255,0.04)_25%,rgba(255,255,255,0.08)_50%,rgba(255,255,255,0.04)_75%)] bg-[length:200%_100%] animate-[shimmer_1.5s_infinite]" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!video) {
+    return (
+      <div className="max-w-[1280px] mx-auto p-4">
+        <div className="flex flex-col items-center justify-center py-20 text-center gap-3">
+          <div className="text-4xl">🎬</div>
+          <div className="text-[var(--text-muted)] text-xl font-medium">Video not found</div>
+          <Link to="/" className="btn-primary !py-2 !px-5 !text-sm mt-2">
+            Back to Home
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-[1280px] mx-auto p-4 md:p-6 lg:px-8">
       <div className="w-full max-w-[1024px] mx-auto flex flex-col gap-6">
         <motion.div
-          className="relative w-full aspect-video bg-bg-base rounded-2xl overflow-hidden shadow-glass-lg"
+          className="relative w-full aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl border border-white/10 group"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
         >
           <video
+            ref={videoRef}
             controls
             autoPlay
-            className="w-full h-full object-contain outline-none"
+            playsInline
+            className="w-full h-full object-contain outline-none bg-black"
             src={getVideoUrl(video.videoFile?.url)}
             poster={video.thumbnail?.url}
+            onLoadStart={() => setIsBuffering(true)}
+            onWaiting={() => setIsBuffering(true)}
+            onSeeking={() => setIsBuffering(true)}
+            onStalled={() => setIsBuffering(true)}
+            onCanPlay={() => {
+              setIsBuffering(false);
+              setVideoError(null);
+            }}
+            onCanPlayThrough={() => {
+              setIsBuffering(false);
+              setVideoError(null);
+            }}
+            onPlaying={() => {
+              setIsBuffering(false);
+              setVideoError(null);
+            }}
+            onSeeked={() => setIsBuffering(false)}
+            onLoadedData={() => setIsBuffering(false)}
+            onTimeUpdate={() => {
+              if (isBuffering) setIsBuffering(false);
+            }}
+            onError={() => {
+              setIsBuffering(false);
+              setVideoError('Unable to load video stream. Please check your network or try again.');
+            }}
           />
+
+          {/* Buffering Spinner Overlay */}
+          <AnimatePresence>
+            {isBuffering && !videoError && (
+              <VideoBuffering 
+                message="Buffering..." 
+                subtext="Loading video stream"
+                overlay={true}
+              />
+            )}
+          </AnimatePresence>
+
+          {/* Video Error Overlay */}
+          {videoError && (
+            <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/85 backdrop-blur-sm p-6 text-center">
+              <div className="w-12 h-12 rounded-full bg-red-500/10 border border-red-500/30 text-red-400 flex items-center justify-center text-2xl mb-3">
+                ⚠️
+              </div>
+              <p className="text-white font-medium text-sm mb-1 max-w-md">{videoError}</p>
+              <p className="text-white/50 text-xs mb-4">Video stream may be processing or temporarily unavailable</p>
+              <button
+                type="button"
+                onClick={handleRetry}
+                className="btn-primary !py-2 !px-5 !text-sm flex items-center gap-2 cursor-pointer"
+              >
+                <HiOutlineRefresh className="text-base" /> Retry Playback
+              </button>
+            </div>
+          )}
         </motion.div>
 
         <div className="flex flex-col gap-3">
@@ -302,3 +409,4 @@ export default function VideoPlayer() {
     </div>
   );
 }
+
