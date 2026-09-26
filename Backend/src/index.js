@@ -1,13 +1,9 @@
-import dotenv from "dotenv";
+import "dotenv/config";
 import { createServer } from "http";
 import connectToDatabase from "./db/index.js";
 import { app } from "./app.js";
 import { initializeSocket } from "./socket/index.js";
 import { updateAllTrendingScores } from "./utils/trending.js";
-
-dotenv.config({
-    path: "./.env"
-});
 
 // Create HTTP server and attach Socket.IO
 const server = createServer(app);

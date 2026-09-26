@@ -27,6 +27,11 @@ export const upload = multer({
 // Returns the full Cloudinary response object (with .secure_url, .public_id …).
 export const uploadBufferToCloudinary = (buffer, options = {}) => {
   return new Promise((resolve, reject) => {
+    cloudinary.config({
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET,
+    });
     const stream = cloudinary.uploader.upload_stream(
       { resource_type: "auto", folder: "vidtube-uploads", ...options },
       (error, result) => {

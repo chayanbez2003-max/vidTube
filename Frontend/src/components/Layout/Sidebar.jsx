@@ -1,10 +1,11 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   HiOutlineHome, HiOutlineFire, HiOutlineFolderOpen,
   HiOutlineThumbUp, HiOutlineClock, HiOutlineUserGroup,
-  HiOutlineChatAlt2, HiOutlineChartBar, HiOutlineStatusOnline
+  HiOutlineChatAlt2, HiOutlineChartBar, HiOutlineStatusOnline,
+  HiOutlineLogin, HiOutlineUpload
 } from "react-icons/hi";
 
 export default function Sidebar({ collapsed, mobileOpen, onClose }) {
@@ -18,6 +19,7 @@ export default function Sidebar({ collapsed, mobileOpen, onClose }) {
   ];
 
   const libraryNav = [
+    { to: '/upload', icon: <HiOutlineUpload />, label: 'Upload Video' },
     { to: '/history', icon: <HiOutlineClock />, label: 'History' },
     { to: '/liked-videos', icon: <HiOutlineThumbUp />, label: 'Liked Videos' },
     { to: '/playlists', icon: <HiOutlineFolderOpen />, label: 'Playlists' },
@@ -72,6 +74,22 @@ export default function Sidebar({ collapsed, mobileOpen, onClose }) {
               {!collapsed && <span className="truncate">{item.label}</span>}
             </NavLink>
           ))}
+        </div>
+      )}
+
+      {!user && !collapsed && (
+        <div className="mx-2 mt-2 p-3.5 rounded-2xl bg-gradient-to-br from-sky-500/10 via-indigo-500/5 to-purple-500/10 border border-sky-200/60 dark:border-sky-800/40 shadow-sm">
+          <p className="text-xs text-[var(--text-secondary)] mb-3 leading-relaxed font-medium">
+            Sign in to like videos, comment, and subscribe.
+          </p>
+          <Link
+            to="/login"
+            className="inline-flex items-center justify-center gap-1.5 w-full py-2 px-3 rounded-full text-xs font-semibold text-white bg-gradient-to-r from-sky-500 via-indigo-600 to-violet-600 hover:from-sky-400 hover:via-indigo-500 hover:to-violet-500 shadow-[0_4px_12px_rgba(99,102,241,0.25)] hover:shadow-[0_6px_16px_rgba(139,92,246,0.4)] transition-all duration-200 no-underline hover:-translate-y-0.5 active:translate-y-0"
+            onClick={onClose}
+          >
+            <HiOutlineLogin className="text-sm" />
+            <span>Sign In</span>
+          </Link>
         </div>
       )}
 

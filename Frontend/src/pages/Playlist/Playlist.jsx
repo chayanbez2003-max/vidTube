@@ -74,28 +74,28 @@ export default function Playlist() {
   return (
     <div className="max-w-[1280px] mx-auto p-4 md:p-6 lg:px-8 flex flex-col gap-8">
       {/* Playlist Header Info */}
-      <div className="flex flex-col md:flex-row gap-6 p-6 md:p-8 bg-bg-surface border border-white/10 rounded-2xl">
-        <div className="relative w-full md:w-[320px] aspect-video rounded-xl overflow-hidden shrink-0 bg-[var(--glass-border)]">
+      <div className="flex flex-col md:flex-row gap-6 p-6 md:p-8 bg-white border border-slate-200/80 rounded-2xl shadow-sm">
+        <div className="relative w-full md:w-[320px] aspect-video rounded-xl overflow-hidden shrink-0 bg-slate-100">
           {playlist.videos?.length > 0 ? (
             <img src={playlist.videos[0].thumbnail?.url || playlist.videos[0].thumbnail} alt={playlist.name} className="w-full h-full object-cover" />
           ) : (
-            <div className="w-full h-full flex items-center justify-center bg-[var(--glass-border)]"><HiOutlineFolderOpen className="text-5xl text-[var(--border-color)]" /></div>
+            <div className="w-full h-full flex items-center justify-center bg-slate-100"><HiOutlineFolderOpen className="text-5xl text-slate-300" /></div>
           )}
-          <div className="absolute bottom-2 right-2 bg-black/80 px-2 py-1 rounded text-xs font-semibold flex items-center gap-1.5 backdrop-blur-sm">
+          <div className="absolute bottom-2 right-2 bg-black/75 text-white px-2 py-1 rounded-md text-xs font-semibold flex items-center gap-1.5 backdrop-blur-sm">
             <HiOutlinePlay /> {playlist.totalVideos || 0}
           </div>
         </div>
         
         <div className="flex flex-col flex-1">
-          <h1 className="text-2xl md:text-3xl font-light text-[var(--text-primary)] m-0 mb-3">{playlist.name}</h1>
-          <p className="text-[15px] text-[var(--text-secondary)] leading-relaxed m-0 mb-6 flex-1">{playlist.description}</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-slate-900 m-0 mb-3">{playlist.name}</h1>
+          <p className="text-[15px] text-slate-600 leading-relaxed m-0 mb-6 flex-1">{playlist.description}</p>
           
-          <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 pt-5 border-t border-white/10">
-            <Link to={`/channel/${playlist.owner?.username}`} className="flex items-center gap-3 no-underline text-[var(--text-primary)] font-medium hover:text-[var(--primary-soft)] transition-colors">
-              <img src={playlist.owner?.avatar?.url || playlist.owner?.avatar} alt="" className="w-8 h-8 rounded-full object-cover" />
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 pt-5 border-t border-slate-100">
+            <Link to={`/channel/${playlist.owner?.username}`} className="flex items-center gap-3 no-underline text-slate-800 font-semibold hover:text-sky-600 transition-colors">
+              <img src={playlist.owner?.avatar?.url || playlist.owner?.avatar} alt="" className="w-8 h-8 rounded-full object-cover border border-slate-200" />
               <span>{playlist.owner?.fullName || playlist.owner?.username}</span>
             </Link>
-            <div className="flex items-center gap-2 flex-wrap text-sm text-[var(--text-muted)]">
+            <div className="flex items-center gap-2 flex-wrap text-sm text-slate-400 font-medium">
               <span>{playlist.totalVideos || 0} videos</span>
               •
               <span>{formatViews(playlist.totalViews || 0)} views</span>
